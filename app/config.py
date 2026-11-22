@@ -90,6 +90,47 @@ class Vertex(_Frozen):
     est_inr_per_call: float
 
 
+class CompanyFilters(_Frozen):
+    country_field: str
+    country_values: tuple[str, ...]
+    industry_field: str
+    industry_op: str
+    state_field: str
+    state_op: str
+    headcount_field: str
+
+
+class Discovery(_Frozen):
+    default_max_accounts: int
+    search_candidate_multiplier: int
+    search_max_pages: int
+    company_filters: CompanyFilters
+    job_title_field: str
+    job_title_op: str
+    job_title_keywords: tuple[str, ...]
+    job_country_field: str
+    job_country_value: str
+    news_query_template: str
+    news_max_queries: int
+
+
+class Dedup(_Frozen):
+    name_ratio: float
+    name_suffixes: tuple[str, ...]
+
+
+class PreRankWeights(_Frozen):
+    industry_fit: float
+    headcount_in_range: float
+    state_match: float
+    trigger_present: float
+
+
+class PreRank(_Frozen):
+    industry_ratio: float
+    weights: PreRankWeights
+
+
 class CacheTtlHours(_Frozen):
     registry: int
     news: int
@@ -153,6 +194,9 @@ class Settings(_Frozen):
     cache_ttl_hours: CacheTtlHours
     matching: Matching
     shortlist: Shortlist
+    discovery: Discovery
+    dedup: Dedup
+    pre_rank: PreRank
     output: Output
     db: Db
     runner: Runner

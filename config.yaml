@@ -79,6 +79,42 @@ shortlist:
   pre_rank_top: 10
   enrich_top: 8
 
+# app/discovery/doors.py. Filter field names follow the Crustdata filter grammar; the
+# industry/state "(.)" (all words, any order) choice is unprobed: check it on the first live run.
+discovery:
+  default_max_accounts: 10        # when the RunSpec gives no max_accounts
+  search_candidate_multiplier: 3  # door 1 stops at max_accounts * this many candidates...
+  search_max_pages: 3             # ...or after this many pages
+  company_filters:
+    country_field: locations.country
+    country_values: [India]
+    industry_field: taxonomy.professional_network_industry
+    industry_op: "(.)"
+    state_field: locations.state
+    state_op: "(.)"
+    headcount_field: headcount.total
+  job_title_field: job_details.title
+  job_title_op: "(.)"
+  job_title_keywords: [supply chain, logistics, warehouse]
+  job_country_field: location.country
+  job_country_value: India
+  news_query_template: "{industry} new warehouse India"
+  news_max_queries: 3             # one web search (+1 LLM extract) per industry, capped
+
+# app/discovery/dedup.py
+dedup:
+  name_ratio: 95                  # rapidfuzz token_set_ratio for the (hold-only) name edge
+  name_suffixes: [private limited, pvt ltd, pvt. ltd., limited, ltd, llp, inc, india]
+
+# pre_rank step: cheap score from search fields, then score / est credits (greedy knapsack)
+pre_rank:
+  industry_ratio: 85              # token_set_ratio for a job listing's industry vs the spec
+  weights:
+    industry_fit: 1
+    headcount_in_range: 1
+    state_match: 1
+    trigger_present: 1
+
 output:
   fields: []
 
