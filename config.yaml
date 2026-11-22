@@ -51,6 +51,19 @@ gateway:
   default_timeout_s: 30
   endpoint_rpm: {}          # e.g. {"crustdata:web/search": 10} (probe saw 10 rpm on web endpoints)
 
+# Gemini on Vertex AI (app/gateway/vertex.py). Prices are list prices used only to ESTIMATE
+# cost_ledger.inr from token counts; check them against the GCP price page before the demo.
+vertex:
+  model: gemini-2.5-flash
+  location: us-central1
+  temperature: 0
+  thinking_budget: 0              # parsing needs no thinking tokens; null = model default
+  timeout_s: 60
+  usd_per_m_input_tokens: 0.30
+  usd_per_m_output_tokens: 2.50   # thinking tokens bill as output
+  inr_per_usd: 88
+  est_inr_per_call: 1             # pre-call budget-guard estimate (actual cost logged after)
+
 cache_ttl_hours:
   registry: 24
   news: 24

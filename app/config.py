@@ -78,6 +78,18 @@ class Gateway(_Frozen):
     endpoint_rpm: dict[str, float]
 
 
+class Vertex(_Frozen):
+    model: str
+    location: str
+    temperature: float
+    thinking_budget: int | None
+    timeout_s: float
+    usd_per_m_input_tokens: float
+    usd_per_m_output_tokens: float
+    inr_per_usd: float
+    est_inr_per_call: float
+
+
 class CacheTtlHours(_Frozen):
     registry: int
     news: int
@@ -131,6 +143,7 @@ class Settings(_Frozen):
     windows: Windows
     crustdata: Crustdata
     gateway: Gateway
+    vertex: Vertex
     cache_ttl_hours: CacheTtlHours
     matching: Matching
     shortlist: Shortlist

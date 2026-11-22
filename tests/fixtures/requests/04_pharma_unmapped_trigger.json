@@ -1,0 +1,22 @@
+{
+  "input": "Pharma distributors in Telangana with a new CEO, or that just won a government tender. At most 10 accounts. Our pitch should mention cold-chain capability.",
+  "llm_output": {
+    "industries": ["pharma distribution"],
+    "geo_states": ["Telangana"],
+    "size_min": null,
+    "size_max": null,
+    "trigger_types": ["leadership_hire"],
+    "buyer_titles": [],
+    "exclude_domains": [],
+    "max_accounts": 10,
+    "limits": {},
+    "free_text_notes": "just won a government tender; pitch should mention cold-chain capability"
+  },
+  "expected": {
+    "industries": ["pharma distribution"],
+    "geo_states": ["Telangana"],
+    "trigger_types": ["leadership_hire"],
+    "max_accounts": 10,
+    "free_text_notes": "just won a government tender; pitch should mention cold-chain capability"
+  }
+}

@@ -75,9 +75,9 @@ class RunSpec(BaseModel):
 
     @model_validator(mode="after")
     def _size_range(self) -> Self:
-        if self.size_min is not None and self.size_max is not None:
-            if self.size_min > self.size_max:
-                raise ValueError("size_min must be <= size_max")
+        sizes_set = self.size_min is not None and self.size_max is not None
+        if sizes_set and self.size_min > self.size_max:
+            raise ValueError("size_min must be <= size_max")
         return self
 
     def effective_limits(self, settings: Settings) -> Limits:
