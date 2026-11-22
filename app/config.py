@@ -46,6 +46,7 @@ class Gateway(_Frozen):
     bucket_capacity: float
     default_rpm: int
     default_timeout_s: float
+    endpoint_rpm: dict[str, float]
 
 
 class CacheTtlHours(_Frozen):

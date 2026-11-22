@@ -1,4 +1,4 @@
-"""Token bucket per endpoint group, stored in Postgres so it holds across processes."""
+"""Token bucket per endpoint, stored in Postgres so it holds across processes."""
 
 from __future__ import annotations
 

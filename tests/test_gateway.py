@@ -223,6 +223,32 @@ async def test_logs_one_line_per_call(gw: Gateway, pool, caplog: pytest.LogCaptu
     assert "test-key" not in rec.getMessage() + str(rec.__dict__)
 
 
+async def test_buckets_are_per_endpoint(pool) -> None:
+    s = load_settings(DEFAULT_CONFIG_PATH)
+    s = s.model_copy(
+        update={
+            "crustdata": s.crustdata.model_copy(update={"rpm": 6}),  # 10 s per token
+            "gateway": s.gateway.model_copy(update={"endpoint_rpm": {"crustdata:web/x": 9}}),
+            "secrets": s.secrets.model_copy(update={"crustdata_api_key": SecretStr("k")}),
+        }
+    )
+    suffix = uuid.uuid4().hex
+    ep_a, ep_b = f"crustdata:a-{suffix}", f"crustdata:b-{suffix}"
+    async with httpx.AsyncClient() as client:
+        gw = Gateway(s, pool, client)
+        assert gw.endpoint_rpm(ep_a) == 6
+        assert gw.endpoint_rpm("crustdata:web/x") == 9
+        job = await _new_job(pool)
+        with respx.mock:
+            url_a, url_b = _url(), _url()
+            respx.post(url_a).respond(200, json={"matches": [{"id": 1}]})
+            respx.post(url_b).respond(200, json={"matches": [{"id": 2}]})
+            t0 = asyncio.get_running_loop().time()
+            await _call(gw, job, url_a, endpoint=ep_a)
+            await _call(gw, job, url_b, endpoint=ep_b)  # different endpoint: no 10 s wait
+            assert asyncio.get_running_loop().time() - t0 < 5
+
+
 async def test_rate_limit_spaces_calls_across_bucket(pool) -> None:
     from app.gateway import ratelimit
 

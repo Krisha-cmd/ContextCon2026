@@ -126,6 +126,11 @@ class Gateway:
             raise GatewayError(f"no cache_ttl_hours entry for data_type {key!r}")
         return float(getattr(self.settings.cache_ttl_hours, key))
 
+    def endpoint_rpm(self, endpoint: str) -> float:
+        """Per-endpoint override from gateway.endpoint_rpm, else the endpoint's group rpm."""
+        override = self.settings.gateway.endpoint_rpm.get(endpoint)
+        return float(override) if override is not None else self.group_rpm(endpoint_group(endpoint))
+
     def group_rpm(self, group: str) -> float:
         section = getattr(self.settings, group, None)
         return float(getattr(section, "rpm", self.settings.gateway.default_rpm))
@@ -215,7 +220,7 @@ class Gateway:
             hit = await self._cached(conn, job_id, endpoint, rhash, data_type, entity_id, t0)
             if hit:
                 return hit
-            sent = await self._send(group, method, url, json, params, est_credits)
+            sent = await self._send(endpoint, group, method, url, json, params, est_credits)
             ms = _elapsed_ms(t0)
             await self._record(conn, job_id, endpoint, rhash, data_type, entity_id, sent, ms)
         return GatewayResponse(sent.status, sent.body, False, sent.credits, ms, rhash)
@@ -247,14 +252,16 @@ class Gateway:
         if spent + est > limit:
             raise BudgetExceeded(job_id, spent, est, limit)
 
-    async def _send(self, group, method, url, json, params, est_credits) -> _Sent:
+    async def _send(self, endpoint, group, method, url, json, params, est_credits) -> _Sent:
         headers = self.group_headers(group)
         timeout = self.group_timeout(group)
-        rpm = self.group_rpm(group)
+        rpm = self.endpoint_rpm(endpoint)
+        capacity = self.settings.gateway.bucket_capacity
         max_attempts = self.settings.gateway.max_attempts
         header_total: float | None = None
         for attempt in range(1, max_attempts + 1):
-            await ratelimit.acquire(self.pool, group, rpm, self.settings.gateway.bucket_capacity)
+            # One bucket per endpoint: Crustdata enforces its rate limits per endpoint.
+            await ratelimit.acquire(self.pool, endpoint, rpm, capacity)
             try:
                 resp = await self.client.request(
                     method, url, json=json, params=params, headers=headers, timeout=timeout

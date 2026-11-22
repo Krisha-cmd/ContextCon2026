@@ -1,10 +1,14 @@
-API-research\.env
-API-research\calls.1795330655.jsonl
-API-research\calls.1795330994.jsonl
-API-research\calls.jsonl
-API-research\endpoints_snapshot.json
+# Secrets (any folder)
 .env
+.env.*
+
+# API probe output: raw responses and account entitlements
+API-research/calls*.jsonl
+API-research/endpoints_snapshot.json
+
+# Python / tooling
 .venv/
 __pycache__/
+*.pyc
 .pytest_cache/
 .ruff_cache/

@@ -18,8 +18,9 @@ crustdata:
   api_version: "2025-11-01"
 
 # app/gateway. Endpoint names are "<group>:<name>", e.g. "crustdata:company/identify".
-# A group's rpm/timeout_s come from its own section above (e.g. crustdata) when it has one,
-# otherwise from the defaults here.
+# Rate limiting uses one token bucket per endpoint. Its rpm is endpoint_rpm[endpoint] if set,
+# else the group's rpm. A group's rpm/timeout_s come from its own section above
+# (e.g. crustdata) when it has one, otherwise from the defaults here.
 gateway:
   max_attempts: 4           # total tries, including the first
   backoff_base_s: 1.0       # attempt n waits base * 2^(n-1), capped, plus jitter
@@ -28,6 +29,7 @@ gateway:
   bucket_capacity: 1        # token-bucket burst; 1 = strict 60/rpm spacing (Crustdata 429s on bursts)
   default_rpm: 60
   default_timeout_s: 30
+  endpoint_rpm: {}          # e.g. {"crustdata:web/search": 10} (probe saw 10 rpm on web endpoints)
 
 cache_ttl_hours:
   registry: 24
