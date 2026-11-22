@@ -91,6 +91,14 @@ db:
 
 runner:
   poll_interval_s: 5
+  lease_s: 60               # a claimed step is owned until now() + lease_s
+  heartbeat_s: 20           # the heartbeat thread extends the lease this often
+  max_attempts: 3           # then dead_letter (+ account held for per-account steps)
+  retry_backoff_base_s: 5   # attempt n waits base * 2^(n-1), capped
+  retry_backoff_max_s: 300
+  # Skipped when the budget is exhausted or the job runs past max_minutes_per_job.
+  # Downstream steps must treat their missing output as "cannot verify" (hold, not pass).
+  optional_steps: [registry, news, enrich, trigger, buyer, draft]
 
 log:
   level: INFO
