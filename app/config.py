@@ -188,12 +188,37 @@ class Identity(_Frozen):
     site_paths: tuple[str, ...]
 
 
+class Actions(_Frozen):
+    poll_interval_s: float
+    batch_size: int
+    lease_s: int
+    max_attempts: int
+    email_mode: Literal["sink", "gmail"]
+    calendar_mode: Literal["sink", "google"]
+    sink_path: str
+    sink_address: str
+    message_id_domain: str
+    calendar_id: str
+    calendar_send_updates: Literal["none", "all", "externalOnly"]
+    default_timezone: str
+    google_scopes: tuple[str, ...]
+
+
+class GoogleApi(_Frozen):
+    base_url: str
+    rpm: int
+    timeout_s: float
+    max_attempts: int
+    retry_statuses: tuple[int, ...]
+
+
 class CacheTtlHours(_Frozen):
     registry: int
     news: int
     company: int
     people: int
     negative: int
+    actions: int
 
 
 class Matching(_Frozen):
@@ -259,6 +284,9 @@ class Settings(_Frozen):
     crustdata: Crustdata
     gateway: Gateway
     gstinapi: GstinApi
+    actions: Actions
+    gcal: GoogleApi
+    gmail: GoogleApi
     registry: RegistryChoice
     registryapi: RegistryApi
     news: News

@@ -200,3 +200,11 @@ CREATE TABLE IF NOT EXISTS dead_letter (
     attempts int NOT NULL,
     at       timestamptz NOT NULL DEFAULT now()
 );
+
+-- app/actions outbox (exactly-once side effects). Idempotent additions.
+ALTER TABLE actions ADD COLUMN IF NOT EXISTS attempts   int NOT NULL DEFAULT 0;
+ALTER TABLE actions ADD COLUMN IF NOT EXISTS claimed_by text;
+ALTER TABLE actions ADD COLUMN IF NOT EXISTS last_error text;
+ALTER TABLE actions ADD COLUMN IF NOT EXISTS created_at timestamptz NOT NULL DEFAULT now();
+CREATE INDEX IF NOT EXISTS actions_ready_idx ON actions (state, updated_at);
+ALTER TABLE approvals ADD COLUMN IF NOT EXISTS payload_hash text;  -- what exactly was approved
