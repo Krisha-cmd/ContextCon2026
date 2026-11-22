@@ -8,13 +8,42 @@ from pathlib import Path
 
 import psycopg
 from psycopg.rows import dict_row
-from psycopg_pool import ConnectionPool
+from psycopg_pool import AsyncConnectionPool, ConnectionPool
 
 from app.config import ROOT, Settings, get_settings
 
 SCHEMA_PATH = ROOT / "schema.sql"
 
 _pool: ConnectionPool | None = None
+_apool: AsyncConnectionPool | None = None
+
+
+def _pool_kwargs(s: Settings) -> dict:
+    return {"row_factory": dict_row, "connect_timeout": s.db.connect_timeout_s}
+
+
+async def open_async_pool(settings: Settings | None = None) -> AsyncConnectionPool:
+    """Open the process-wide async pool (idempotent). Used by app/gateway."""
+    global _apool
+    if _apool is None:
+        s = settings or get_settings()
+        pool = AsyncConnectionPool(
+            database_url(s),
+            min_size=s.db.pool_min,
+            max_size=s.db.pool_max,
+            kwargs=_pool_kwargs(s),
+            open=False,
+        )
+        await pool.open(wait=True)
+        _apool = pool
+    return _apool
+
+
+async def close_async_pool() -> None:
+    global _apool
+    if _apool is not None:
+        await _apool.close()
+        _apool = None
 
 
 def database_url(settings: Settings) -> str:
@@ -32,7 +61,7 @@ def open_pool(settings: Settings | None = None) -> ConnectionPool:
             database_url(s),
             min_size=s.db.pool_min,
             max_size=s.db.pool_max,
-            kwargs={"row_factory": dict_row, "connect_timeout": s.db.connect_timeout_s},
+            kwargs=_pool_kwargs(s),
             open=True,
         )
     return _pool
