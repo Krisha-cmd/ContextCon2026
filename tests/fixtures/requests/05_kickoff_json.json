@@ -1,0 +1,25 @@
+{
+  "input": {
+    "sectors": ["e-commerce", "home furnishing"],
+    "states": ["Haryana", "Delhi"],
+    "headcount_min": 100,
+    "headcount_max": 2000,
+    "triggers": ["New Warehouse", "supply-chain hiring"],
+    "personas": ["Head of Logistics"],
+    "exclude": ["pepperfry.com"],
+    "max_accounts": 20,
+    "budget_inr": 2000
+  },
+  "llm_output": null,
+  "expected": {
+    "industries": ["e-commerce", "home furnishing"],
+    "geo_states": ["Haryana", "Delhi"],
+    "size_min": 100,
+    "size_max": 2000,
+    "trigger_types": ["new_warehouse", "supply_chain_hiring"],
+    "buyer_titles": ["Head of Logistics"],
+    "exclude_domains": ["pepperfry.com"],
+    "max_accounts": 20,
+    "limits": {"max_inr_per_job": 2000}
+  }
+}

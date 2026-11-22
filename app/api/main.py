@@ -1,16 +1,17 @@
-"""HTTP API. Only /health for now."""
+"""HTTP API. /health, plus the SpecInvalid -> 422 handler shown to requesters."""
 
 from __future__ import annotations
 
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
 from app import db
 from app.config import get_settings
 from app.log import get_logger, setup_logging
+from app.spec.parser import SpecInvalid
 
 log = get_logger(__name__)
 
@@ -26,6 +27,14 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
 
 
 app = FastAPI(title="revagent", lifespan=lifespan)
+
+
+@app.exception_handler(SpecInvalid)
+async def spec_invalid_handler(_: Request, exc: SpecInvalid) -> JSONResponse:
+    """The requester sees why their request could not be parsed, so they can rephrase it."""
+    return JSONResponse(
+        {"error": "spec_invalid", "message": str(exc), "details": exc.errors}, status_code=422
+    )
 
 
 @app.get("/health")

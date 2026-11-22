@@ -1,0 +1,22 @@
+{
+  "input": "Show me 15 consumer electronics manufacturers in Tamil Nadu that are expanding into new markets. Exclude ones we already work with: www.boat-lifestyle.com and Noise.com.",
+  "llm_output": {
+    "industries": ["consumer electronics manufacturing"],
+    "geo_states": ["Tamil Nadu"],
+    "size_min": null,
+    "size_max": null,
+    "trigger_types": ["new_market"],
+    "buyer_titles": [],
+    "exclude_domains": ["www.boat-lifestyle.com", "Noise.com"],
+    "max_accounts": 15,
+    "limits": {},
+    "free_text_notes": null
+  },
+  "expected": {
+    "industries": ["consumer electronics manufacturing"],
+    "geo_states": ["Tamil Nadu"],
+    "trigger_types": ["new_market"],
+    "exclude_domains": ["boat-lifestyle.com", "noise.com"],
+    "max_accounts": 15
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "input": "Find D2C apparel and footwear brands in Maharashtra and Karnataka with 50-500 employees that opened a new warehouse or raised funding recently. We want to talk to the Head of Supply Chain or VP Operations. Skip myntra.com. Keep the spend under Rs 1500.",
+  "llm_output": {
+    "industries": ["D2C apparel", "footwear"],
+    "geo_states": ["Maharashtra", "Karnataka"],
+    "size_min": 50,
+    "size_max": 500,
+    "trigger_types": ["new_warehouse", "funding"],
+    "buyer_titles": ["Head of Supply Chain", "VP Operations"],
+    "exclude_domains": ["myntra.com"],
+    "max_accounts": null,
+    "limits": {"max_inr_per_job": 1500},
+    "free_text_notes": null
+  },
+  "expected": {
+    "industries": ["D2C apparel", "footwear"],
+    "geo_states": ["Maharashtra", "Karnataka"],
+    "size_min": 50,
+    "size_max": 500,
+    "trigger_types": ["new_warehouse", "funding"],
+    "buyer_titles": ["Head of Supply Chain", "VP Operations"],
+    "exclude_domains": ["myntra.com"],
+    "limits": {"max_inr_per_job": 1500}
+  }
+}

@@ -243,14 +243,18 @@ class Gateway:
         return GatewayResponse(status, body, True, 0.0, ms, rhash)
 
     async def _guard_budget(self, job_id: Any, est_credits: float) -> None:
+        await self.guard_budget_inr(job_id, self.to_inr(est_credits))
+
+    async def guard_budget_inr(self, job_id: Any, est_inr: float) -> None:
+        """Raise BudgetExceeded if spending est_inr would push the job over its limit.
+        Also used by callers that are priced in INR rather than credits (app/gateway/vertex)."""
         async with self.pool.connection() as conn:
             spent = await store.job_spent_inr(conn, job_id)
             limit = await store.job_limit_inr(conn, job_id)
         if limit is None:
             limit = self.settings.limits.max_inr_per_job
-        est = self.to_inr(est_credits)
-        if spent + est > limit:
-            raise BudgetExceeded(job_id, spent, est, limit)
+        if spent + est_inr > limit:
+            raise BudgetExceeded(job_id, spent, est_inr, limit)
 
     async def _send(self, endpoint, group, method, url, json, params, est_credits) -> _Sent:
         headers = self.group_headers(group)
