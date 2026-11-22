@@ -9,8 +9,9 @@ from __future__ import annotations
 
 from typing import Any
 
+from app.identity.step import run_identity
 from app.runner.context import StepContext
-from app.runner.registry import step
+from app.runner.registry import StepFn, step
 
 PIPELINE: list[tuple[str, bool]] = [  # (name, per_account), in run order
     ("parse", False),
@@ -26,6 +27,10 @@ PIPELINE: list[tuple[str, bool]] = [  # (name, per_account), in run order
     ("score", True),
     ("draft", True),
 ]
+# Built steps replace their placeholder here.
+IMPLEMENTED: dict[str, StepFn] = {
+    "identity": run_identity,
+}
 ORDER_STEP = 10  # gap between orders so steps can be inserted later without renumbering
 
 
@@ -38,4 +43,5 @@ def _placeholder(name: str):
 
 
 for _i, (_name, _per_account) in enumerate(PIPELINE, start=1):
-    step(_name, per_account=_per_account, order=_i * ORDER_STEP)(_placeholder(_name))
+    _fn = IMPLEMENTED.get(_name) or _placeholder(_name)
+    step(_name, per_account=_per_account, order=_i * ORDER_STEP)(_fn)

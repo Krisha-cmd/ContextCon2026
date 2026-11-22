@@ -28,6 +28,14 @@ class Disposition:
     evidence_ids: tuple[str, ...] = ()
 
 
+@dataclass(frozen=True)
+class PendingWrite:
+    """One SQL write a step wants, run when the step commits (same transaction)."""
+
+    sql: str
+    params: tuple[Any, ...]
+
+
 @dataclass
 class StepContext:
     """job/account are DB rows (dicts). `db` and `gateway` are for reads and outside calls;
@@ -41,6 +49,7 @@ class StepContext:
     audit: Auditor = field(default_factory=Auditor)
     new_accounts: list[NewAccount] = field(default_factory=list)
     dispositions: list[Disposition] = field(default_factory=list)
+    writes: list[PendingWrite] = field(default_factory=list)
 
     @property
     def job_id(self) -> Any:
@@ -53,6 +62,14 @@ class StepContext:
     def add_account(self, name: str | None, domain: str | None, entity_id: str | None = None,
                     data: dict[str, Any] | None = None) -> None:  # fmt: skip
         self.new_accounts.append(NewAccount(name, domain, entity_id, data or {}))
+
+    def write(
+        self, sql: str, params: tuple[Any, ...], *, tbl: str, record_id: Any, before: Any,
+        after: Any, reason: str, evidence_ids: tuple[str, ...] = (),
+    ) -> None:  # fmt: skip
+        """Buffer a write plus its audit row; both commit with the step or not at all."""
+        self.writes.append(PendingWrite(sql, params))
+        self.audit(tbl, record_id, before, after, reason, evidence_ids)
 
     def set_account_status(
         self, account_id: Any, status: str, reason: str, evidence_ids: tuple[str, ...] = ()

@@ -1,0 +1,26 @@
+{
+  "_note": "Synthetic test fixture. Page text and registry records are illustrative: they mimic the shape of mamaearth.in and an MCA record but were NOT captured from either. The CIN is format-valid but made up. crustdata_id 5844 is the Mamaearth id seen in API-research/summary.md.",
+  "account": {
+    "id": "00000000-0000-0000-0000-000000005844",
+    "name": "Mamaearth",
+    "domain": "mamaearth.in",
+    "data": {"crustdata_ids": [5844], "state": "Haryāna", "city": "Gurugram"}
+  },
+  "pages": {
+    "https://mamaearth.in": "Mamaearth | Goodness Inside. Toxin-free skincare, haircare and baby care. Shop now. Free shipping on orders above Rs 399.",
+    "https://mamaearth.in/privacy": "Privacy Policy. This policy explains how Honasa Consumer Limited (formerly known as Honasa Consumer Private Limited) collects and uses your data when you use Mamaearth. Registered office: Unit No. 404, 4th Floor, City Centre, Sector 12, Dwarka, New Delhi 110075. CIN: L74999DL2016PLC000001. © 2026 Honasa Consumer Limited. All rights reserved."
+  },
+  "mca": {
+    "L74999DL2016PLC000001": {
+      "cin": "L74999DL2016PLC000001",
+      "company_name": "HONASA CONSUMER LIMITED",
+      "status": "Active",
+      "state": "Delhi"
+    }
+  },
+  "company_search": {
+    "Honasa Consumer Limited": [
+      {"cin": "L74999DL2016PLC000001", "company_name": "HONASA CONSUMER LIMITED", "status": "Active", "state": "Delhi"}
+    ]
+  }
+}
