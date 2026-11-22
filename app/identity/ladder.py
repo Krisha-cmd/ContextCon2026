@@ -20,7 +20,13 @@ from app.identity import crosswalk as cw
 from app.identity.india import cin_state, gst_state, same_state
 from app.identity.matcher import features
 from app.identity.site import SiteFindings
-from app.trust.registry import InvalidGstin, Registry, RegistryError, RegistryRecord
+from app.trust.registry import (
+    InvalidCin,
+    InvalidGstin,
+    RegistryClient,
+    RegistryRecord,
+    RegistryUnavailable,
+)
 
 SaveFn = Callable[..., Source]
 
@@ -127,7 +133,7 @@ async def mca_side(
     job_id: Any,
     acct: AccountIn,
     site: SiteFindings,
-    reg: Registry,
+    reg: RegistryClient,
     save: SaveFn,
     suffixes: tuple[str, ...],
 ) -> Side:
@@ -137,23 +143,30 @@ async def mca_side(
     return await _mca_by_name(job_id, name, acct, reg, save, suffixes)
 
 
-async def _mca_by_cin(job_id: Any, cin: str, reg: Registry, save: SaveFn) -> Side:
+async def _mca_by_cin(job_id: Any, cin: str, reg: RegistryClient, save: SaveFn) -> Side:
     try:
-        rec = await reg.mca_lookup(job_id, cin)
-    except RegistryError as exc:
-        return Side(missing=f"CIN {cin} found on the site but not confirmed: {exc}")
-    if rec is None:
+        res = await reg.mca_lookup(job_id, cin=cin)
+    except InvalidCin:
+        return Side(red_flag=f"CIN {cin} on the site is not a valid CIN")
+    if isinstance(res, RegistryUnavailable):
+        return Side(missing=f"CIN {cin} found on the site but not confirmed: {res.reason}")
+    if not res:
         return Side(red_flag=f"CIN {cin} on the site is not on the MCA register")
+    rec = res[0]
     return Side(proven=rec, source=await _save(save, rec, "registry.mca"))
 
 
 async def _mca_by_name(
-    job_id: Any, name: str, acct: AccountIn, reg: Registry, save: SaveFn, suffixes: tuple[str, ...]
+    job_id: Any,
+    name: str,
+    acct: AccountIn,
+    reg: RegistryClient,
+    save: SaveFn,
+    suffixes: tuple[str, ...],
 ) -> Side:
-    try:
-        cands = await reg.company_search(job_id, name)
-    except RegistryError as exc:
-        return Side(missing=f"legal name {name!r} not confirmed: {exc}")
+    cands = await reg.mca_lookup(job_id, name=name)
+    if isinstance(cands, RegistryUnavailable):
+        return Side(missing=f"legal name {name!r} not confirmed: {cands.reason}")
     pick, missing = choose_by_name(name, acct.state, cands, suffixes)
     if pick is None:
         return Side(missing=missing, no_entity=missing == NO_ENTITY, candidates=cands)
@@ -177,7 +190,7 @@ def choose_by_name(
 
 
 # ---- GST side -----------------------------------------------------------------------------
-async def gst_side(job_id: Any, site: SiteFindings, reg: Registry, save: SaveFn) -> Side:
+async def gst_side(job_id: Any, site: SiteFindings, reg: RegistryClient, save: SaveFn) -> Side:
     if not site.gstin:
         return Side(missing=NO_GSTIN)
     gstin = site.gstin.value
@@ -185,25 +198,30 @@ async def gst_side(job_id: Any, site: SiteFindings, reg: Registry, save: SaveFn)
         rec = await reg.gst_lookup(job_id, gstin)
     except InvalidGstin:
         return Side(red_flag=f"GSTIN {gstin} on the site is not a valid GSTIN")
-    except RegistryError as exc:
-        return Side(missing=f"GSTIN {gstin} found on the site but not confirmed: {exc}")
+    if isinstance(rec, RegistryUnavailable):
+        return Side(missing=f"GSTIN {gstin} found on the site but not confirmed: {rec.reason}")
     if rec is None:
         return Side(red_flag=f"GSTIN {gstin} on the site is not registered for GST")
     side = Side(proven=rec, source=await _save(save, rec, "registry.gst"))
-    await _other_states(job_id, gstin, reg, save, side)
+    await _other_states(job_id, rec, reg, save, side)
     return side
 
 
-async def _other_states(job_id: Any, gstin: str, reg: Registry, save: SaveFn, side: Side) -> None:
-    pan = pan_from_gstin(gstin)
-    try:
-        others = await reg.gstins_by_pan(job_id, pan) if pan else []
-    except RegistryError as exc:
-        side.notes.append(f"registrations in other states not checked: {exc}")
+async def _other_states(
+    job_id: Any, rec: RegistryRecord, reg: RegistryClient, save: SaveFn, side: Side
+) -> None:
+    """Same-PAN GSTINs in other states, found by searching the GST legal name."""
+    pan = pan_from_gstin(rec.id)
+    if not (pan and rec.legal_name):
+        side.notes.append("registrations in other states not checked: no PAN or legal name")
         return
-    for rec in others:
-        if rec.id != gstin:
-            side.extra.append((rec, await _save(save, rec, "registry.gst")))
+    found = await reg.gst_search(job_id, rec.legal_name)
+    if isinstance(found, RegistryUnavailable):
+        side.notes.append(f"registrations in other states not checked: {found.reason}")
+        return
+    for other in found:
+        if other.id != rec.id and pan_from_gstin(other.id) == pan:
+            side.extra.append((other, await _save(save, other, "registry.gst")))
 
 
 # ---- the ladder ---------------------------------------------------------------------------

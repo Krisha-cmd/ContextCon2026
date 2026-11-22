@@ -12,6 +12,7 @@ from typing import Any
 from app.identity.step import run_identity
 from app.runner.context import StepContext
 from app.runner.registry import StepFn, step
+from app.trust.step import run_registry
 
 PIPELINE: list[tuple[str, bool]] = [  # (name, per_account), in run order
     ("parse", False),
@@ -30,6 +31,7 @@ PIPELINE: list[tuple[str, bool]] = [  # (name, per_account), in run order
 # Built steps replace their placeholder here.
 IMPLEMENTED: dict[str, StepFn] = {
     "identity": run_identity,
+    "registry": run_registry,
 }
 ORDER_STEP = 10  # gap between orders so steps can be inserted later without renumbering
 

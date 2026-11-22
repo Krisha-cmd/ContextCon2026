@@ -30,7 +30,7 @@ H = "a" * 64
 
 
 def _fixture(name: str) -> dict[str, Any]:
-    return json.loads((FIX / name).read_text())["response"]
+    return json.loads((FIX / name).read_text(encoding="utf-8"))["response"]
 
 
 class FakeSearch:

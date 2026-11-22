@@ -1,0 +1,19 @@
+{
+  "_note": "Synthetic gstinapi.in-shaped record for tests; not a real taxpayer.",
+  "success": true,
+  "gstin": "07AAFCK4321M1Z2",
+  "data": {
+    "gstin": "07AAFCK4321M1Z2",
+    "legal_name": "KAPPA TRADERS PRIVATE LIMITED",
+    "trade_name": "KAPPA TRADERS PRIVATE LIMITED",
+    "status": "Active",
+    "taxpayer_type": "Regular",
+    "registration_date": "2017-07-01",
+    "cancellation_date": null,
+    "state_code": "07",
+    "address_details": {
+      "state": "Delhi"
+    },
+    "last_updated": null
+  }
+}

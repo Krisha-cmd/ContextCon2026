@@ -1,0 +1,19 @@
+{
+  "_note": "Synthetic gstinapi.in-shaped record for tests; not a real taxpayer.",
+  "success": true,
+  "gstin": "27AAPCA1234B1Z5",
+  "data": {
+    "gstin": "27AAPCA1234B1Z5",
+    "legal_name": "ACME FOODS PRIVATE LIMITED",
+    "trade_name": "ACME FOODS PRIVATE LIMITED",
+    "status": "Active",
+    "taxpayer_type": "Regular",
+    "registration_date": "2017-07-01",
+    "cancellation_date": null,
+    "state_code": "27",
+    "address_details": {
+      "state": "Maharashtra"
+    },
+    "last_updated": "2026-10-01"
+  }
+}

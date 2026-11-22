@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 from app.discovery.crustdata import FetchResult
-from app.trust.registry import RegistryRecord, RegistryUnsupported
+from app.trust.registry import GstRecord, McaRecord, RegistryUnavailable
 
 
 class FakeFetch:
@@ -19,49 +19,48 @@ class FakeFetch:
         return FetchResult(rec, "h" * 64, url)
 
 
-def mca(cin: str, name: str, state: str | None = None, status: str = "Active") -> RegistryRecord:
+def mca(cin: str, name: str, state: str | None = None, status: str = "Active") -> McaRecord:
     raw = {"cin": cin, "company_name": name, "status": status, "state": state}
-    return RegistryRecord("mca", cin, name, status, state, cin[6:8], f"mca://{cin}", "data", raw)
+    return McaRecord(cin, name, status, None, state, raw, f"mca://{cin}")
 
 
-def gst(gstin: str, name: str, status: str = "Active") -> RegistryRecord:
+def gst(gstin: str, name: str, status: str = "Active", state: str | None = None) -> GstRecord:
     raw = {"success": True, "data": {"gstin": gstin, "legal_name": name, "status": status}}
-    return RegistryRecord("gst", gstin, name, status, None, gstin[:2],
-                          f"https://www.gstinapi.in/v1/gstin/{gstin}", "data", raw)  # fmt: skip
+    return GstRecord(gstin, name, None, state, status, None, None, raw,
+                     f"https://www.gstinapi.in/v1/gstin/{gstin}")  # fmt: skip
 
 
 class FakeRegistry:
-    """Answers from dicts. Pass unsupported={"mca_lookup", ...} to mimic gstinapi.in."""
+    """Answers from dicts. unsupported={"mca_lookup", "gst_search"} mimics gstinapi.in, whose
+    only call is gst_lookup; gst_search is unsupported unless `gst_by_name` is given."""
 
     def __init__(self, *, mca_by_cin: dict | None = None, search: dict | None = None,
-                 gst_by_gstin: dict | None = None, by_pan: dict | None = None,
+                 gst_by_gstin: dict | None = None, gst_by_name: dict | None = None,
                  unsupported: set[str] | None = None) -> None:  # fmt: skip
         self.mca_by_cin = mca_by_cin or {}
         self.search = search or {}
         self.gst_by_gstin = gst_by_gstin or {}
-        self.by_pan = by_pan
-        self.unsupported = unsupported or set()
+        self.gst_by_name = gst_by_name
+        self.unsupported = set(unsupported or ())
+        if gst_by_name is None:
+            self.unsupported.add("gst_search")
         self.calls: list[tuple[str, str]] = []
 
-    def _call(self, name: str, arg: str) -> None:
+    def _down(self, name: str, arg: str) -> RegistryUnavailable | None:
         self.calls.append((name, arg))
-        if name in self.unsupported:
-            raise RegistryUnsupported(f"gstinapi.in has no {name}")
+        return RegistryUnavailable(f"provider has no {name}") if name in self.unsupported else None
 
-    async def mca_lookup(self, job_id: Any, cin: str) -> RegistryRecord | None:
-        self._call("mca_lookup", cin)
-        return self.mca_by_cin.get(cin)
-
-    async def company_search(self, job_id: Any, name: str) -> list[RegistryRecord]:
-        self._call("company_search", name)
+    async def mca_lookup(self, job_id: Any, cin: str | None = None, name: str | None = None):
+        if down := self._down("mca_lookup", cin or name or ""):
+            return down
+        if cin:
+            return [self.mca_by_cin[cin]] if cin in self.mca_by_cin else []
         return self.search.get(name, [])
 
-    async def gst_lookup(self, job_id: Any, gstin: str) -> RegistryRecord | None:
-        self._call("gst_lookup", gstin)
-        return self.gst_by_gstin.get(gstin)
+    async def gst_lookup(self, job_id: Any, gstin: str):
+        return self._down("gst_lookup", gstin) or self.gst_by_gstin.get(gstin)
 
-    async def gstins_by_pan(self, job_id: Any, pan: str) -> list[RegistryRecord]:
-        self._call("gstins_by_pan", pan)
-        if self.by_pan is None:
-            raise RegistryUnsupported("gstinapi.in has no GSTIN-by-PAN lookup")
-        return self.by_pan.get(pan, [])
+    async def gst_search(self, job_id: Any, legal_name: str, state: str | None = None):
+        if down := self._down("gst_search", legal_name):
+            return down
+        return (self.gst_by_name or {}).get(legal_name, [])

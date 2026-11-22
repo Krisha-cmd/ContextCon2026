@@ -154,6 +154,12 @@ class Gateway:
             if key is None:
                 raise GatewayError("GSTIN_API_KEY is not set")
             return {"x-api-key": key.get_secret_value()}
+        if group == "registryapi":
+            key = self.settings.secrets.registry_api_key
+            if key is None:
+                raise GatewayError("REGISTRY_API_KEY is not set")
+            api = self.settings.registryapi
+            return {api.auth_header: f"{api.auth_prefix}{key.get_secret_value()}"}
         if group == "crustdata":
             key = self.settings.secrets.crustdata_api_key
             if key is None:
