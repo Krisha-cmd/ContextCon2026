@@ -88,6 +88,9 @@ class Vertex(_Frozen):
     usd_per_m_output_tokens: float
     inr_per_usd: float
     est_inr_per_call: float
+    embedding_model: str
+    embedding_dims: int
+    est_inr_per_embedding: float
 
 
 class CompanyFilters(_Frozen):
@@ -216,6 +219,21 @@ class Score(_Frozen):
     no_adverse_news: float
 
 
+class Outreach(_Frozen):
+    max_words: int
+    word_limit_regex: str
+    examples_k: int
+    draft_attempts: int
+    approver: str
+    default_segment: str
+    client_profile: dict[str, Any]
+    decisions: tuple[str, ...]
+    reflect_every: int
+    reflect_window: int
+    min_support: int
+    metric_batch: int
+
+
 class Identity(_Frozen):
     site_paths: tuple[str, ...]
 
@@ -297,6 +315,7 @@ class Settings(_Frozen):
     trigger: Trigger
     buyer: Buyer
     score: Score
+    outreach: Outreach
     identity: Identity
     vertex: Vertex
     cache_ttl_hours: CacheTtlHours

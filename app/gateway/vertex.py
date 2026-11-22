@@ -103,14 +103,25 @@ class VertexLLM:
         inr = estimate_inr(self.cfg, usage)
         async with self.gateway.pool.connection() as conn:
             await store.write_ledger(
-                conn, job_id=job_id, endpoint=endpoint, credits=0, inr=inr, ms=ms,
+                conn,
+                job_id=job_id,
+                endpoint=endpoint,
+                credits=0,
+                inr=inr,
+                ms=ms,
                 cache_hit=False,
-            )  # fmt: skip
+            )
         log.info(
             "vertex call",
-            extra={"endpoint": endpoint, "model": self.cfg.model, "ms": ms, "inr": inr,
-                   "input_tokens": usage.input_tokens, "output_tokens": usage.output_tokens},
-        )  # fmt: skip
+            extra={
+                "endpoint": endpoint,
+                "model": self.cfg.model,
+                "ms": ms,
+                "inr": inr,
+                "input_tokens": usage.input_tokens,
+                "output_tokens": usage.output_tokens,
+            },
+        )
         if not resp.text:
             raise GatewayError(f"vertex {endpoint}: empty response")
         return resp.text
@@ -125,3 +136,57 @@ async def get_vertex_llm() -> VertexLLM:
         gw = await get_gateway()
         _default = VertexLLM(gw.settings, gw)
     return _default
+
+
+# ---- embeddings ---------------------------------------------------------------------------
+class Embedder(Protocol):
+    """What callers depend on. Tests pass a fake; production uses VertexEmbedder."""
+
+    async def embed(self, text: str, *, job_id: Any, endpoint: str) -> list[float]: ...
+
+
+class VertexEmbedder:
+    def __init__(self, settings: Settings, gateway: Gateway, client: Any = None) -> None:
+        self.cfg = settings.vertex
+        self.gateway = gateway
+        self.client = client if client is not None else make_client(settings)
+
+    async def embed(self, text: str, *, job_id: Any, endpoint: str) -> list[float]:
+        inr = self.cfg.est_inr_per_embedding
+        await self.gateway.guard_budget_inr(job_id, inr)
+        t0 = time.perf_counter()
+        config = types.EmbedContentConfig(
+            output_dimensionality=self.cfg.embedding_dims, task_type="SEMANTIC_SIMILARITY"
+        )
+        try:
+            resp = await self.client.aio.models.embed_content(
+                model=self.cfg.embedding_model, contents=[text], config=config
+            )
+        except Exception as exc:
+            raise GatewayError(f"vertex {endpoint}: {exc!r}") from exc
+        ms = round((time.perf_counter() - t0) * MS_PER_S)
+        async with self.gateway.pool.connection() as conn:
+            await store.write_ledger(
+                conn,
+                job_id=job_id,
+                endpoint=endpoint,
+                credits=0,
+                inr=inr,
+                ms=ms,
+                cache_hit=False,
+            )
+        values = list(resp.embeddings[0].values or []) if resp.embeddings else []
+        if len(values) != self.cfg.embedding_dims:
+            raise GatewayError(f"vertex {endpoint}: got {len(values)} dims")
+        return values
+
+
+_embedder: VertexEmbedder | None = None
+
+
+async def get_vertex_embedder() -> VertexEmbedder:
+    global _embedder
+    if _embedder is None:
+        gw = await get_gateway()
+        _embedder = VertexEmbedder(gw.settings, gw)
+    return _embedder

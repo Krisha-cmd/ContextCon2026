@@ -63,6 +63,9 @@ vertex:
   usd_per_m_output_tokens: 2.50   # thinking tokens bill as output
   inr_per_usd: 88
   est_inr_per_call: 1             # pre-call budget-guard estimate (actual cost logged after)
+  embedding_model: text-embedding-005
+  embedding_dims: 768             # must match examples.embedding vector(768) in schema.sql
+  est_inr_per_embedding: 0.01     # ledger estimate per embed call (priced per character)
 
 # GST registry (app/trust/registry.py). Gateway group "gstinapi": only 429 and 502 are
 # retried, at most 3 attempts in total. A 200 costs 1 credit; errors cost nothing.
@@ -204,6 +207,27 @@ score:
   buyer_stale_penalty: 10
   trust_active: 10                # status_active verified True
   no_adverse_news: 10             # adverse_news verified "no adverse news found"
+
+# app/outreach. The draft step writes a pending send_email action + a pending approval;
+# nothing is sent there. Learning: every decision becomes an example; reflect() turns
+# repeated edits into preference rules.
+outreach:
+  max_words: 150                  # body limit unless an active rule sets another
+  word_limit_regex: '\b(?:under|within|at most|max(?:imum)?|no more than|less than|fewer than)\s+(\d+)\s+words\b'
+  examples_k: 3                   # nearest approved examples retrieved by pgvector cosine
+  draft_attempts: 2               # LLM drafts per account (first + one repair)
+  approver: client-approver       # who a pending approval is assigned to (approver scope)
+  default_segment: general        # segment when the account has no industry
+  client_profile:                 # used when the job's kickoff data has no client_profile
+    name: Demo 3PL Client         # PLACEHOLDER: fictional client for the hackathon
+    offer: warehousing, fulfilment and last-mile distribution across India
+    footprint: [Pune, Chennai, Bhiwandi, Bengaluru]
+    sender: the client's partnerships team
+  decisions: [approved, rejected]
+  reflect_every: 5                # reflect() runs after every N decisions
+  reflect_window: 20              # how many recent diffs reflect() reads
+  min_support: 2                  # a rule needs at least this many supporting diffs
+  metric_batch: 5                 # decisions per point on the "it learns" chart
 
 # app/identity: company pages fetched for the legal name / CIN / GSTIN, in order.
 # Fetching stops at the first page that yields a legal name or CIN.

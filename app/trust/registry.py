@@ -19,7 +19,7 @@ from __future__ import annotations
 
 import json
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import date
 from pathlib import Path
 from typing import Any, ClassVar, Protocol
@@ -82,6 +82,7 @@ class GstRecord:
     raw: Any
     url: str  # what was called; cited in the Source
     field_path: str = "data"  # where the record sits in `raw`
+    extra: dict[str, Any] = field(default_factory=dict)  # provider extras the matcher may use
     kind: ClassVar[str] = "gst"
 
     @property
@@ -99,6 +100,7 @@ class McaRecord:
     raw: Any
     url: str
     field_path: str = "data"
+    extra: dict[str, Any] = field(default_factory=dict)  # city, email, pan, directors, ...
     kind: ClassVar[str] = "mca"
 
     @property
