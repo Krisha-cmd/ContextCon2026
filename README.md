@@ -1,5 +1,7 @@
 # ContextCon2026
 
+▶ **[Demo video](https://drive.google.com/drive/folders/17TYBYaHp6nUgUnSjBplUOsu1EwaGt1w4)**
+
 A revenue agent for an Indian 3PL. It finds companies that need a 3PL partner, proves they
 are real, active and free of adverse news, finds a recent trigger and the right buyer, scores
 the lead and drafts an email. A person approves before anything is sent.
