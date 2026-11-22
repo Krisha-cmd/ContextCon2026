@@ -184,6 +184,38 @@ class News(_Frozen):
     hold_on_cannot_verify: bool
 
 
+class Trigger(_Frozen):
+    decay_days: float
+    type_weights: dict[str, float]
+    job_title_regex: str
+    news_title_regex: dict[str, str]
+    use_llm: bool
+
+
+class BuyerConfidence(_Frozen):
+    same_rank_or_above: float
+    one_rank_below: float
+
+
+class Buyer(_Frozen):
+    default_titles: tuple[str, ...]
+    abbreviations: dict[str, str]
+    functions: dict[str, str]
+    seniority: dict[str, int]
+    confidence: BuyerConfidence
+
+
+class Score(_Frozen):
+    trigger: float
+    industry_fit: float
+    size_fit: float
+    state_fit: float
+    buyer: float
+    buyer_stale_penalty: float
+    trust_active: float
+    no_adverse_news: float
+
+
 class Identity(_Frozen):
     site_paths: tuple[str, ...]
 
@@ -254,6 +286,9 @@ class Settings(_Frozen):
     registry: RegistryChoice
     registryapi: RegistryApi
     news: News
+    trigger: Trigger
+    buyer: Buyer
+    score: Score
     identity: Identity
     vertex: Vertex
     cache_ttl_hours: CacheTtlHours
