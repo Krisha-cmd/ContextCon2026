@@ -9,7 +9,7 @@ from app.config import DEFAULT_CONFIG_PATH, load_settings
 EXPECTED_TABLES = {
     "jobs", "steps", "accounts", "entity_keys", "audit_log", "evidence", "http_cache",
     "entity_cache", "cost_ledger", "actions", "approvals", "parse_rules", "preferences",
-    "examples", "match_labels", "source_stats", "dead_letter",
+    "examples", "match_labels", "source_stats", "dead_letter", "rate_buckets",
 }  # fmt: skip
 
 

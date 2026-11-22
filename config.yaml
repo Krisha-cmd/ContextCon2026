@@ -14,6 +14,20 @@ crustdata:
   rpm: 5                    # observed effective_rate_limit_rpm on search/enrich/identify
   timeout_s: 180            # web fetch was observed at 157 s
   batch_enrich: 5
+  base_url: https://api.crustdata.com
+  api_version: "2025-11-01"
+
+# app/gateway. Endpoint names are "<group>:<name>", e.g. "crustdata:company/identify".
+# A group's rpm/timeout_s come from its own section above (e.g. crustdata) when it has one,
+# otherwise from the defaults here.
+gateway:
+  max_attempts: 4           # total tries, including the first
+  backoff_base_s: 1.0       # attempt n waits base * 2^(n-1), capped, plus jitter
+  backoff_max_s: 30
+  backoff_jitter_s: 1.0
+  bucket_capacity: 1        # token-bucket burst; 1 = strict 60/rpm spacing (Crustdata 429s on bursts)
+  default_rpm: 60
+  default_timeout_s: 30
 
 cache_ttl_hours:
   registry: 24

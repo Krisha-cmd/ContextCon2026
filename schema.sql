@@ -175,6 +175,13 @@ CREATE TABLE IF NOT EXISTS source_stats (
     contradicted int NOT NULL DEFAULT 0
 );
 
+-- Token buckets for app/gateway rate limiting, shared across processes.
+CREATE TABLE IF NOT EXISTS rate_buckets (
+    bucket     text PRIMARY KEY,
+    tokens     double precision NOT NULL,
+    updated_at timestamptz NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS dead_letter (
     id       bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     step_id  bigint REFERENCES steps(id),
