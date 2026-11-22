@@ -201,10 +201,19 @@ CREATE TABLE IF NOT EXISTS dead_letter (
     at       timestamptz NOT NULL DEFAULT now()
 );
 
--- app/actions outbox (exactly-once side effects). Idempotent additions.
-ALTER TABLE actions ADD COLUMN IF NOT EXISTS attempts   int NOT NULL DEFAULT 0;
-ALTER TABLE actions ADD COLUMN IF NOT EXISTS claimed_by text;
-ALTER TABLE actions ADD COLUMN IF NOT EXISTS last_error text;
-ALTER TABLE actions ADD COLUMN IF NOT EXISTS created_at timestamptz NOT NULL DEFAULT now();
-CREATE INDEX IF NOT EXISTS actions_ready_idx ON actions (state, updated_at);
-ALTER TABLE approvals ADD COLUMN IF NOT EXISTS payload_hash text;  -- what exactly was approved
+-- app/outreach: examples remember which action, approver and segment they came from; the
+-- names in `meta` let reflect() reject rules that mention a prospect. One example per action.
+ALTER TABLE examples ADD COLUMN IF NOT EXISTS action_key text;
+ALTER TABLE examples ADD COLUMN IF NOT EXISTS job_id uuid;
+ALTER TABLE examples ADD COLUMN IF NOT EXISTS approver text;
+ALTER TABLE examples ADD COLUMN IF NOT EXISTS segment text;
+ALTER TABLE examples ADD COLUMN IF NOT EXISTS embed_text text;
+ALTER TABLE examples ADD COLUMN IF NOT EXISTS reason text;
+ALTER TABLE examples ADD COLUMN IF NOT EXISTS meta jsonb NOT NULL DEFAULT '{}'::jsonb;
+CREATE UNIQUE INDEX IF NOT EXISTS examples_action_idx ON examples (action_key);
+-- preferences: one row per version. rule_key groups the versions of one rule (its topic);
+-- status is active | superseded | disabled | rolled_back.
+ALTER TABLE preferences ADD COLUMN IF NOT EXISTS rule_key text;
+ALTER TABLE preferences ADD COLUMN IF NOT EXISTS updated_at timestamptz NOT NULL DEFAULT now();
+ALTER TABLE preferences ADD COLUMN IF NOT EXISTS changed_by text;
+CREATE INDEX IF NOT EXISTS preferences_key_idx ON preferences (rule_key, scope, version);
