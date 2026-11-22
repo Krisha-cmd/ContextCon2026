@@ -139,7 +139,21 @@ class Gateway:
         section = getattr(self.settings, group, None)
         return float(getattr(section, "timeout_s", self.settings.gateway.default_timeout_s))
 
+    def group_max_attempts(self, group: str) -> int:
+        section = getattr(self.settings, group, None)
+        return int(getattr(section, "max_attempts", self.settings.gateway.max_attempts))
+
+    def group_retryable(self, group: str, status: int) -> bool:
+        """A group may list its own retry_statuses (gstinapi: only 429/502); else the default."""
+        statuses = getattr(getattr(self.settings, group, None), "retry_statuses", None)
+        return status in statuses if statuses is not None else is_retryable_status(status)
+
     def group_headers(self, group: str) -> dict[str, str]:
+        if group == "gstinapi":
+            key = self.settings.secrets.gstin_api_key
+            if key is None:
+                raise GatewayError("GSTIN_API_KEY is not set")
+            return {"x-api-key": key.get_secret_value()}
         if group == "crustdata":
             key = self.settings.secrets.crustdata_api_key
             if key is None:
@@ -150,8 +164,11 @@ class Gateway:
             }
         return {}
 
-    def to_inr(self, credits: float) -> float:
-        return credits * self.settings.limits.credit_inr
+    def to_inr(self, credits: float, group: str | None = None) -> float:
+        """A group's own credit_inr (gstinapi bills per lookup) else the Crustdata rate."""
+        section = getattr(self.settings, group, None) if group else None
+        rate = getattr(section, "credit_inr", None)
+        return credits * (self.settings.limits.credit_inr if rate is None else rate)
 
     # ---- public ---------------------------------------------------------------------
     async def call(
@@ -214,7 +231,7 @@ class Gateway:
             hit = await self._cached(conn, job_id, endpoint, rhash, data_type, entity_id, t0)
         if hit:
             return hit
-        await self._guard_budget(job_id, est_credits)
+        await self._guard_budget(job_id, est_credits, group)
         async with self.pool.connection() as conn, conn.transaction():
             await conn.execute("SELECT pg_advisory_xact_lock(hashtext(%s))", (rhash,))
             hit = await self._cached(conn, job_id, endpoint, rhash, data_type, entity_id, t0)
@@ -242,8 +259,8 @@ class Gateway:
         )
         return GatewayResponse(status, body, True, 0.0, ms, rhash)
 
-    async def _guard_budget(self, job_id: Any, est_credits: float) -> None:
-        await self.guard_budget_inr(job_id, self.to_inr(est_credits))
+    async def _guard_budget(self, job_id: Any, est_credits: float, group: str) -> None:
+        await self.guard_budget_inr(job_id, self.to_inr(est_credits, group))
 
     async def guard_budget_inr(self, job_id: Any, est_inr: float) -> None:
         """Raise BudgetExceeded if spending est_inr would push the job over its limit.
@@ -261,7 +278,7 @@ class Gateway:
         timeout = self.group_timeout(group)
         rpm = self.endpoint_rpm(endpoint)
         capacity = self.settings.gateway.bucket_capacity
-        max_attempts = self.settings.gateway.max_attempts
+        max_attempts = self.group_max_attempts(group)
         header_total: float | None = None
         for attempt in range(1, max_attempts + 1):
             # One bucket per endpoint: Crustdata enforces its rate limits per endpoint.
@@ -278,7 +295,7 @@ class Gateway:
             used = header_credits(resp)
             if used is not None:
                 header_total = (header_total or 0.0) + used
-            if is_retryable_status(resp.status_code) and attempt < max_attempts:
+            if self.group_retryable(group, resp.status_code) and attempt < max_attempts:
                 await asyncio.sleep(backoff_s(self.settings, attempt, retry_after_s(resp)))
                 continue
             break
@@ -291,7 +308,7 @@ class Gateway:
     ) -> None:  # fmt: skip
         await store.write_ledger(
             conn, job_id=job_id, endpoint=endpoint, credits=sent.credits,
-            inr=self.to_inr(sent.credits), ms=ms, cache_hit=False,
+            inr=self.to_inr(sent.credits, endpoint_group(endpoint)), ms=ms, cache_hit=False,
         )  # fmt: skip
         if not httpx.codes.is_success(sent.status):
             return  # errors are never cached

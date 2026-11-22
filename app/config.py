@@ -131,6 +131,21 @@ class PreRank(_Frozen):
     weights: PreRankWeights
 
 
+class GstinApi(_Frozen):
+    base_url: str
+    rpm: int
+    timeout_s: float
+    max_attempts: int
+    retry_statuses: tuple[int, ...]
+    credit_inr: float
+    est_credits_per_lookup: float
+    include_profile: bool
+
+
+class Identity(_Frozen):
+    site_paths: tuple[str, ...]
+
+
 class CacheTtlHours(_Frozen):
     registry: int
     news: int
@@ -182,6 +197,7 @@ class Secrets(BaseSettings):
     crustdata_api_key: SecretStr | None = None
     gcp_project: str | None = None
     registry_api_key: SecretStr | None = None
+    gstin_api_key: SecretStr | None = None  # gstinapi.in x-api-key
     database_url: SecretStr | None = None
 
 
@@ -190,6 +206,8 @@ class Settings(_Frozen):
     windows: Windows
     crustdata: Crustdata
     gateway: Gateway
+    gstinapi: GstinApi
+    identity: Identity
     vertex: Vertex
     cache_ttl_hours: CacheTtlHours
     matching: Matching

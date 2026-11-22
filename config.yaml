@@ -1,5 +1,5 @@
 # All limits, windows, thresholds and output fields. No magic numbers in code.
-# Secrets are NOT here: CRUSTDATA_API_KEY, GCP_PROJECT, REGISTRY_API_KEY, DATABASE_URL come from env.
+# Secrets are NOT here: CRUSTDATA_API_KEY, GCP_PROJECT, REGISTRY_API_KEY, GSTIN_API_KEY, DATABASE_URL come from env.
 
 limits:
   max_inr_per_job: 2500
@@ -63,6 +63,23 @@ vertex:
   usd_per_m_output_tokens: 2.50   # thinking tokens bill as output
   inr_per_usd: 88
   est_inr_per_call: 1             # pre-call budget-guard estimate (actual cost logged after)
+
+# GST registry (app/trust/registry.py). Gateway group "gstinapi": only 429 and 502 are
+# retried, at most 3 attempts in total. A 200 costs 1 credit; errors cost nothing.
+gstinapi:
+  base_url: https://www.gstinapi.in
+  rpm: 60
+  timeout_s: 30
+  max_attempts: 3
+  retry_statuses: [429, 502]
+  credit_inr: 1                 # PLACEHOLDER: set to your plan's INR price per lookup
+  est_credits_per_lookup: 1
+  include_profile: true         # same cost; adds business_constitution, jurisdiction, etc.
+
+# app/identity: company pages fetched for the legal name / CIN / GSTIN, in order.
+# Fetching stops at the first page that yields a legal name or CIN.
+identity:
+  site_paths: ["", /privacy, /terms, /about, /contact]
 
 cache_ttl_hours:
   registry: 24

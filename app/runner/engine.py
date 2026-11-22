@@ -133,6 +133,8 @@ class Engine:
         job = self.lock_job(claim.job["id"])
         sd, name = claim.stepdef, claim.stepdef.name
         self._insert_accounts(job, name, ctx)
+        for w in ctx.writes:  # buffered step writes; their audit rows flush below
+            self.conn.execute(w.sql, w.params)
         self._apply_dispositions(job, name, ctx)
         self.conn.execute(
             "UPDATE steps SET status = 'done', output = %s, lease_owner = NULL, "

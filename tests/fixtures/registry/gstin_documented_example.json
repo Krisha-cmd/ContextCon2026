@@ -1,0 +1,36 @@
+{
+  "_note": "Copied from the gstinapi.in documentation example (GET /v1/gstin/33AAACC1206D1ZN), not from a live call.",
+  "success": true,
+  "gstin": "33AAACC1206D1ZN",
+  "credits_remaining": 487,
+  "response_ms": 312,
+  "data": {
+    "gstin": "33AAACC1206D1ZN",
+    "legal_name": "CENTRAL WAREHOUSING CORPORATION",
+    "trade_name": "CENTRAL WAREHOUSING CORPORATION",
+    "status": "Active",
+    "taxpayer_type": "Regular",
+    "business_constitution": null,
+    "registration_date": "2017-07-01",
+    "cancellation_date": null,
+    "state_code": "33",
+    "state_jurisdiction": null,
+    "address": "No.4, Thiruvalar Illam, North Avenue, Srinagar Colony, Saidapet, Chennai",
+    "city": "Saidapet, Chennai",
+    "address_details": {
+      "building_number": "No.4",
+      "building_name": "Thiruvalar Illam",
+      "floor": null,
+      "street": "North Avenue",
+      "locality": "Srinagar Colony, Saidapet, Chennai",
+      "district": null,
+      "city": null,
+      "state": null,
+      "landmark": null,
+      "pincode": "600015"
+    },
+    "pincode": "600015",
+    "nature_of_business": null,
+    "block_status": "Unblocked"
+  }
+}
