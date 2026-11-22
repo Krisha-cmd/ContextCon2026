@@ -107,6 +107,30 @@ registryapi:
     gst_lookup: /gst/{gstin}
     mca_lookup: /mca/companies
 
+# app/trust/news.py: runner step "news" (adverse news). {name} is the legal name without its
+# legal suffix (better recall); the relevance filter below decides what is about the company.
+news:
+  max_fetch: 5                    # pages fetched per account (search results + cached enrich news)
+  query_template: '"{name}" (fraud OR insolvency OR NCLT OR raid OR "wilful defaulter" OR scam OR arrested OR penalty)'
+  proximity_chars: 300            # a risk keyword must sit this close to the company name
+  risk_keywords:                  # keyword -> category; matched as whole words, case ignored
+    fraud: fraud
+    scam: fraud
+    arrested: fraud
+    insolvency: insolvency
+    nclt: insolvency
+    wilful defaulter: insolvency
+    raid: regulatory
+    penalty: regulatory
+  keyword_suffixes: [s, es, ed, ing, ulent]   # "raids", "raided", "fraudulent" also count
+  legal_suffixes: [private limited, pvt. ltd., pvt ltd, pvt. ltd, limited, ltd., ltd, llp]
+  date_meta_names: [article:published_time, datepublished, og:article:published_time,
+                    publish-date, pubdate, date]
+  min_article_chars: 200          # shorter <article> blocks fall back to the whole <body>
+  use_llm: false                  # v2: Gemini labels articles that name the company
+  llm_max_chars: 12000            # article text sent to the LLM is cut to this length
+  hold_on_cannot_verify: true     # search failed -> hold (a wrong pass is worse than a hold)
+
 # app/identity: company pages fetched for the legal name / CIN / GSTIN, in order.
 # Fetching stops at the first page that yields a legal name or CIN.
 identity:

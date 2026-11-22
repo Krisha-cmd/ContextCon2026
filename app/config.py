@@ -170,6 +170,20 @@ class RegistryApi(_Frozen):
     paths: RegistryApiPaths
 
 
+class News(_Frozen):
+    max_fetch: int = 5
+    query_template: str
+    proximity_chars: int
+    risk_keywords: dict[str, str]
+    keyword_suffixes: tuple[str, ...]
+    legal_suffixes: tuple[str, ...]
+    date_meta_names: tuple[str, ...]
+    min_article_chars: int
+    use_llm: bool
+    llm_max_chars: int
+    hold_on_cannot_verify: bool
+
+
 class Identity(_Frozen):
     site_paths: tuple[str, ...]
 
@@ -239,6 +253,7 @@ class Settings(_Frozen):
     gstinapi: GstinApi
     registry: RegistryChoice
     registryapi: RegistryApi
+    news: News
     identity: Identity
     vertex: Vertex
     cache_ttl_hours: CacheTtlHours
