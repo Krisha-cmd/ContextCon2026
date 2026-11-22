@@ -262,12 +262,33 @@ class GoogleApi(_Frozen):
     retry_statuses: tuple[int, ...]
 
 
+class Api(_Frozen):
+    poll_s: float
+    top_reasons: int
+    default_client_id: str
+    start_mode: Literal["local", "cloud_run"]
+    token_cookie: str
+    max_upload_kb: int
+    log_page: int
+
+
+class CloudRun(_Frozen):
+    base_url: str
+    region: str
+    job: str
+    rpm: int
+    timeout_s: float
+    max_attempts: int
+    retry_statuses: tuple[int, ...]
+
+
 class CacheTtlHours(_Frozen):
     registry: int
     news: int
     company: int
     people: int
     negative: int
+    control: int
     actions: int
 
 
@@ -326,6 +347,7 @@ class Secrets(BaseSettings):
     registry_provider: str | None = None  # overrides registry.gst_provider / mca_provider
     gstin_api_key: SecretStr | None = None  # gstinapi.in x-api-key
     database_url: SecretStr | None = None
+    api_token: SecretStr | None = None  # shared demo token for the web UI / API
 
 
 class Settings(_Frozen):
@@ -344,6 +366,8 @@ class Settings(_Frozen):
     buyer: Buyer
     score: Score
     outreach: Outreach
+    api: Api
+    cloudrun: CloudRun
     identity: Identity
     vertex: Vertex
     cache_ttl_hours: CacheTtlHours

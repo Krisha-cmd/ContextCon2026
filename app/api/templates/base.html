@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{% block title %}Revenue Agent{% endblock %}</title>
+<link rel="stylesheet" href="/static/style.css">
+<script src="/static/htmx.min.js" defer></script>
+</head>
+<body>
+<header>
+  <b>▢ Revenue Agent</b>
+  <span class="pill">Client: {{ s.outreach.client_profile.name }}</span>
+  {% if job %}
+  <span class="pill">Job {{ (job.id|string)[:8] }} · {{ ledger.inr|inr }}{% if limit_inr %} / {{ limit_inr|inr }}{% endif %}</span>
+  <span class="pill st-{{ job.status }}">{{ job.status }}</span>
+  {% endif %}
+</header>
+<nav>
+  <a href="/" {% if tab == 1 %}class="on"{% endif %}>1 New request</a>
+  {% if job %}
+  <a href="/jobs/{{ job.id }}/progress" {% if tab == 2 %}class="on"{% endif %}>2 Live progress</a>
+  <a href="/jobs/{{ job.id }}" {% if tab == 3 %}class="on"{% endif %}>3 Accounts</a>
+  {% endif %}
+  <a href="/approvals" {% if tab == 5 %}class="on"{% endif %}>5 Approvals</a>
+  {% if job %}
+  <a href="/jobs/{{ job.id }}/outcome" {% if tab == 6 %}class="on"{% endif %}>6 Outcome</a>
+  <a href="/jobs/{{ job.id }}/log" {% if tab == 7 %}class="on"{% endif %}>7 Run log</a>
+  {% endif %}
+  <a href="/preferences" {% if tab == 8 %}class="on"{% endif %}>Learned rules</a>
+</nav>
+<main>{% block main %}{% endblock %}</main>
+<div id="drawer" class="drawer"></div>
+</body>
+</html>

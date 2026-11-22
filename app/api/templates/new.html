@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% set tab = 1 %}
+{% block title %}New request · Revenue Agent{% endblock %}
+{% block main %}
+<div class="frame">
+  <h2>1 · New request</h2>
+  {% if error %}<div class="alert warn">{{ error }}</div>{% endif %}
+  <form method="post" action="/jobs" enctype="multipart/form-data">
+    <div class="row">
+      <div class="col grow2">
+        <label for="text">What do you need?</label>
+        <textarea id="text" name="text" rows="5" placeholder="Find D2C brands in Maharashtra, 200–2,000 staff, that may need a 3PL partner.">{{ text or "" }}</textarea>
+        <label for="kickoff">…or upload kickoff JSON</label>
+        <input id="kickoff" name="kickoff" type="file" accept="application/json,.json">
+        <p><button class="btn" type="submit">▶ Run</button></p>
+      </div>
+      <div class="col box">
+        <b>Limits (checked before every paid call)</b>
+        <div class="kv"><label for="budget_inr">Budget ₹ (max {{ s.limits.max_inr_per_job|int }})</label>
+          <input id="budget_inr" name="budget_inr" type="number" min="1" step="1" max="{{ s.limits.max_inr_per_job }}" value="{{ s.limits.max_inr_per_job|int }}" class="num"></div>
+        <div class="kv"><label for="max_minutes">Time limit, minutes (max {{ s.limits.max_minutes_per_job }})</label>
+          <input id="max_minutes" name="max_minutes" type="number" min="1" step="1" max="{{ s.limits.max_minutes_per_job }}" value="{{ s.limits.max_minutes_per_job }}" class="num"></div>
+        <div class="kv"><span>Trigger window</span><span>last {{ s.windows.trigger_days }} days</span></div>
+        <div class="kv"><span>Max drafts</span><span>{{ s.shortlist.enrich_top }} (approval required)</span></div>
+        <div class="kv"><span>Rough cost estimate</span><span>≤ {{ estimate|inr }}</span></div>
+        {% if estimate > s.limits.max_inr_per_job %}<div class="alert warn">The estimate is above the budget: the run will stop optional steps when the budget is reached, and accounts that miss a check are held.</div>{% endif %}
+        <p class="src">The estimate uses the config prices per call. Limits can only be lowered here. When one is hit, optional steps stop and the run shows what it finished.</p>
+      </div>
+    </div>
+  </form>
+</div>
+{% if jobs %}
+<div class="frame">
+  <h2>Recent jobs</h2>
+  <table>
+    <thead><tr><th>Job</th><th>Client</th><th>Status</th><th>Created</th></tr></thead>
+    <tbody>
+    {% for j in jobs %}
+      <tr><td><a href="/jobs/{{ j.id }}">{{ (j.id|string)[:8] }}</a></td><td>{{ j.client_id }}</td>
+        <td><span class="pill st-{{ j.status }}">{{ j.status }}</span></td><td>{{ j.created_at|when }}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+{% endblock %}

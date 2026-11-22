@@ -12,7 +12,6 @@ re-claimed after the lease, when the check-first path runs again.
 from __future__ import annotations
 
 import base64
-import fcntl
 import json
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
@@ -70,6 +69,20 @@ def _from_status(resp: GatewayResponse, what: str) -> Outcome | None:
 
 
 # ---- sink (test mode) ---------------------------------------------------------------------
+def _lock_file(fh: Any) -> None:
+    """Exclusive lock until the file is closed: flock on POSIX, msvcrt on Windows."""
+    try:
+        import fcntl
+    except ImportError:  # Windows: lock one byte at the start; released when fh closes
+        import msvcrt
+
+        fh.seek(0)
+        msvcrt.locking(fh.fileno(), msvcrt.LK_LOCK, 1)
+        fh.seek(0, 2)
+        return
+    fcntl.flock(fh, fcntl.LOCK_EX)
+
+
 class Sink:
     """Append-only JSONL log standing in for the outside world in test mode."""
 
@@ -88,7 +101,7 @@ class Sink:
     def append(self, entry: dict[str, Any]) -> None:
         self.path.parent.mkdir(parents=True, exist_ok=True)
         with self.path.open("a", encoding="utf-8") as fh:
-            fcntl.flock(fh, fcntl.LOCK_EX)
+            _lock_file(fh)
             fh.write(json.dumps(entry, ensure_ascii=False) + "\n")
             fh.flush()
 

@@ -32,6 +32,8 @@ from app.runner.heartbeat import Heartbeat
 from app.runner.registry import REGISTRY, Registry
 
 log = get_logger(__name__)
+
+RUN_JOB_ENV = "RUN_JOB_ID"
 FINISHED_JOB_STATUSES = ("done", "failed")
 
 
@@ -163,14 +165,15 @@ def main() -> None:
     settings = get_settings()
     setup_logging(settings.log.level)
     db.init_db(settings)
-    worker = Worker(settings, REGISTRY)
+    job_id = os.environ.get(RUN_JOB_ENV) or None  # Cloud Run Job execution: one job, then exit
+    worker = Worker(settings, REGISTRY, job_id=job_id)
     for sig in (signal.SIGTERM, signal.SIGINT):
         signal.signal(sig, worker.request_stop)
     outbox = OutboxLoop(settings, worker.stop)  # same stop event: SIGTERM stops both
     outbox.start()
     with bind(step="worker"):
         log.info("worker started", extra={"owner": worker.owner, "steps": REGISTRY.names()})
-        worker.run()
+        worker.run(until_job_done=job_id is not None)
         log.info("worker stopping")
     worker.stop.set()
     outbox.join(timeout=settings.actions.poll_interval_s * 2)

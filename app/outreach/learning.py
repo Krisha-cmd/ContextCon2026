@@ -1,8 +1,8 @@
 """The self-improving loop: every decision becomes an example; repeated edits become rules.
 
-record_feedback(): called by the API when a person decides an approval. Stores draft, final,
-a unified diff, the embedding (Vertex text-embedding) and the decision in `examples`, closes
-the approval and moves the action to approved / rejected. The next draft retrieves these
+record_feedback(): called by the API when a person decides an approval (the API moves the
+action through app.actions.outbox in the same request). Stores draft, final, a unified diff,
+the embedding (Vertex text-embedding) and the decision in `examples`. The next draft retrieves these
 examples, so every decision changes later drafts. After every outreach.reflect_every
 decisions it runs reflect().
 reflect(): Gemini reads recent diffs and proposes rules. Plain code keeps a rule only if at
@@ -24,7 +24,6 @@ from dataclasses import dataclass
 from typing import Any, Literal
 
 from psycopg import Connection
-from psycopg.types.json import Jsonb
 from pydantic import BaseModel, ValidationError
 from rapidfuzz.distance import Levenshtein
 
@@ -34,7 +33,7 @@ from app.gateway import GatewayError
 from app.gateway.vertex import Embedder, JsonLLM, get_vertex_embedder, get_vertex_llm
 from app.log import get_logger
 from app.outreach import store
-from app.outreach.draft import EMBED_ENDPOINT, draft_text
+from app.outreach.draft import EMBED_ENDPOINT
 from app.outreach.privacy import names_from_meta, names_in, personal_data_in
 from app.runner.audit import audit
 
@@ -95,109 +94,72 @@ async def record_feedback(
     deps: LearningDeps | None = None,
     settings: Settings | None = None,
 ) -> dict[str, Any]:
+    """Store one decision as an example (draft, final, diff, embedding, decision).
+
+    The action itself is moved to approved / rejected by app.actions.outbox (the API does both
+    for one request); this function only learns from it. Recorded once per action.
+    """
     s, deps = settings or get_settings(), deps or LearningDeps()
     if decision not in s.outreach.decisions:
         raise FeedbackError(f"decision must be one of {list(s.outreach.decisions)}")
-    action = await asyncio.to_thread(_read_action, conn, action_key)
-    payload = action["payload"]
+    draft = await asyncio.to_thread(_read_draft, conn, action_key)
+    ctx = draft["context"] or {}
     try:
         embedding = await (await deps.get_embedder()).embed(
-            payload["embed_text"], job_id=action["job_id"], endpoint=EMBED_ENDPOINT
+            ctx.get("embed_text", ""), job_id=draft["job_id"], endpoint=EMBED_ENDPOINT
         )
     except GatewayError as exc:  # the example is still kept; it just can't be retrieved
         log.warning("feedback embedding failed", extra={"error": type(exc).__name__})
         embedding = None
     out = await asyncio.to_thread(
-        _record, conn, action_key, decision, final_text, reason, by_user, embedding
+        _record, conn, draft, decision, final_text, reason, by_user, embedding
     )
     if out["recorded"] and out["count"] % s.outreach.reflect_every == 0:
         out["reflect"] = await reflect(conn=conn, deps=deps, settings=s)
     return out
 
 
-def _read_action(conn: Connection | None, key: str) -> dict[str, Any]:
+def _read_draft(conn: Connection | None, key: str) -> dict[str, Any]:
     with _tx(conn) as c:
-        row = c.execute("SELECT * FROM actions WHERE idem_key = %s", (key,)).fetchone()
+        row = store.get_draft(c, key)
     if row is None:
-        raise FeedbackError(f"no action {key}")
+        raise FeedbackError(f"no draft for action {key}")
     return row
 
 
 def _record(
     conn: Connection | None,
-    key: str,
+    draft: dict[str, Any],
     decision: str,
     final_text: str | None,
     reason: str | None,
     by_user: str,
     embedding: list[float] | None,
 ) -> dict[str, Any]:
+    ctx, text = draft["context"] or {}, draft["draft_text"]
+    final = (final_text or text) if decision == "approved" else final_text
+    diff = unified_diff(text, final)
     with _tx(conn) as c:
-        action = store.action_for_update(c, key)
-        approval = store.pending_approval(c, key)
-        if action is None or approval is None:
-            return {"recorded": False, "reason": "already decided", "count": 0}
-        p = action["payload"]
-        draft = approval["draft_text"] or draft_text(p["subject"], p["body"])
-        final = (final_text or draft) if decision == "approved" else final_text
-        diff = unified_diff(draft, final)
-        c.execute(
-            "UPDATE approvals SET decision = %s, final_text = %s, reason = %s, by_user = %s, "
-            "at = now() WHERE id = %s",
-            (decision, final, reason, by_user, approval["id"]),
-        )
-        audit(
-            c,
-            action["job_id"],
-            STEP,
-            "approvals",
-            approval["id"],
-            {"decision": approval["decision"]},
-            {"decision": decision, "by_user": by_user, "edited": bool(diff)},
-            f"approval {decision} by {by_user}",
-        )
-        c.execute(
-            "UPDATE actions SET state = %s, payload = payload || %s, updated_at = now() "
-            "WHERE idem_key = %s",
-            (decision, Jsonb({"final_text": final}), key),
-        )
-        audit(
-            c,
-            action["job_id"],
-            STEP,
-            "actions",
-            key,
-            {"state": action["state"]},
-            {"state": decision},
-            f"approval {decision}",
-        )
         ex = store.insert_example(
             c,
-            action_key=key,
-            job_id=action["job_id"],
-            draft=draft,
+            action_key=draft["action_key"],
+            job_id=draft["job_id"],
+            draft=text,
             final=final,
             diff=diff,
             embedding=embedding,
             decision=decision,
             approver=by_user,
-            segment=p.get("segment"),
-            embed_text=p.get("embed_text", ""),
+            segment=ctx.get("segment"),
+            embed_text=ctx.get("embed_text", ""),
             reason=reason,
-            meta=p.get("meta") or {},
+            meta=ctx.get("meta") or {},
         )
         if ex is None:
-            return {"recorded": False, "reason": "example already stored", "count": 0}
-        audit(
-            c,
-            action["job_id"],
-            STEP,
-            "examples",
-            ex["id"],
-            None,
-            {"decision": decision, "edited": bool(diff), "embedded": embedding is not None},
-            "decision stored as an example",
-        )
+            return {"recorded": False, "reason": "decision already recorded", "count": 0}
+        after = {"decision": decision, "edited": bool(diff), "embedded": embedding is not None}
+        audit(c, draft["job_id"], STEP, "examples", ex["id"], None, after,
+              f"{decision} by {by_user} stored as an example")  # fmt: skip
         count = store.count_examples(c)
     log.info("feedback", extra={"decision": decision, "edited": bool(diff)})
     return {"recorded": True, "example_id": ex["id"], "edited": bool(diff), "count": count}
@@ -417,6 +379,21 @@ def disable_rule(pref_id: int, by_user: str, conn: Connection | None = None) -> 
             {"status": store.DISABLED},
             f"disabled by {by_user}",
         )
+    return out
+
+
+def enable_rule(pref_id: int, by_user: str, conn: Connection | None = None) -> dict[str, Any]:
+    """Re-activate a disabled rule, unless a newer version of it is active."""
+    with _tx(conn) as c:
+        row = store.get_preference(c, pref_id, lock=True)
+        if row is None or row["status"] != store.DISABLED:
+            raise FeedbackError(f"rule {pref_id} is not disabled")
+        latest = store.latest_version(c, row["rule_key"], row["scope"])
+        if latest is not None and latest["id"] != pref_id and latest["status"] == store.ACTIVE:
+            raise FeedbackError(f"a newer version ({latest['id']}) of this rule is active")
+        out = store.set_preference_status(c, pref_id, store.ACTIVE, by_user)
+        audit(c, None, STEP, "preferences", pref_id, {"status": store.DISABLED},
+              {"status": store.ACTIVE}, f"enabled by {by_user}")  # fmt: skip
     return out
 
 

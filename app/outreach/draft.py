@@ -7,14 +7,16 @@ outreach.examples_k nearest approved examples (pgvector cosine on the embedding 
 Gemini writes subject + body from a numbered fact sheet; plain code then checks the draft:
 word limit, the trigger cited (its sentence must be in the body), only fact-sheet facts used,
 no number that isn't in the facts, no personal data, no other prospect's name. One repair try,
-then the account is held. A passing draft becomes a pending "send_email" action
-(idem_key = sha256(job, account, "send_email")) plus a pending approval, written with the step.
+then the account is held. A passing draft becomes an outbox "email" action in
+pending_approval (key email:<job>:<account>, so one email per account) plus a `drafts` row
+with everything the approver needs to judge it, both written with the step.
+actions.payload is exactly what the outbox will send ({to, subject, body}). `to` starts empty:
+we never store a personal address, so the approver enters the business address on approval.
 """
 
 from __future__ import annotations
 
 import asyncio
-import hashlib
 import json
 import re
 from collections.abc import Awaitable, Callable
@@ -25,6 +27,7 @@ from psycopg.types.json import Jsonb
 from pydantic import BaseModel, ValidationError
 
 from app import db
+from app.actions.models import ActionType, State, make_key
 from app.config import Settings
 from app.evidence.models import quote_in_text
 from app.gateway import GatewayError
@@ -37,7 +40,7 @@ from app.runner.context import StepContext
 
 log = get_logger(__name__)
 
-ACTION_TYPE = "send_email"
+ACTION_TYPE = ActionType.email.value
 DRAFT_ENDPOINT, EMBED_ENDPOINT = "vertex.draft", "vertex.embed"
 APPROVED = "approved"
 _NUMBER = re.compile(r"\d+(?:[.,]\d+)*")
@@ -47,9 +50,9 @@ INSERT_ACTION = (
     "INSERT INTO actions (idem_key, job_id, account_id, type, payload, state) "
     "VALUES (%s, %s, %s, %s, %s, %s) ON CONFLICT (idem_key) DO NOTHING"
 )
-INSERT_APPROVAL = (
-    "INSERT INTO approvals (action_key, decision, draft_text, by_user) "
-    "SELECT %s, %s, %s, %s WHERE NOT EXISTS (SELECT 1 FROM approvals WHERE action_key = %s)"
+INSERT_DRAFT = (
+    "INSERT INTO drafts (action_key, job_id, account_id, draft_text, context) "
+    "VALUES (%s, %s, %s, %s, %s) ON CONFLICT (action_key) DO NOTHING"
 )
 
 PROMPT = """You write a short first email from {client_name} to a prospect.
@@ -88,7 +91,8 @@ class FactLine:
 
 
 def action_key(job_id: Any, account_id: Any) -> str:
-    return hashlib.sha256(f"{job_id}:{account_id}:{ACTION_TYPE}".encode()).hexdigest()
+    """The outbox key: one email per (job, account)."""
+    return make_key(ACTION_TYPE, job_id, account_id)
 
 
 def draft_text(subject: str, body: str) -> str:
@@ -333,17 +337,18 @@ async def run_draft(ctx: StepContext, deps: DraftDeps | None = None) -> dict[str
             if src.get("evidence_id")
         }
     )
-    payload = {
+    context = {
         "subject": d.subject,
-        "body": d.body,
         "trigger_sentence": d.trigger_sentence,
         "facts_used": d.facts_used,
+        "facts": [{"key": f.key, "text": f.text, "source": f.source} for f in sheet],
+        "score_reasons": data.get("score_reasons") or [],
         "evidence_ids": evs,
-        "to": {k: buyer.get(k) for k in ("name", "title", "company", "profile_url")},
+        "recipient": {k: buyer.get(k) for k in ("name", "title", "company", "profile_url")},
         "approver": s.outreach.approver,
         "segment": segment,
         "embed_text": embed_text,
-        "rules": [{"id": r["id"], "version": r["version"]} for r in rules],
+        "rules": [{"id": r["id"], "version": r["version"], "rule": r["rule"]} for r in rules],
         "example_ids": [e["id"] for e in examples],
         "meta": {
             "buyer_name": buyer.get("name"),
@@ -352,32 +357,41 @@ async def run_draft(ctx: StepContext, deps: DraftDeps | None = None) -> dict[str
             "legal_name": fact_value(data, "legal_name"),
         },
     }
+    outbox_payload = {"to": [], "subject": d.subject, "body": d.body}
     text = draft_text(d.subject, d.body)
     ctx.write(
         INSERT_ACTION,
-        (key, ctx.job_id, ctx.account_id, ACTION_TYPE, Jsonb(payload), store.PENDING),
+        (
+            key,
+            ctx.job_id,
+            ctx.account_id,
+            ACTION_TYPE,
+            Jsonb(outbox_payload),
+            State.pending_approval.value,
+        ),
         tbl="actions",
         record_id=key,
         before=None,
-        after={"type": ACTION_TYPE, "state": store.PENDING},
-        reason="draft: pending approval",
+        after={"type": ACTION_TYPE, "state": State.pending_approval.value},
+        reason="draft: proposed, waiting for approval",
         evidence_ids=tuple(evs),
     )
     ctx.write(
-        INSERT_APPROVAL,
-        (key, store.PENDING, text, s.outreach.approver, key),
-        tbl="approvals",
+        INSERT_DRAFT,
+        (key, ctx.job_id, ctx.account_id, text, Jsonb(context)),
+        tbl="drafts",
         record_id=key,
         before=None,
-        after={"decision": store.PENDING, "by_user": s.outreach.approver},
-        reason="draft: approval requested",
+        after={"approver": s.outreach.approver, "rules": len(rules), "examples": len(examples)},
+        reason="draft: context for the approver",
+        evidence_ids=tuple(evs),
     )
     log.info("draft", extra={"rules": len(rules), "examples": len(examples)})
     return {
         "drafted": True,
         "action_key": key,
         "subject": d.subject,
-        "rules": payload["rules"],
-        "example_ids": payload["example_ids"],
+        "rules": [{"id": r["id"], "version": r["version"]} for r in rules],
+        "example_ids": context["example_ids"],
         "notes": notes,
     }

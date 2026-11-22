@@ -1,0 +1,35 @@
+{% set ctx = c.context or {} %}
+{% set rcpt = ctx.recipient or {} %}
+{% set f = form or {} %}
+<div class="card">
+  <form hx-post="/approvals/{{ c.idem_key }}" hx-target="closest .card" hx-swap="outerHTML">
+    <div class="meta">
+      To: <b>{{ rcpt.name or "?" }}</b>{% if rcpt.title %}, {{ rcpt.title }}{% endif %}{% if rcpt.company %} · {{ rcpt.company }}{% endif %}
+      {% if rcpt.profile_url %}· <a href="{{ rcpt.profile_url }}" target="_blank" rel="noopener noreferrer">profile ↗</a>{% endif %}
+      · account {% if c.account_id %}<a href="/jobs/{{ c.job_id }}/accounts/{{ c.account_id }}">{{ c.account_name or "?" }}</a>{% else %}{{ c.account_name or "?" }}{% endif %}
+    </div>
+    {% if error %}<div class="alert warn">{{ error }}</div>{% endif %}
+    <label>To: business email (you enter it; we never store personal contact data)</label>
+    <input name="to" type="email" placeholder="name@company.com" value="{{ f.to or '' }}">
+    <label>Subject</label>
+    <input name="subject" value="{{ f.subject or c.payload.subject }}" readonly class="draft">
+    <label>Body</label>
+    <textarea name="body" rows="7" readonly class="draft">{{ f.body or c.payload.body }}</textarea>
+    <div class="row">
+      <div class="col"><b>Why this account</b>
+        <ul class="reasons">{% for r in ctx.score_reasons or [] %}{% if r|points != 0 %}<li>{{ r }}</li>{% endif %}{% else %}<li class="mute">no score reasons</li>{% endfor %}</ul>
+      </div>
+      <div class="col"><b>Facts it relies on</b>
+        <ul class="reasons">{% for x in ctx.facts or [] %}<li>{{ x.text }} <span class="src">({% if x.source.startswith("http") %}<a href="{{ x.source }}" target="_blank" rel="noopener noreferrer">source ↗</a>{% else %}{{ x.source }}{% endif %})</span></li>{% endfor %}</ul>
+      </div>
+    </div>
+    {% if ctx.rules %}<div class="src">Rules applied: {% for r in ctx.rules %}“{{ r.rule }}”{% if not loop.last %} · {% endif %}{% endfor %}</div>{% endif %}
+    <input name="reason" placeholder="Reason (required to reject; optional note when approving)" value="{{ f.reason or '' }}">
+    <input type="hidden" name="by_user" value="{{ f.by_user or s.outreach.approver }}">
+    <div class="actions">
+      <button class="btn sm" name="action" value="approve">Approve</button>
+      <button class="btn ghost sm" type="button" onclick="this.closest('form').querySelectorAll('.draft').forEach(e=>{e.readOnly=false;e.classList.add('editing')});this.closest('form').querySelector('textarea').focus();this.textContent='Editing: approve to send the edited text'">Edit, then approve</button>
+      <button class="btn ghost sm bad" name="action" value="reject">Reject</button>
+    </div>
+  </form>
+</div>

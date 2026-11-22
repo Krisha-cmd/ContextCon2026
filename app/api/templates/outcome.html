@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% set tab = 6 %}
+{% block title %}Outcome · Revenue Agent{% endblock %}
+{% block main %}
+{% set sent = emails|selectattr("state", "equalto", "done")|list %}
+{% set booked = meetings|selectattr("state", "equalto", "done")|list %}
+<div class="frame">
+  <h2>6 · Outcome</h2>
+  <div class="row">
+    <div class="stat"><b>{{ sent|length }}</b>emails sent (once each)</div>
+    <div class="stat"><b>{{ emails|selectattr("state", "in", ["approved", "executing"])|list|length }}</b>approved, in the outbox</div>
+    <div class="stat"><b>{{ emails|selectattr("state", "equalto", "pending_approval")|list|length }}</b>waiting for approval</div>
+    <div class="stat"><b>{{ booked|length }}</b>meeting{{ "" if booked|length == 1 else "s" }} booked</div>
+  </div>
+  {% for m in meetings %}
+  <div class="box"><b>📅 {{ m.account_name or "?" }}</b>: {{ m.payload.summary }} · {{ m.payload.start }} ·
+    <span class="pill {{ 'ok' if m.state == 'done' else ('bad' if m.state == 'failed' else 'warn') }}">{{ m.state|replace("_", " ") }}</span></div>
+  {% endfor %}
+  {% if emails %}
+  <table>
+    <thead><tr><th>Account</th><th>Subject</th><th>State</th><th>Decided by</th><th>Result</th></tr></thead>
+    <tbody>
+    {% for e in emails %}
+      <tr><td>{{ e.account_name or "?" }}</td><td>{{ e.payload.subject }}</td>
+        <td><span class="pill {{ {'done': 'ok', 'failed': 'bad', 'rejected': 'mute'}.get(e.state, 'warn') }}">{{ e.state|replace("_", " ") }}</span></td>
+        <td>{{ e.by_user or "–" }}{% if e.reason %}<div class="src">{{ e.reason }}</div>{% endif %}</td>
+        <td class="src">{% if e.result %}{{ e.result|pretty|truncate(120) }}{% elif e.last_error %}<span class="bad">{{ e.last_error }}</span>{% else %}–{% endif %}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% else %}<p class="src">No emails drafted for this job yet.</p>{% endif %}
+  <div class="row pills">
+    <span class="pill">Job cost: {{ ledger.inr|inr }}</span>
+    <span class="pill">Time: {{ (job.elapsed_s // 60)|int }}m {{ (job.elapsed_s % 60)|int }}s</span>
+    <span class="pill">{{ ledger.calls }} API calls ({{ ledger.cache_hits }} from cache)</span>
+  </div>
+</div>
+<div class="frame">
+  <h2>Final client output</h2>
+  <p><a class="btn sm" href="/jobs/{{ job.id }}/output">⬇ JSON (every fact with its sources)</a></p>
+  <details><summary>{{ output.accounts|length }} account(s)</summary><pre class="json">{{ output|pretty }}</pre></details>
+</div>
+{% endblock %}

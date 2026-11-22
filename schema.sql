@@ -201,6 +201,15 @@ CREATE TABLE IF NOT EXISTS dead_letter (
     at       timestamptz NOT NULL DEFAULT now()
 );
 
+-- app/actions outbox (exactly-once side effects). Idempotent additions.
+-- (Restored: these lines were lost in the t11 merge.)
+ALTER TABLE actions ADD COLUMN IF NOT EXISTS attempts   int NOT NULL DEFAULT 0;
+ALTER TABLE actions ADD COLUMN IF NOT EXISTS claimed_by text;
+ALTER TABLE actions ADD COLUMN IF NOT EXISTS last_error text;
+ALTER TABLE actions ADD COLUMN IF NOT EXISTS created_at timestamptz NOT NULL DEFAULT now();
+CREATE INDEX IF NOT EXISTS actions_ready_idx ON actions (state, updated_at);
+ALTER TABLE approvals ADD COLUMN IF NOT EXISTS payload_hash text;  -- what exactly was approved
+
 -- app/outreach: examples remember which action, approver and segment they came from; the
 -- names in `meta` let reflect() reject rules that mention a prospect. One example per action.
 ALTER TABLE examples ADD COLUMN IF NOT EXISTS action_key text;
@@ -217,3 +226,14 @@ ALTER TABLE preferences ADD COLUMN IF NOT EXISTS rule_key text;
 ALTER TABLE preferences ADD COLUMN IF NOT EXISTS updated_at timestamptz NOT NULL DEFAULT now();
 ALTER TABLE preferences ADD COLUMN IF NOT EXISTS changed_by text;
 CREATE INDEX IF NOT EXISTS preferences_key_idx ON preferences (rule_key, scope, version);
+
+-- app/outreach drafts: what the draft step knew when it wrote an email action (fact sheet,
+-- reasons, rules, examples used). actions.payload stays exactly what the outbox will run.
+CREATE TABLE IF NOT EXISTS drafts (
+    action_key text PRIMARY KEY REFERENCES actions(idem_key),
+    job_id     uuid NOT NULL REFERENCES jobs(id),
+    account_id uuid,
+    draft_text text NOT NULL,
+    context    jsonb NOT NULL,
+    created_at timestamptz NOT NULL DEFAULT now()
+);

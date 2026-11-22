@@ -1,0 +1,10 @@
+{% set fb = out.feedback or {} %}
+<div class="card done">
+  <div class="meta"><code>{{ key }}</code></div>
+  {% if out.state == "approved" %}<b class="ok">✔ Approved: queued in the outbox, sent once</b>{% else %}<b>✖ Rejected</b>{% endif %}
+  {% if fb.recorded %}
+    <div class="src">Saved as learning example #{{ fb.example_id }}{% if fb.edited %} with your edits (diff stored){% endif %}.{% if fb.reflect %} Rules reviewed: {{ fb.reflect.accepted|length }} new.{% endif %}</div>
+  {% else %}
+    <div class="alert warn">Decision saved, but the learning example was not: {{ fb.reason }}</div>
+  {% endif %}
+</div>

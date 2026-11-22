@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% set tab = 3 %}
+{% block title %}{{ account.name }} · Evidence{% endblock %}
+{% block main %}
+<div class="frame">
+  <p><a href="/jobs/{{ job.id }}">← Account table</a></p>
+  {% with standalone = True %}{% include "_evidence.html" %}{% endwith %}
+</div>
+{% endblock %}

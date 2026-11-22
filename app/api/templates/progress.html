@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% set tab = 2 %}
+{% block title %}Progress · Revenue Agent{% endblock %}
+{% block main %}
+<div class="frame">
+  <h2>2 · Live progress</h2>
+  {% include "_progress.html" %}
+  <p><a class="btn sm" href="/jobs/{{ job.id }}">View accounts →</a></p>
+  <p class="src">State lives in Postgres: after a restart this view redraws from the last finished step.</p>
+</div>
+{% endblock %}

@@ -16,7 +16,7 @@ from app.config import DEFAULT_CONFIG_PATH, load_settings
 from app.outreach import learning, store
 from app.outreach.draft import (
     INSERT_ACTION,
-    INSERT_APPROVAL,
+    INSERT_DRAFT,
     DraftDeps,
     action_key,
     draft_text,
@@ -24,6 +24,7 @@ from app.outreach.draft import (
 )
 from app.outreach.learning import LearningDeps, ProposedRule, validate
 from app.runner.context import HELD, StepContext
+from tests.outreach_helpers import queue_draft
 
 S = load_settings(DEFAULT_CONFIG_PATH)
 NO_AUTO_REFLECT = S.model_copy(
@@ -128,24 +129,26 @@ def _ctx(account: dict | None = None) -> StepContext:
 
 
 # ---- draft step ---------------------------------------------------------------------------
-async def test_draft_writes_pending_action_and_approval() -> None:
+async def test_draft_writes_pending_outbox_action_and_context() -> None:
     ctx = _ctx()
     out = await run_draft(ctx, _draft_deps(FakeLLM(GOOD)))
-    key = hashlib.sha256(b"job-1:acc-1:send_email").hexdigest()
+    key = "email:job-1:acc-1"
     assert out["drafted"] and out["action_key"] == key == action_key("job-1", "acc-1")
-    action, approval = ctx.writes
-    assert action.sql == INSERT_ACTION and approval.sql == INSERT_APPROVAL
-    payload = action.params[4].obj
-    assert action.params[3] == "send_email" and action.params[5] == "pending"
-    assert payload["to"] == {
+    action, draft = ctx.writes
+    assert action.sql == INSERT_ACTION and draft.sql == INSERT_DRAFT
+    assert action.params[3] == "email" and action.params[5] == "pending_approval"
+    # The outbox payload is exactly what would be sent; no address is ever stored for it.
+    assert action.params[4].obj == {"to": [], "subject": GOOD["subject"], "body": GOOD["body"]}
+    assert draft.params[3] == draft_text(GOOD["subject"], GOOD["body"])
+    context = draft.params[4].obj
+    assert context["recipient"] == {
         "name": "Priya Raman",
         "title": "Head of Warehousing",
         "company": "Acme Foods",
         "profile_url": "https://p/1",
     }
-    assert payload["embed_text"] == "Consumer Goods | new_warehouse | Head of Warehousing"
-    assert approval.params[1] == "pending"
-    assert approval.params[2] == draft_text(GOOD["subject"], GOOD["body"])
+    assert context["embed_text"] == "Consumer Goods | new_warehouse | Head of Warehousing"
+    assert [f["key"] for f in context["facts"]][:3] == ["company", "trigger", "buyer"]
     assert len(ctx.audit.entries) == len(ctx.writes) and ctx.dispositions == []
 
 
@@ -254,23 +257,7 @@ def _job(c: psycopg.Connection) -> Any:
 
 
 def _pending(c: psycopg.Connection, job: Any, n: int, body: str = GOOD["body"]) -> str:
-    """A drafted action + pending approval, as the draft step writes them."""
-    from psycopg.types.json import Jsonb
-
-    key = action_key(job, f"acc-{n}")
-    payload = {
-        "subject": "Your new Pune warehouse",
-        "body": body,
-        "segment": "consumer goods",
-        "embed_text": f"Consumer Goods | new_warehouse | Head of Warehousing {n}",
-        "meta": {"buyer_name": "Priya Raman", "company": "Acme Foods"},
-    }
-    c.execute(INSERT_ACTION, (key, job, None, "send_email", Jsonb(payload), "pending"))
-    c.execute(
-        INSERT_APPROVAL,
-        (key, "pending", draft_text(payload["subject"], body), "client-approver", key),
-    )
-    return key
+    return queue_draft(c, job, n, body)
 
 
 def _deps(llm: FakeLLM | None = None) -> LearningDeps:
@@ -308,17 +295,10 @@ async def test_approving_an_edited_draft_creates_an_example(conn: psycopg.Connec
     assert ex["decision"] == "approved" and ex["final"] == _edited()
     assert "-" in ex["diff"] and "Rs 18 per order" in ex["diff"]
     assert ex["embedding"] is not None and ex["approver"] == "asha"
-    state = conn.execute("SELECT state FROM actions WHERE idem_key = %s", (key,)).fetchone()
-    assert state["state"] == "approved"
-    appr = conn.execute(
-        "SELECT decision, final_text FROM approvals WHERE action_key = %s", (key,)
-    ).fetchone()
-    assert appr == {"decision": "approved", "final_text": _edited()}
     audits = conn.execute(
-        "SELECT tbl FROM audit_log WHERE step = 'learning' AND record_id IN (%s, %s, %s)",
-        (key, str(ex["id"]), "x"),
+        "SELECT tbl FROM audit_log WHERE step = 'learning' AND record_id = %s", (str(ex["id"]),)
     ).fetchall()
-    assert {a["tbl"] for a in audits} >= {"actions", "examples"}
+    assert [a["tbl"] for a in audits] == ["examples"]
     again = await learning.record_feedback(
         key,
         "approved",
