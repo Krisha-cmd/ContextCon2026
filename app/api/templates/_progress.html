@@ -1,0 +1,21 @@
+<div id="progress" {% if job.status == "running" %}hx-get="/jobs/{{ job.id }}/progress" hx-trigger="every {{ s.api.poll_s|int }}s" hx-swap="outerHTML"{% endif %}>
+  <div class="steps">{% for st in steps %}<div class="{{ st.state }}" title="{{ st.name }}"></div>{% endfor %}</div>
+  <div class="log box">
+    {% for st in steps %}
+    <div class="sl {{ st.state }}"><span class="mk">{{ {"d": "✔", "p": "⏳", "f": "✖", "s": "–"}.get(st.state, "○") }}</span> {{ st.line }}</div>
+    {% endfor %}
+  </div>
+  <div class="row pills">
+    <span class="pill">Spent {{ ledger.inr|inr }}{% if limit_inr %} of {{ limit_inr|inr }}{% endif %}</span>
+    <span class="pill">{{ ledger.cache_hits }} cache hits / {{ ledger.calls }} calls</span>
+    <span class="pill">{{ "%.2f"|format(ledger.credits) }} credits</span>
+    <span class="pill">{{ (job.elapsed_s // 60)|int }}m {{ (job.elapsed_s % 60)|int }}s</span>
+    <span class="pill ok">proceed {{ counts.proceed }}</span>
+    <span class="pill warn">held {{ counts.held }}</span>
+    <span class="pill mute">dropped {{ counts.dropped }}</span>
+  </div>
+  {% if job.stop_optional %}
+  <div class="alert warn">Optional steps stopped: {{ job.stop_optional|replace("_", " ") }}. Accounts that missed a check are shown as "cannot verify".</div>
+  {% endif %}
+  {% if job.status == "failed" %}<div class="alert bad">The job failed. Run <code>python -m app.runner resume {{ job.id }}</code> to retry the failed step.</div>{% endif %}
+</div>

@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% from "_macros.html" import decision_pill, trust_pill, fact_cell %}
+{% set tab = 3 %}
+{% block title %}Accounts · Revenue Agent{% endblock %}
+{% block main %}
+<div class="frame">
+  <h2>3 · Account table</h2>
+  <div class="row pills">
+    <span class="pill ok">✅ proceed {{ counts.proceed }}</span>
+    <span class="pill warn">⚠ held {{ counts.held }}</span>
+    <span class="pill mute">✖ dropped {{ counts.dropped }} (reasons shown)</span>
+    <span class="pill">job {{ job.status }}{% if job.stop_optional %} · optional steps stopped ({{ job.stop_optional|replace("_", " ") }}){% endif %}</span>
+  </div>
+  {% if not accounts %}
+  <p class="src">No accounts yet. {% if job.status == "running" %}<a href="/jobs/{{ job.id }}/progress">Watch progress</a>.{% endif %}</p>
+  {% else %}
+  <div class="scroll">
+  <table class="accounts">
+    <thead><tr><th>Company</th><th>Decision</th><th>Score</th><th>Top reasons</th><th>Trust</th><th>Trigger</th><th>Buyer</th><th></th></tr></thead>
+    <tbody>
+    {% for a in accounts %}
+      {% set r = a.row %}
+      <tr class="d-{{ a.decision.decision }}">
+        <td><b>{{ r.name or "(unnamed)" }}</b>{% if r.domain %}<div class="src">{{ r.domain }}</div>{% endif %}</td>
+        <td>{{ decision_pill(a.decision) }}
+          {% if a.decision.reason %}<div class="reason {{ 'warn' if a.decision.decision == 'held' else 'mute' }}">{{ a.decision.reason }}</div>{% endif %}</td>
+        <td class="score">{{ a.score if a.score is not none else "–" }}</td>
+        <td><ul class="reasons">{% for x in a.reasons %}<li>{{ x }}</li>{% else %}<li class="mute">–</li>{% endfor %}</ul></td>
+        <td class="trust">{{ trust_pill("registry", a.trust.registry) }}<br>{{ trust_pill("news", a.trust.news) }}</td>
+        <td>{{ fact_cell(a.trigger) }}</td>
+        <td>{{ fact_cell(a.buyer) }}</td>
+        <td><button class="i" title="Evidence" hx-get="/jobs/{{ job.id }}/accounts/{{ r.id }}" hx-target="#drawer" hx-swap="outerHTML">i</button></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+  {% endif %}
+</div>
+<div class="frame">
+  <h2>Cost ledger</h2>
+  <div class="row pills">
+    <span class="pill">{{ ledger.inr|inr }}{% if limit_inr %} of {{ limit_inr|inr }}{% endif %}</span>
+    <span class="pill">{{ "%.2f"|format(ledger.credits) }} credits</span>
+    <span class="pill">{{ ledger.calls }} calls · {{ ledger.cache_hits }} cache hits</span>
+    <a class="pill" href="/jobs/{{ job.id }}/output">client output (JSON) ↗</a>
+  </div>
+  {% if ledger.by_endpoint %}
+  <details><summary>By endpoint</summary>
+  <table class="log"><thead><tr><th>Endpoint</th><th>Calls</th><th>Cache hits</th><th>Credits</th><th>₹</th></tr></thead><tbody>
+  {% for e in ledger.by_endpoint %}<tr><td>{{ e.endpoint }}</td><td>{{ e.calls }}</td><td>{{ e.cache_hits }}</td><td>{{ "%.2f"|format(e.credits) }}</td><td>{{ e.inr|inr }}</td></tr>{% endfor %}
+  </tbody></table></details>
+  {% endif %}
+</div>
+{% endblock %}

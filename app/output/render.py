@@ -15,12 +15,16 @@ import psycopg
 
 from app import db
 from app.config import get_settings
-from app.spec.models import Account
+from app.spec.models import Account, Decision
 
 _SELECT_JOB = "SELECT id, client_id, status, created_at FROM jobs WHERE id = %s"
 _SELECT_ACCOUNTS = (
-    "SELECT id, name, domain, entity_id, data FROM accounts WHERE job_id = %s ORDER BY id"
+    "SELECT id, name, domain, entity_id, data, status, status_reason FROM accounts "
+    "WHERE job_id = %s ORDER BY id"
 )
+# accounts.status (runner) -> Decision. "active" at the end of a job means it passed every step.
+DECISIONS = {"active": Decision.proceed, "held": Decision.held, "dropped": Decision.dropped}
+_ROW_FIELDS = {"id", "name", "domain", "crustdata_id", "decision", "decision_reason"}
 
 
 def output_fields(configured: Sequence[str]) -> list[str]:
@@ -46,15 +50,28 @@ def render_accounts(accounts: Sequence[Account], configured: Sequence[str]) -> l
     return [render_account(a, fields) for a in accounts]
 
 
-def account_from_row(row: dict[str, Any]) -> Account:
-    """accounts.data holds the Account fact fields; identity columns live on the row itself."""
+PROCEED_REASON = "passed every check"
+JOB_DONE = "done"
+
+
+def account_from_row(row: dict[str, Any], job_status: str | None = JOB_DONE) -> Account:
+    """accounts.data holds the Account fact fields (plus working data the steps keep, which is
+    not output); identity columns and the decision live on the row itself."""
+    data = row["data"] or {}
+    fields = {k: v for k, v in data.items() if k in Account.model_fields and k not in _ROW_FIELDS}
+    decision = DECISIONS.get(row.get("status") or "")
+    reason = row.get("status_reason")
+    if decision is Decision.proceed:  # only a finished job's active accounts have proceeded
+        decision, reason = (decision, PROCEED_REASON) if job_status == JOB_DONE else (None, None)
     return Account.model_validate(
         {
-            **(row["data"] or {}),
+            **fields,
             "id": row["id"],
             "name": row["name"],
             "domain": row["domain"],
             "crustdata_id": row["entity_id"],
+            "decision": decision,
+            "decision_reason": reason,
         }
     )
 
@@ -64,7 +81,7 @@ def load_job(conn: psycopg.Connection, job_id: UUID | str) -> tuple[dict, list[A
     if job is None:
         raise LookupError(f"job {job_id} not found")
     rows = conn.execute(_SELECT_ACCOUNTS, (job_id,)).fetchall()
-    return job, [account_from_row(r) for r in rows]
+    return job, [account_from_row(r, job["status"]) for r in rows]
 
 
 def render_job(job_id: UUID | str, conn: psycopg.Connection | None = None) -> dict[str, Any]:

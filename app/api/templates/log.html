@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% set tab = 7 %}
+{% block title %}Run log · Revenue Agent{% endblock %}
+{% block main %}
+<div class="frame">
+  <h2>7 · Run log</h2>
+  <form class="row filters" hx-get="/jobs/{{ job.id }}/log" hx-target="#logtables" hx-swap="outerHTML" hx-trigger="change">
+    <label>Audit step
+      <select name="step"><option value="">all steps</option>{% for st in steps %}<option value="{{ st }}" {% if st == step %}selected{% endif %}>{{ st }}</option>{% endfor %}</select></label>
+    <label>Ledger endpoint
+      <select name="endpoint"><option value="">all endpoints</option>{% for g in groups %}<option value="{{ g }}" {% if g == endpoint %}selected{% endif %}>{{ g }}</option>{% endfor %}</select></label>
+  </form>
+  {% include "_log_tables.html" %}
+</div>
+{% endblock %}

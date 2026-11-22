@@ -106,7 +106,8 @@ class Account(BaseModel):
     gstin: Fact[str] = Field(default_factory=_unchecked)
     cin: Fact[str] = Field(default_factory=_unchecked)
     status_active: Fact[bool] = Field(default_factory=_unchecked)
-    adverse_news: Fact[str] = Field(default_factory=_unchecked)
+    # "no adverse news found" (str) or the list of findings a person must review
+    adverse_news: Fact[Any] = Field(default_factory=_unchecked)
     trigger: Fact[dict[str, Any]] = Field(default_factory=_unchecked)
     buyer: Fact[dict[str, Any]] = Field(default_factory=_unchecked)
     score: float | None = None

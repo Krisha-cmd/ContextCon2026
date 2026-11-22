@@ -9,7 +9,6 @@ from psycopg import Connection
 from psycopg.types.json import Jsonb
 
 ACTIVE, SUPERSEDED, DISABLED, ROLLED_BACK = "active", "superseded", "disabled", "rolled_back"
-PENDING = "pending"
 GLOBAL = "global"
 
 
@@ -164,16 +163,6 @@ def decided_pairs(conn: Connection) -> list[dict[str, Any]]:
     ).fetchall()
 
 
-# ---- actions / approvals ------------------------------------------------------------------
-def action_for_update(conn: Connection, action_key: str) -> dict[str, Any] | None:
-    return conn.execute(
-        "SELECT * FROM actions WHERE idem_key = %s FOR UPDATE", (action_key,)
-    ).fetchone()
-
-
-def pending_approval(conn: Connection, action_key: str) -> dict[str, Any] | None:
-    return conn.execute(
-        "SELECT * FROM approvals WHERE action_key = %s AND decision = %s ORDER BY id LIMIT 1 "
-        "FOR UPDATE",
-        (action_key, PENDING),
-    ).fetchone()
+# ---- drafts -------------------------------------------------------------------------------
+def get_draft(conn: Connection, action_key: str) -> dict[str, Any] | None:
+    return conn.execute("SELECT * FROM drafts WHERE action_key = %s", (action_key,)).fetchone()

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% set tab = 8 %}
+{% block title %}Learned rules · Revenue Agent{% endblock %}
+{% block main %}
+<div class="frame">
+  <h2>Learned rules</h2>
+  <p class="src">Proposed by reflect() from your edits. Each needs at least {{ s.outreach.min_support }} supporting diffs. A newer version supersedes an older one; a rule you disable stays off.</p>
+  <table>
+    <thead><tr><th>Rule</th><th>Scope</th><th>Version</th><th>Support</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+    {% for r in rules %}
+      <tr class="{{ '' if r.status == 'active' else 'mute' }}">
+        <td>{{ r.rule }}<div class="src">topic {{ r.rule_key }} · diffs {{ r.source_diffs|join(", ") if r.source_diffs else "–" }}</div></td>
+        <td>{{ r.scope }}</td><td>v{{ r.version }}</td><td>{{ r.support }}</td>
+        <td><span class="pill {{ {'active': 'ok', 'disabled': 'warn'}.get(r.status, 'mute') }}">{{ r.status|replace("_", " ") }}</span>{% if r.changed_by %}<div class="src">by {{ r.changed_by }}</div>{% endif %}</td>
+        <td class="actions">
+          {% if r.status == "active" %}
+          <form method="post" action="/preferences/{{ r.id }}/disable"><button class="btn ghost sm">Disable</button></form>
+          {% if r.version > 1 %}<form method="post" action="/preferences/{{ r.id }}/rollback"><button class="btn ghost sm">Roll back</button></form>{% endif %}
+          {% elif r.status == "disabled" %}
+          <form method="post" action="/preferences/{{ r.id }}/enable"><button class="btn ghost sm">Enable</button></form>
+          {% endif %}
+        </td>
+      </tr>
+    {% else %}<tr><td colspan="6" class="mute">No rules yet: they appear after a few similar edits.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
+<div class="frame">
+  <h2>It learns: edit distance per {{ s.outreach.metric_batch }} decisions</h2>
+  {% for m in metric %}
+  <div class="bar"><span>batch {{ m.batch }}{% if not m.complete %} (partial, {{ m.n }}){% endif %}</span><div><i style="width: {{ (m.mean_distance * 100)|round(1) }}%"></i></div><span>{{ "%.2f"|format(m.mean_distance) }}</span></div>
+  {% else %}<p class="src">No decisions yet.</p>{% endfor %}
+  <p class="src">0 = approved exactly as drafted, 1 = fully rewritten. The line should fall as rules and examples accumulate.</p>
+</div>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% macro decision_pill(d) -%}
+<span class="pill {{ {'proceed': 'ok', 'held': 'warn', 'dropped': 'mute'}.get(d.decision, 'mute') }}">{{ {'proceed': '✅ proceed', 'held': '⚠ held', 'dropped': '✖ dropped'}.get(d.decision, d.decision) }}</span>
+{%- endmacro %}
+
+{% macro status_pill(status) -%}
+{% if status == "verified" %}<span class="pill ok">✅ verified</span>
+{% elif status == "conflict" %}<span class="pill warn">⚠ conflict</span>
+{% elif status == "unchecked" %}<span class="pill warn">❔ not checked</span>
+{% else %}<span class="pill warn">❔ cannot verify</span>{% endif %}
+{%- endmacro %}
+
+{% macro trust_pill(label, value) -%}
+{% set tone = 'ok' if value in ('active', 'none found') else ('bad' if value in ('inactive', 'issue found') else 'warn') %}
+<span class="pill {{ tone }}">{{ label }}: {{ {'cannot_verify': 'cannot verify', 'unchecked': 'not checked'}.get(value, value) }}</span>
+{%- endmacro %}
+
+{% macro fact_cell(f) -%}
+{% if f and f.status == "verified" %}{{ f.value|short }}{% if f.stale %} <span class="pill warn sm">stale</span>{% endif %}
+{% elif f %}<span class="warn">❔ {{ f.missing or "cannot verify" }}</span>
+{% else %}<span class="warn">❔ not checked</span>{% endif %}
+{%- endmacro %}
+
+{% macro source(src) -%}
+<div class="src">
+  <b>{{ src.source_name or "source" }}</b>
+  {% if src.url %}· <a href="{{ src.url }}" target="_blank" rel="noopener noreferrer">{{ src.url|truncate(60, true) }} ↗</a>{% endif %}
+  {% if src.field_path %}· field <code>{{ src.field_path }}</code>{% endif %}
+  · record date {{ src.record_date or "unknown" }}
+  · retrieved {{ src.retrieved_at|when }}
+  {% if src.evidence_id %}· <code class="mute">{{ src.evidence_id }}</code>{% endif %}
+  {% if src.quote %}<blockquote>“<mark>{{ src.quote }}</mark>”</blockquote>{% endif %}
+</div>
+{%- endmacro %}

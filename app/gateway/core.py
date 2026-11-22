@@ -25,7 +25,7 @@ from app.log import bind, get_logger
 log = get_logger(__name__)
 
 CREDITS_HEADER = "X-Credits-Used"
-GOOGLE_GROUPS = ("gcal", "gmail")  # OAuth bearer from Application Default Credentials
+GOOGLE_GROUPS = ("gcal", "gmail", "cloudrun")  # OAuth bearer from Application Default Credentials
 HASH_PREFIX_LEN = 12
 # A call can hold one connection for the single-flight lock and borrow a second for the
 # rate-limit bucket, so in-flight calls are capped at pool_max // CONNS_PER_CALL.

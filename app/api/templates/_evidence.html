@@ -1,0 +1,42 @@
+{% from "_macros.html" import decision_pill, status_pill, source %}
+<div {% if standalone %}class="page-evidence"{% else %}id="drawer" class="drawer on"{% endif %}>
+  {% if not standalone %}<button class="btn ghost sm close" type="button" onclick="this.closest('.drawer').classList.remove('on')">✕ Close</button>{% endif %}
+  <h3>{{ account.name or "(unnamed)" }} {{ decision_pill(decision) }}</h3>
+  {% if decision.reason %}<div class="alert {{ 'warn' if decision.decision == 'held' else 'mute' }}">{{ decision.decision|capitalize }} at step <b>{{ decision.step or "?" }}</b>: {{ decision.reason }}</div>{% endif %}
+
+  {% if data.score is not none and data.score_reasons %}
+  <div class="fact"><b>Why score {{ data.score }}</b>
+    {% for r in data.score_reasons %}<div class="kv {{ 'mute' if r|points == 0 }}"><span>{{ r.split(' ', 1)[1] }}</span><span>{{ r.split(' ', 1)[0] }}</span></div>{% endfor %}
+  </div>
+  {% endif %}
+
+  {% for f in facts %}
+  <div class="fact {{ f.tone }}">
+    <div class="fh"><b>{{ f.label }}</b> {{ status_pill(f.status) }}{% if f.stale %} <span class="pill warn">stale</span>{% endif %}</div>
+    {% if f.status == "verified" %}
+      <div class="val">{{ f.value|short }}</div>
+      {% if f.value is mapping or (f.value is iterable and f.value is not string) %}<details><summary>full value</summary><pre>{{ f.value|pretty }}</pre></details>{% endif %}
+    {% elif f.status == "conflict" %}
+      <div class="warn">Sources disagree. A person decides:</div>
+      {% for alt in f.alternatives %}<div class="alt"><b>{{ alt[0]|short }}</b>{{ source(alt[1]) }}</div>{% endfor %}
+    {% else %}
+      <div class="missing">❔ Cannot verify: {{ f.missing }}</div>
+    {% endif %}
+    {% if f.status != "conflict" %}
+      {% for src in f.sources %}{{ source(src) }}{% else %}{% if f.status == "verified" %}<div class="src bad">no source (should not happen)</div>{% endif %}{% endfor %}
+    {% endif %}
+  </div>
+  {% endfor %}
+
+  {% if unchecked %}
+  <div class="fact warn"><b>Not checked</b>
+    <div class="missing">❔ {{ unchecked|join(", ") }}: the step that checks it did not run for this account (optional step skipped, or the account stopped earlier). Shown so the gap is visible.</div>
+  </div>
+  {% endif %}
+
+  <details><summary>Audit log ({{ audit|length }})</summary>
+    <table class="log"><thead><tr><th>Time</th><th>Step</th><th>Table</th><th>Reason</th></tr></thead><tbody>
+    {% for a in audit %}<tr><td>{{ a.at|when }}</td><td>{{ a.step or "–" }}</td><td>{{ a.tbl }}</td><td>{{ a.reason }}{% if a.evidence_ids %} <span class="mute">({{ a.evidence_ids|length }} evidence)</span>{% endif %}</td></tr>{% endfor %}
+    </tbody></table>
+  </details>
+</div>

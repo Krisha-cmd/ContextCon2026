@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% set tab = 5 %}
+{% block title %}Approvals · Revenue Agent{% endblock %}
+{% block main %}
+<div class="frame">
+  <h2>5 · Approval queue</h2>
+  <p><b>{{ cards|length }} email{{ "" if cards|length == 1 else "s" }} waiting for your approval</b> · nothing is sent without this</p>
+  {% for c in cards %}{% include "_approval_card.html" %}{% else %}<p class="src">Nothing to approve right now.</p>{% endfor %}
+  <p class="src">Approving moves the action to the outbox (idempotency key <code>email:&lt;job&gt;:&lt;account&gt;</code>), so a restart cannot send twice. Every decision and edit is stored as an example, and later drafts learn from it (see <a href="/preferences">learned rules</a>).</p>
+</div>
+{% endblock %}

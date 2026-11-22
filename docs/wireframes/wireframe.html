@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ShipCo Revenue Wireframe</title>
+<style>
+:root{--bg:#f6f6f4;--card:#fff;--ink:#222;--mute:#777;--line:#bbb;--fill:#e6e6e2;--ok:#2e7d32;--warn:#b26a00;--unk:#555;--acc:#333}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 "Comic Sans MS","Segoe Print",ui-sans-serif,system-ui,sans-serif}
+header{display:flex;gap:12px;align-items:center;padding:10px 16px;border-bottom:2px dashed var(--line);background:var(--card);flex-wrap:wrap}
+header b{font-size:16px}.pill{border:1.5px solid var(--ink);border-radius:999px;padding:2px 10px;font-size:12px}
+nav{display:flex;gap:6px;flex-wrap:wrap;padding:10px 16px}
+nav button{border:1.5px dashed var(--line);background:var(--card);padding:6px 10px;border-radius:6px;cursor:pointer;font:inherit}
+nav button.on{border:2px solid var(--ink);font-weight:bold}
+main{max-width:1000px;margin:0 auto;padding:8px 16px 40px}
+section{display:none}section.on{display:block}
+.frame{background:var(--card);border:2px solid var(--ink);border-radius:10px;padding:16px;position:relative}
+.frame h2{margin:0 0 12px;font-size:18px}.note{font-size:12px;color:var(--mute);border-left:3px solid var(--line);padding:4px 8px;margin-top:14px}
+.row{display:flex;gap:16px;flex-wrap:wrap}.col{flex:1;min-width:240px}
+.box{border:1.5px dashed var(--line);border-radius:8px;padding:10px;background:#fcfcfa}
+textarea,input{width:100%;font:inherit;border:1.5px solid var(--ink);border-radius:6px;padding:8px;background:#fff}
+.btn{border:2px solid var(--ink);background:var(--ink);color:#fff;border-radius:6px;padding:7px 14px;cursor:pointer;font:inherit}
+.btn.ghost{background:#fff;color:var(--ink)}.btn.sm{padding:3px 9px;font-size:12px}.btn:disabled{opacity:.4;cursor:default}
+.kv{display:flex;justify-content:space-between;border-bottom:1px dotted var(--line);padding:4px 0}
+.steps{display:flex;gap:4px;margin:8px 0 14px}.steps div{flex:1;height:14px;border:1.5px solid var(--ink);border-radius:3px}
+.steps .d{background:var(--ink)}.steps .p{background:repeating-linear-gradient(45deg,#999 0 4px,#fff 4px 8px)}
+.log{font-family:ui-monospace,Menlo,monospace;font-size:12.5px}.log div{padding:3px 0}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{border-bottom:1px solid var(--line);padding:7px 6px;text-align:left;vertical-align:top}
+th{border-bottom:2px solid var(--ink)}.ok{color:var(--ok)}.warn{color:var(--warn)}.unk{color:var(--unk)}
+.i{border:1.5px solid var(--ink);border-radius:50%;width:22px;height:22px;background:#fff;cursor:pointer;font-weight:bold}
+.drawer{position:fixed;top:0;right:-440px;width:420px;max-width:92vw;height:100%;background:var(--card);border-left:2px solid var(--ink);padding:16px;overflow:auto;transition:right .2s;z-index:5;box-shadow:-6px 0 0 rgba(0,0,0,.06)}
+.drawer.on{right:0}.fact{border:1.5px dashed var(--line);border-radius:8px;padding:8px;margin:8px 0}
+.src{font-size:12px;color:var(--mute)}.src a{color:var(--ink)}mark{background:#eee;border-bottom:2px solid #999}
+.card{border:1.5px solid var(--ink);border-radius:8px;padding:10px;margin:10px 0}.card.done{opacity:.55}
+.card .meta{font-size:12px;color:var(--mute)}.card pre{white-space:pre-wrap;font:inherit;background:#fafafa;border:1px dashed var(--line);padding:8px;border-radius:6px;margin:8px 0}
+.stat{border:2px solid var(--ink);border-radius:8px;padding:10px;text-align:center;flex:1;min-width:120px}.stat b{display:block;font-size:22px}
+.restart{border:2px solid var(--warn);color:var(--warn);border-radius:6px;padding:6px 10px;margin:6px 0;font-weight:bold}
+.fake{position:absolute;top:10px;right:12px;font-size:11px;color:var(--mute)}
+@media(max-width:600px){th:nth-child(4),td:nth-child(4){display:none}}
+</style></head><body>
+<header><b>▢ Revenue Agent</b><span class="pill">Client: ShipCo 3PL</span><span class="pill">User: Ananya (Sales head)</span><span style="margin-left:auto" class="pill" id="hdrCost">Job #0142 · ₹184 / ₹500</span></header>
+<nav id="nav"></nav>
+<main>
+
+<section id="s1"><div class="frame"><span class="fake">sample data, all fictional</span><h2>1 · New request</h2>
+<div class="row"><div class="col" style="flex:2">
+<label>What do you need?</label>
+<textarea rows="4">Find D2C brands in Maharashtra, 200–2,000 staff, that may need a 3PL partner. Book up to 5 meetings.</textarea>
+<p style="font-size:12px;color:var(--mute)">Parsed as: region = Maharashtra · segment = D2C · headcount 200–2,000 · goal = meetings ≤ 5</p>
+<button class="btn" onclick="startRun()">▶ Run</button></div>
+<div class="col box"><b>Limits</b>
+<div class="kv"><span>Budget</span><span>₹500</span></div>
+<div class="kv"><span>Time limit</span><span>15 min</span></div>
+<div class="kv"><span>Trigger window</span><span>last 30 days</span></div>
+<div class="kv"><span>Max emails</span><span>5 (approval required)</span></div>
+<p style="font-size:12px;color:var(--mute)">Run stops cleanly when a limit is hit and shows what it finished.</p></div></div>
+<div class="note">Build: <code>st.text_area</code> + <code>st.number_input</code> ×3 + button, or one HTML form posting to <code>POST /jobs</code>.</div></div></section>
+
+<section id="s2"><div class="frame"><span class="fake">sample data</span><h2>2 · Live progress</h2>
+<div class="steps" id="bar"></div>
+<div class="log box" id="plog"></div>
+<div class="row" style="margin-top:12px;align-items:center">
+<span id="pcost" class="pill">Cost so far: ₹184 of ₹500</span><span id="ptime" class="pill">6m 12s elapsed</span>
+<button class="btn ghost sm" onclick="killDemo()">☠ Kill process (demo)</button>
+<button class="btn sm" onclick="go('s3')">View accounts →</button></div>
+<div id="restartMsg"></div>
+<div class="note">Build: poll <code>GET /jobs/{id}</code> every 2s (HTMX <code>hx-trigger="every 2s"</code> or <code>st.rerun</code>). State lives in the DB, so the bar redraws from the last finished step after a restart.</div></div></section>
+
+<section id="s3"><div class="frame"><span class="fake">sample data, companies are placeholders</span><h2>3 · Account table</h2>
+<div class="row" style="margin-bottom:8px"><span class="pill ok">✅ Verified 15</span><span class="pill warn">⚠ Flagged 3</span><span class="pill unk">❔ Cannot verify 4</span><span class="pill">42 dropped (see reasons)</span></div>
+<table><thead><tr><th>#</th><th>Company</th><th>Status</th><th>Trigger (last 30 days)</th><th>Buyer</th><th>Score</th><th></th></tr></thead><tbody id="tbody"></tbody></table>
+<div class="note">Build: <code>st.dataframe</code> + a select box for the row, or an HTML table where ⓘ does <code>hx-get="/accounts/{id}/evidence"</code> into a side panel.</div></div></section>
+
+<section id="s4"><div class="frame"><h2>4 · Evidence drawer</h2><p>Click any <b>ⓘ</b> in the account table to open the drawer. Try Brand A (verified) and Brand C (flagged).</p>
+<button class="btn" onclick="openDrawer(0)">Open Brand A evidence</button> <button class="btn ghost" onclick="openDrawer(2)">Open Brand C evidence</button>
+<div class="note">Rule shown in UI: every fact = value + source link + exact field or quoted passage + retrieved date. No source → "Cannot verify".</div></div></section>
+
+<section id="s5"><div class="frame"><span class="fake">sample data</span><h2>5 · Approval queue</h2>
+<p><b id="qcount">5 emails waiting for your approval</b> · nothing is sent without this</p>
+<div id="queue"></div>
+<div class="note">Build: one card per draft. Approve writes an <code>outbox</code> row with an idempotency key, so a restart cannot send twice. Edits are saved as diffs so later drafts learn Ananya's style.</div></div></section>
+
+<section id="s6"><div class="frame"><span class="fake">sample data</span><h2>6 · Outcome</h2>
+<div class="row"><div class="stat"><b id="sent">4</b>emails sent (once each)</div><div class="stat"><b>2</b>replies</div><div class="stat"><b>1</b>meeting booked</div></div>
+<div class="box" style="margin-top:12px">📅 <b>Brand A</b>, Thu 3 PM with Priya S. (Head of Supply Chain)</div>
+<div class="row" style="margin-top:12px"><span class="pill">Job cost: ₹212</span><span class="pill">Time: 9m 40s</span><span class="pill">61 API calls</span></div>
+<p><button class="btn">⬇ Download report (PDF)</button> <button class="btn ghost">⬇ CSV with all sources</button></p>
+<div class="note">Price to client ≈ ₹5,000 per job vs ₹212 cost. Show this margin line to judges, not to the client.</div></div></section>
+
+<section id="s7"><div class="frame"><span class="fake">sample data</span><h2>7 · Run log</h2>
+<table class="log"><thead><tr><th>Time</th><th>Step</th><th>Source</th><th>Cost ₹</th><th>Cache</th></tr></thead><tbody id="rlog"></tbody></table>
+<div class="note">Build: append-only <code>ledger</code> table. Totals on screens 2 and 6 are <code>SUM(cost)</code> over it.</div></div></section>
+</main>
+
+<div class="drawer" id="drawer"></div>
+
+<script>
+const tabs=[["s1","1 New request"],["s2","2 Live progress"],["s3","3 Accounts"],["s4","4 Evidence"],["s5","5 Approvals"],["s6","6 Outcome"],["s7","7 Run log"]];
+const nav=document.getElementById('nav');
+tabs.forEach(([id,l])=>{const b=document.createElement('button');b.textContent=l;b.dataset.id=id;b.onclick=()=>go(id);nav.appendChild(b)});
+function go(id){document.querySelectorAll('section').forEach(s=>s.classList.toggle('on',s.id===id));nav.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.id===id));closeDrawer();scrollTo(0,0)}
+const P=[["Research","✔ Research: 64 companies found → 22 match the request (42 dropped, reasons shown)"],["Trust checks","✔ Trust checks: 15 Verified · 3 Flagged · 4 Cannot verify"],["Triggers + buyers","⏳ Triggers and buyers: 11 of 15 done"],["Score","○ Score and rank"],["Drafts","○ Draft emails for approval"]];
+let restarted=false;
+function drawProgress(){document.getElementById('bar').innerHTML=P.map((p,i)=>`<div class="${i<2?'d':i==2?'p':''}" title="${p[0]}"></div>`).join('');document.getElementById('plog').innerHTML=P.map(p=>`<div>${p[1]}</div>`).join('')}
+function startRun(){go('s2');document.getElementById('hdrCost').textContent='Job #0142 · ₹184 / ₹500'}
+function killDemo(){const m=document.getElementById('restartMsg');m.innerHTML='<div class="restart">✖ Process killed at 6m 12s…</div>';
+setTimeout(()=>{m.innerHTML='<div class="restart">↻ Process restarted at 6:02, resumed from step "buyers", 0 actions repeated.</div>';P[2][1]='⏳ Triggers and buyers: 12 of 15 done (resumed)';drawProgress();restarted=true;drawLog()},1200)}
+const A=[
+{n:"Brand A Pvt Ltd",st:"ok",t:"Opened Pune warehouse, 5 Oct",b:"Head of Supply Chain",s:"0.86"},
+{n:"Brand B Ltd",st:"ok",t:"Hiring 12 warehouse roles, 9 Oct",b:"VP Operations",s:"0.79"},
+{n:"Brand C",st:"warn",t:"GST probe in news, 14 Oct",b:"(not used)",s:"–"},
+{n:"Brand D",st:"unk",t:"No buyer found in sources",b:"–",s:"–"}];
+const lab={ok:"✅ Verified",warn:"⚠ Flagged",unk:"❔ Cannot verify"};
+document.getElementById('tbody').innerHTML=A.map((a,i)=>`<tr><td>${i+1}</td><td>${a.n}</td><td class="${a.st}">${lab[a.st]}</td><td>${a.t}</td><td>${a.b}</td><td>${a.s}</td><td><button class="i" onclick="openDrawer(${i})">i</button></td></tr>`).join('')+`<tr><td colspan="7" style="color:var(--mute)">… 18 more rows</td></tr>`;
+const L='<a href="#" onclick="return false">link ↗</a>';
+const EV={
+0:`<h3>Brand A Pvt Ltd <span class="ok">✅ Verified</span></h3>
+<div class="fact"><b>Legal name:</b> Brand A Private Limited<div class="src">MCA record · field "Company Name" · retrieved 22 Nov 2026 · ${L}</div></div>
+<div class="fact"><b>Status:</b> Active<div class="src">MCA record · field "Company Status" · retrieved 22 Nov 2026 · ${L}</div></div>
+<div class="fact"><b>Trigger:</b> new Pune warehouse<div class="src">LinkedIn post · 5 Oct 2026 · ${L}</div><p>"…excited to <mark>open our new 80,000 sq ft fulfilment centre in Pune</mark>…"</p></div>
+<div class="fact"><b>Buyer:</b> Priya S., Head of Supply Chain<div class="src">Crustdata people record · refreshed 3 Nov 2026 · ${L}</div></div>
+<div class="fact"><b>Adverse news:</b> none found<div class="src">web search, 3 queries · 22 Nov 2026</div></div>
+<div class="fact"><b>Why score 0.86</b><div class="kv"><span>Recent expansion</span><span>+0.30</span></div><div class="kv"><span>Headcount +18% in 6 months</span><span>+0.20</span></div><div class="kv"><span>No current 3PL partner mentioned</span><span>+0.15</span></div><div class="kv"><span>Segment + region fit</span><span>+0.21</span></div></div>`,
+1:`<h3>Brand B Ltd <span class="ok">✅ Verified</span></h3><div class="fact"><b>Trigger:</b> hiring 12 warehouse roles<div class="src">Crustdata job listings · 9 Oct 2026 · ${L}</div></div><div class="fact"><b>Buyer:</b> VP Operations<div class="src">Crustdata people record · refresh date missing → shown as "date unknown"</div></div>`,
+2:`<h3>Brand C <span class="warn">⚠ Flagged</span></h3>
+<div class="fact"><b>Why flagged:</b> adverse news<div class="src">News article · 14 Oct 2026 · ${L}</div><p>"…<mark>GST officials searched premises of Brand C</mark>…"</p></div>
+<div class="fact"><b>Namesake check:</b> article names "Brand C Foods, Nagpur". Our match is "Brand C Retail, Mumbai" (different CIN).<div class="src">MCA · field "CIN" compared · retrieved 22 Nov 2026</div></div>
+<p><button class="btn sm">Clear flag (namesake)</button> <button class="btn ghost sm">Keep flagged</button></p>
+<p class="src">Flagged accounts never get outreach until a human clears them.</p>`,
+3:`<h3>Brand D <span class="unk">❔ Cannot verify</span></h3><div class="fact"><b>Buyer:</b> not found<div class="src">Crustdata people search returned 0 matches (empty result, not an error) · LinkedIn search: no match</div></div><p class="src">Shown, not hidden, so the client sees the gap.</p>`};
+function openDrawer(i){const d=document.getElementById('drawer');d.innerHTML=`<button class="btn ghost sm" style="float:right" onclick="closeDrawer()">✕ Close</button>`+EV[i];d.classList.add('on')}
+function closeDrawer(){document.getElementById('drawer').classList.remove('on')}
+const Q=[
+["Priya S. · Brand A","Opened Pune warehouse, 5 Oct","Hi Priya, congratulations on the new Pune fulfilment centre. ShipCo 3PL runs multi-client warehouses in Bhiwandi and Chakan…"],
+["VP Operations · Brand B","Hiring 12 warehouse roles, 9 Oct","Hi there, saw you're hiring 12 warehouse roles. Before you scale headcount, a 3PL partner could…"],
+["Head of Logistics · Brand E","New Nagpur DC announced, 18 Oct","Hi, congrats on the Nagpur DC news…"],
+["COO · Brand F","Raised Series B, 20 Oct","Hi, congratulations on the Series B…"],
+["Supply Chain Lead · Brand G","Launched quick-commerce, 2 Nov","Hi, noticed the quick-commerce launch…"]];
+function drawQueue(){document.getElementById('queue').innerHTML=Q.map((q,i)=>`<div class="card" id="c${i}"><div class="meta">To: ${q[0]} · cites trigger: ${q[1]}</div><pre contenteditable="true">${q[2]}</pre><span class="act"><button class="btn sm" onclick="act(${i},'✔ Approved, queued to send once')">Approve</button> <button class="btn ghost sm" onclick="this.closest('.card').querySelector('pre').focus()">Edit</button> <button class="btn ghost sm" onclick="act(${i},'✖ Rejected')">Reject</button></span></div>`).join('')}
+let left=5;function act(i,msg){const c=document.getElementById('c'+i);c.classList.add('done');c.querySelector('.act').innerHTML='<b>'+msg+'</b>';left--;document.getElementById('qcount').textContent=left?`${left} emails waiting for your approval`:'All reviewed'}
+function drawLog(){const r=[["6:00:01","research","Crustdata company search","₹38","fresh"],["6:00:40","research","web search ×6","₹12","fresh"],["6:01:15","trust","MCA lookup ×22","₹44","fresh"],["6:01:50","trust","news search ×22","₹30","2 cached"],["6:02:00","buyers","Crustdata people ×11","₹60","fresh"]];
+r.push(["6:02:05","—","↻ Process restarted, resumed from step \"buyers\", 0 actions repeated","₹0","—"],["6:02:09","buyers","Crustdata people ×4","₹22","3 cached"]);
+r.push(["6:08:30","outreach","email send ×4 (idempotent)","₹0","—"],["6:09:10","booking","calendar event ×1","₹0","—"]);
+document.getElementById('rlog').innerHTML=r.map(x=>`<tr${x[1]=='—'?' style="font-weight:bold;color:var(--warn)"':''}>${x.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}
+drawProgress();drawQueue();drawLog();go(location.hash.slice(1)||'s1');
+</script></body></html>

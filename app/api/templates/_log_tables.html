@@ -1,0 +1,13 @@
+<div id="logtables">
+  <h3>Audit log{% if step %} · {{ step }}{% endif %} ({{ audit|length }})</h3>
+  <div class="scroll"><table class="log">
+    <thead><tr><th>Time</th><th>Step</th><th>Table</th><th>Record</th><th>Reason</th><th>Evidence</th></tr></thead>
+    <tbody>{% for a in audit %}<tr><td>{{ a.at|when }}</td><td>{{ a.step or "–" }}</td><td>{{ a.tbl }}</td><td><code>{{ a.record_id|truncate(24, true) }}</code></td><td>{{ a.reason }}</td><td>{{ a.evidence_ids|length or "" }}</td></tr>{% else %}<tr><td colspan="6" class="mute">no rows</td></tr>{% endfor %}</tbody>
+  </table></div>
+  <h3>Cost ledger{% if endpoint %} · {{ endpoint }}{% endif %} ({{ ledger_rows|length }})</h3>
+  <div class="scroll"><table class="log">
+    <thead><tr><th>Time</th><th>Endpoint</th><th>₹</th><th>Credits</th><th>ms</th><th>Cache</th></tr></thead>
+    <tbody>{% for e in ledger_rows %}<tr><td>{{ e.at|when }}</td><td>{{ e.endpoint }}</td><td>{{ e.inr|inr }}</td><td>{{ "%.2f"|format(e.credits) }}</td><td>{{ e.ms or "" }}</td><td>{{ "cached" if e.cache_hit else "fresh" }}</td></tr>{% else %}<tr><td colspan="6" class="mute">no rows</td></tr>{% endfor %}</tbody>
+  </table></div>
+  <p class="src">The ledger records endpoints, not steps, so it is filtered by endpoint group.</p>
+</div>

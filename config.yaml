@@ -252,6 +252,7 @@ actions:
     - https://www.googleapis.com/auth/calendar.events
     - https://www.googleapis.com/auth/gmail.send
     - https://www.googleapis.com/auth/gmail.readonly
+    - https://www.googleapis.com/auth/cloud-platform   # Cloud Run Jobs (api.start_mode = cloud_run)
 
 # Gateway groups for Google APIs (OAuth bearer from Application Default Credentials).
 # Calendar inserts carry a client-chosen event id, so retrying them is safe (409 = exists).
@@ -270,12 +271,34 @@ gmail:
   max_attempts: 1
   retry_statuses: []
 
+# app/api: the web UI (FastAPI + Jinja2 + HTMX). Auth is one shared token from env API_TOKEN.
+api:
+  poll_s: 2                       # screen 2 refreshes this often (HTMX polling)
+  top_reasons: 3                  # score reasons shown per row on the account table
+  default_client_id: demo-3pl     # when the request / kickoff JSON names no client_id
+  start_mode: local               # local: insert the steps for the worker | cloud_run: also run the Cloud Run Job
+  token_cookie: revagent_token
+  max_upload_kb: 256              # kickoff JSON upload limit
+  log_page: 500                   # rows per table on the run log
+
+# Cloud Run Jobs API (gateway group "cloudrun"); used only when api.start_mode = cloud_run.
+# The execution runs the worker with RUN_JOB_ID=<job id> until that job is done.
+cloudrun:
+  base_url: https://run.googleapis.com/v2
+  region: asia-south1
+  job: revagent-worker
+  rpm: 30
+  timeout_s: 30
+  max_attempts: 2
+  retry_statuses: [429, 503]
+
 cache_ttl_hours:
   registry: 24
   news: 24
   company: 168
   people: 168
   negative: 6
+  control: 0                      # control-plane calls (Cloud Run trigger): never cached
   actions: 0                # side-effect calls are never served from cache
 
 # app/identity/matcher.py + train.py. Bands: p >= match_threshold -> match,
