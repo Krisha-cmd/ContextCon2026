@@ -1,0 +1,959 @@
+{
+ "endpoint": "POST /person/search",
+ "request": {
+  "filters": {
+   "op": "and",
+   "conditions": [
+    {
+     "field": "experience.employment_details.current.company_website_domain",
+     "type": "=",
+     "value": "delhivery.com"
+    },
+    {
+     "op": "or",
+     "conditions": [
+      {
+       "field": "experience.employment_details.current.title",
+       "type": "(.)",
+       "value": "supply chain"
+      },
+      {
+       "field": "experience.employment_details.current.title",
+       "type": "(.)",
+       "value": "logistics"
+      }
+     ]
+    },
+    {
+     "op": "or",
+     "conditions": [
+      {
+       "field": "experience.employment_details.current.title",
+       "type": "(.)",
+       "value": "head"
+      },
+      {
+       "field": "experience.employment_details.current.title",
+       "type": "(.)",
+       "value": "vp"
+      },
+      {
+       "field": "experience.employment_details.current.title",
+       "type": "(.)",
+       "value": "director"
+      }
+     ]
+    }
+   ]
+  },
+  "limit": 5
+ },
+ "status": 200,
+ "credits_used": 1.65,
+ "recorded_at": "2026-11-22T07:09:06.737210+00:00",
+ "response": {
+  "profiles": [
+   {
+    "crustdata_person_id": 1298971,
+    "metadata": {
+     "updated_at": "2026-11-16T00:43:57+00:00"
+    },
+    "fit": null,
+    "basic_profile": {
+     "name": "REDACTED",
+     "professional_network_name": "REDACTED",
+     "headline": "REDACTED",
+     "current_title": "Sr. Director - Supply Chain Solutions",
+     "normalized_title": {
+      "matched_title": "Director Supply Chain Solutions",
+      "department": "Operations & Logistics",
+      "sub_department": "Supply Chain & Logistics",
+      "similarity": 0.997,
+      "confident": true
+     },
+     "location": {
+      "city": "Gurugram",
+      "state": "Haryana",
+      "country": "India",
+      "continent": "Asia",
+      "raw": "Gurugram, Haryana, India",
+      "full_location": "Gurugram, Haryana, India"
+     }
+    },
+    "contact": {
+     "has_business_email": true,
+     "has_personal_email": null,
+     "has_phone_number": null
+    },
+    "social_handles": {
+     "professional_network_identifier": {
+      "profile_url": "https://www.linkedin.com/in/redacted"
+     },
+     "dev_platform_identifier": {
+      "profile_url": null
+     },
+     "twitter_identifier": {
+      "slug": ""
+     }
+    },
+    "experience": {
+     "employment_details": {
+      "current": [
+       {
+        "name": "Delhivery",
+        "company_website": "https://www.delhivery.com/",
+        "professional_network_id": "2312777",
+        "title": "Sr. Director - Supply Chain Solutions",
+        "location": {
+         "raw": "Gurugram"
+        },
+        "employment_type": "Full-time",
+        "start_date": "2026-02-01T00:00:00",
+        "end_date": null,
+        "is_default": true,
+        "crustdata_company_id": 5798,
+        "company_status": "active",
+        "company_profile_picture_permalink": "https://crustdata-media.s3.us-east-2.amazonaws.com/company/71b150219cfe4c30f5586301a08cb16fbea70619f7f66cbf8fae2b7c1877a544.jpg",
+        "company_professional_network_profile_url": "https://www.linkedin.com/company/delhivery",
+        "seniority_level": "Director",
+        "function_category": "Operations",
+        "years_at_company": "Less than 1 year",
+        "years_at_company_raw": 0,
+        "company_headcount_latest": 35300,
+        "company_headcount_range": "10001+",
+        "company_industries": [
+         "Transportation, Logistics, Supply Chain and Storage"
+        ],
+        "company_professional_network_industry": "Transportation, Logistics, Supply Chain and Storage",
+        "position_id": 2837911934,
+        "company_type": "Public Company",
+        "company_headquarters_country": "India",
+        "company_hq_location": "DLF QE, Haryāna, India",
+        "company_hq_location_address_components": [],
+        "business_email_verified": false
+       }
+      ],
+      "past": [
+       {
+        "name": "Ecom Express Limited",
+        "company_website": "http://www.ecomexpress.in",
+        "professional_network_id": "3151123",
+        "title": "Head - BD and Strategic Accounts (EFS-Warehousing & Fulfilment)",
+        "location": {
+         "raw": "Gurugram"
+        },
+        "employment_type": "Full-time",
+        "start_date": "2023-07-01T00:00:00",
+        "end_date": "2026-01-01T00:00:00",
+        "is_default": false,
+        "crustdata_company_id": 5967,
+        "company_status": "active",
+        "company_profile_picture_permalink": "https://crustdata-media.s3.us-east-2.amazonaws.com/company/674126e4abe3f49908297f37c0fae032151295d56aeac3c38a25279e762074fb.jpg",
+        "company_professional_network_profile_url": "https://www.linkedin.com/company/ecom-express-ltd",
+        "seniority_level": "Director",
+        "function_category": "",
+        "years_at_company": "3 to 5 years",
+        "years_at_company_raw": 2,
+        "company_headcount_latest": 13088,
+        "company_headcount_range": "10001+",
+        "company_industries": [
+         "Transportation, Logistics, Supply Chain and Storage"
+        ],
+        "company_professional_network_industry": "Transportation, Logistics, Supply Chain and Storage",
+        "position_id": 2288990039,
+        "company_type": "Privately Held",
+        "company_headquarters_country": "India",
+        "company_hq_location": "DLF QE, Haryāna, India",
+        "company_hq_location_address_components": [],
+        "business_email_verified": false
+       },
+       {
+        "name": "Adani Ports and SEZ",
+        "company_website": "http://www.adaniports.com",
+        "professional_network_id": "132122",
+        "title": "Senior Manager - Supply Chain Solutions",
+        "location": {
+         "raw": "Ahmedabad"
+        },
+        "employment_type": "Full-time",
+        "start_date": "2019-11-01T00:00:00",
+        "end_date": "2023-07-01T00:00:00",
+        "is_default": false,
+        "crustdata_company_id": 15544,
+        "company_status": "active",
+        "company_profile_picture_permalink": "https://crustdata-media.s3.us-east-2.amazonaws.com/company/29f4087ad61ca8f96ac2360cf89757d1318c84acfa900d56c55352bb7dd18875.jpg",
+        "company_professional_network_profile_url": "https://www.linkedin.com/company/adani-ports-sez-ltd-",
+        "seniority_level": "Experienced Manager",
+        "function_category": "Operations",
+        "years_at_company": "3 to 5 years",
+        "years_at_company_raw": 3,
+        "company_headcount_latest": 4686,
+        "company_headcount_range": "1001-5000",
+        "company_industries": [
+         "Transportation, Logistics, Supply Chain and Storage"
+        ],
+        "company_professional_network_industry": "Transportation, Logistics, Supply Chain and Storage",
+        "position_id": 1557993793,
+        "company_type": "Public Company",
+        "company_headquarters_country": "India",
+        "company_hq_location": "Ambli, Shela, Bopal, Ghuma, Gujarat, India",
+        "company_hq_location_address_components": [],
+        "business_email_verified": false
+       },
+       {
+        "name": "Holisol Supply Chain Solutions",
+        "company_website": "https://holisolscs.ae/",
+        "professional_network_id": "13246353",
+        "title": "Business Head-Fashion & Lifestyle",
+        "location": {
+         "raw": "New Delhi Area, India"
+        },
+        "employment_type": "Full-time",
+        "start_date": "2019-01-01T00:00:00",
+        "end_date": "2019-11-01T00:00:00",
+        "is_default": false,
+        "crustdata_company_id": 2091293,
+        "company_status": "active",
+        "company_profile_picture_permalink": "https://crustdata-media.s3.us-east-2.amazonaws.com/company/598b871479d609ab9d3dd14187fa2a66e83d472bead760186510a9859a80c5a0.jpg",
+        "company_professional_network_profile_url": "https://www.linkedin.com/company/holisol-supply-chain-solutions",
+        "seniority_level": "Director",
+        "function_category": "",
+        "years_at_company": "Less than 1 year",
+        "years_at_company_raw": 0,
+        "company_headcount_latest": 133,
+        "company_headcount_range": "201-500",
+        "company_industries": [
+         "Transportation, Logistics, Supply Chain and Storage"
+        ],
+        "company_professional_network_industry": "Transportation, Logistics, Supply Chain and Storage",
+        "position_id": 1525791355,
+        "company_type": "Privately Held",
+        "company_headquarters_country": "United Arab Emirates",
+        "company_hq_location": "Dubai, Dubai, United Arab Emirates",
+        "company_hq_location_address_components": [
+         "Dubai",
+         "Dubai",
+         "United Arab Emirates"
+        ],
+        "business_email_verified": false
+       }
+      ]
+     }
+    }
+   },
+   {
+    "crustdata_person_id": 1869859,
+    "metadata": {
+     "updated_at": "2026-11-16T00:43:57+00:00"
+    },
+    "fit": null,
+    "basic_profile": {
+     "name": "REDACTED",
+     "professional_network_name": "REDACTED",
+     "headline": "REDACTED",
+     "current_title": "Director - Retention (Supply Chain Services)",
+     "normalized_title": {
+      "matched_title": "Senior Manager, Retention",
+      "department": "Customer Service & Support",
+      "sub_department": "Customer Success & Retention",
+      "similarity": 0.8734,
+      "confident": true
+     },
+     "location": {
+      "city": null,
+      "state": "Delhi",
+      "country": "India",
+      "continent": "Asia",
+      "raw": "Delhi, India",
+      "full_location": "Delhi, India"
+     }
+    },
+    "contact": {
+     "has_business_email": true,
+     "has_personal_email": null,
+     "has_phone_number": null
+    },
+    "social_handles": {
+     "professional_network_identifier": {
+      "profile_url": "https://www.linkedin.com/in/redacted"
+     },
+     "dev_platform_identifier": {
+      "profile_url": null
+     },
+     "twitter_identifier": {
+      "slug": "alam_afzal"
+     }
+    },
+    "experience": {
+     "employment_details": {
+      "current": [
+       {
+        "name": "Delhivery",
+        "company_website": "https://www.delhivery.com/",
+        "professional_network_id": "2312777",
+        "title": "Director - Retention (Supply Chain Services)",
+        "location": {
+         "raw": "Gurugram, Haryana, India"
+        },
+        "employment_type": "Full-time",
+        "start_date": "2025-06-01T00:00:00",
+        "end_date": null,
+        "is_default": true,
+        "crustdata_company_id": 5798,
+        "company_status": "active",
+        "company_profile_picture_permalink": "https://crustdata-media.s3.us-east-2.amazonaws.com/company/71b150219cfe4c30f5586301a08cb16fbea70619f7f66cbf8fae2b7c1877a544.jpg",
+        "company_professional_network_profile_url": "https://www.linkedin.com/company/delhivery",
+        "seniority_level": "Director",
+        "function_category": "Operations",
+        "years_at_company": "1 to 2 years",
+        "years_at_company_raw": 1,
+        "company_headcount_latest": 35300,
+        "company_headcount_range": "10001+",
+        "company_industries": [
+         "Transportation, Logistics, Supply Chain and Storage"
+        ],
+        "company_professional_network_industry": "Transportation, Logistics, Supply Chain and Storage",
+        "position_id": 2661007232,
+        "company_type": "Public Company",
+        "company_headquarters_country": "India",
+        "company_hq_location": "DLF QE, Haryāna, India",
+        "company_hq_location_address_components": [],
+        "business_email_verified": false
+       }
+      ],
+      "past": [
+       {
+        "name": "3SC",
+        "company_website": "https://3scsolution.com/",
+        "professional_network_id": "13185371",
+        "title": "General Manager",
+        "location": {
+         "raw": "Gurugram, Haryana, India"
+        },
+        "employment_type": "Full-time",
+        "start_date": "2022-01-01T00:00:00",
+        "end_date": "2025-05-01T00:00:00",
+        "is_default": false,
+        "crustdata_company_id": 622970,
+        "company_status": "active",
+        "company_profile_picture_permalink": "https://crustdata-media.s3.us-east-2.amazonaws.com/company/149b0acd238155b0f09fe181361b34d398943caa313985ee8565d4333dcd56de.jpg",
+        "company_professional_network_profile_url": "https://www.linkedin.com/company/3scsolution",
+        "seniority_level": "Director",
+        "function_category": "",
+        "years_at_company": "3 to 5 years",
+        "years_at_company_raw": 3,
+        "company_headcount_latest": 411,
+        "company_headcount_range": "201-500",
+        "company_industries": [
+         "Software Development",
+         "Technology, Information and Internet",
+         "Technology, Information and Media"
+        ],
+        "company_professional_network_industry": "Software Development",
+        "position_id": 2052752926,
+        "company_type": "Privately Held",
+        "company_headquarters_country": "India",
+        "company_hq_location": "Gurgaon South City II, Haryāna, India",
+        "company_hq_location_address_components": [],
+        "business_email_verified": false
+       },
+       {
+        "name": "Synchronized",
+        "company_website": "http://www.synchronized.in",
+        "professional_network_id": "811038",
+        "title": "AGM Key Account Management",
+        "location": {
+         "raw": "Gurugram, Haryana, India"
+        },
+        "employment_type": "Full-time",
+        "start_date": "2019-12-01T00:00:00",
+        "end_date": "2022-01-01T00:00:00",
+        "is_default": false,
+        "crustdata_company_id": 29127,
+        "company_status": "active",
+        "company_profile_picture_permalink": "https://crustdata-media.s3.us-east-2.amazonaws.com/company/2ea7d94dc2d720b38e53de38dfb0885a24f028ab4eb16086f59dccab10517fca.jpg",
+        "company_professional_network_profile_url": "https://www.linkedin.com/company/synchronizedltd",
+        "seniority_level": "Entry Level",
+        "function_category": "",
+        "years_at_company": "3 to 5 years",
+        "years_at_company_raw": 2,
+        "company_headcount_latest": 308,
+        "company_headcount_range": "501-1000",
+        "company_industries": [
+         "Transportation, Logistics, Supply Chain and Storage"
+        ],
+        "company_professional_network_industry": "Transportation, Logistics, Supply Chain and Storage",
+        "position_id": 1689003179,
+        "company_type": "Privately Held",
+        "company_headquarters_country": "India",
+        "company_hq_location": "Industrial Complex Dundahera, Haryāna, India",
+        "company_hq_location_address_components": [],
+        "business_email_verified": false
+       },
+       {
+        "name": "DHL Supply Chain",
+        "company_website": "https://www.logistics.dhl/gb-en/home/our-divisions/supply-chain/contact-our-experts.html",
+        "professional_network_id": "3269",
+        "title": "Manager",
+        "location": {
+         "raw": "New Delhi Area, India"
+        },
+        "employment_type": "",
+        "start_date": "2018-04-01T00:00:00",
+        "end_date": "2019-12-01T00:00:00",
+        "is_default": false,
+        "crustdata_company_id": 1134156,
+        "company_status": "active",
+        "company_profile_picture_permalink": "https://crustdata-media.s3.us-east-2.amazonaws.com/company/c418c6ddbb3c5af2e876526c00b5926062ab9f83041705b18be2f29496cb949b.jpg",
+        "company_professional_network_profile_url": "https://www.linkedin.com/company/dhl-supply-chain",
+        "seniority_level": "Entry Level Manager",
+        "function_category": "",
+        "years_at_company": "1 to 2 years",
+        "years_at_company_raw": 1,
+        "company_headcount_latest": 76521,
+        "company_headcount_range": "10001+",
+        "company_industries": [
+         "Transportation, Logistics, Supply Chain and Storage"
+        ],
+        "company_professional_network_industry": "Transportation, Logistics, Supply Chain and Storage",
+        "position_id": 1319492817,
+        "company_type": "Public Company",
+        "company_headquarters_country": "Germany",
+        "company_hq_location": "Bonn, North Rhine-Westphalia, Germany",
+        "company_hq_location_address_components": [
+         "Bonn",
+         "Rhein-Sieg-Kreis",
+         "Cologne"
+        ],
+        "business_email_verified": false
+       }
+      ]
+     }
+    }
+   },
+   {
+    "crustdata_person_id": 1886207,
+    "metadata": {
+     "updated_at": "2026-11-16T00:43:57+00:00"
+    },
+    "fit": null,
+    "basic_profile": {
+     "name": "REDACTED",
+     "professional_network_name": "REDACTED",
+     "headline": "REDACTED",
+     "current_title": "Director Acquisition-E2E Supply Chain Solutions",
+     "normalized_title": {
+      "matched_title": "Associate Director of Acquisitions",
+      "department": "Real Estate & Construction",
+      "sub_department": "Real Estate Appraisal & Investment",
+      "similarity": 0.7807,
+      "confident": true
+     },
+     "location": {
+      "city": null,
+      "state": null,
+      "country": "India",
+      "continent": "Asia",
+      "raw": "India",
+      "full_location": "India"
+     }
+    },
+    "contact": {
+     "has_business_email": false,
+     "has_personal_email": null,
+     "has_phone_number": null
+    },
+    "social_handles": {
+     "professional_network_identifier": {
+      "profile_url": "https://www.linkedin.com/in/redacted"
+     },
+     "dev_platform_identifier": {
+      "profile_url": null
+     },
+     "twitter_identifier": {
+      "slug": ""
+     }
+    },
+    "experience": {
+     "employment_details": {
+      "current": [
+       {
+        "name": "Delhivery",
+        "company_website": "https://www.delhivery.com/",
+        "professional_network_id": "2312777",
+        "title": "Director Acquisition-E2E Supply Chain Solutions",
+        "employment_type": "Full-time",
+        "start_date": "2025-02-01T00:00:00",
+        "end_date": null,
+        "is_default": true,
+        "crustdata_company_id": 5798,
+        "company_status": "active",
+        "company_profile_picture_permalink": "https://crustdata-media.s3.us-east-2.amazonaws.com/company/71b150219cfe4c30f5586301a08cb16fbea70619f7f66cbf8fae2b7c1877a544.jpg",
+        "company_professional_network_profile_url": "https://www.linkedin.com/company/delhivery",
+        "seniority_level": "Director",
+        "function_category": "Operations",
+        "years_at_company": "1 to 2 years",
+        "years_at_company_raw": 1,
+        "company_headcount_latest": 35300,
+        "company_headcount_range": "10001+",
+        "company_industries": [
+         "Transportation, Logistics, Supply Chain and Storage"
+        ],
+        "company_professional_network_industry": "Transportation, Logistics, Supply Chain and Storage",
+        "position_id": 2592177280,
+        "company_type": "Public Company",
+        "company_headquarters_country": "India",
+        "company_hq_location": "DLF QE, Haryāna, India",
+        "company_hq_location_address_components": [],
+        "business_email_verified": false
+       }
+      ],
+      "past": [
+       {
+        "name": "DHL Supply Chain",
+        "company_website": "https://www.logistics.dhl/gb-en/home/our-divisions/supply-chain/contact-our-experts.html",
+        "professional_network_id": "3269",
+        "title": "Head Business Development-West & East",
+        "location": {
+         "raw": "Mumbai, Maharashtra, India"
+        },
+        "employment_type": "Full-time",
+        "start_date": "2022-05-01T00:00:00",
+        "end_date": "2025-03-01T00:00:00",
+        "is_default": false,
+        "crustdata_company_id": 1134156,
+        "company_status": "active",
+        "company_profile_picture_permalink": "https://crustdata-media.s3.us-east-2.amazonaws.com/company/c418c6ddbb3c5af2e876526c00b5926062ab9f83041705b18be2f29496cb949b.jpg",
+        "company_professional_network_profile_url": "https://www.linkedin.com/company/dhl-supply-chain",
+        "seniority_level": "Director",
+        "function_category": "Sales",
+        "years_at_company": "3 to 5 years",
+        "years_at_company_raw": 2,
+        "company_headcount_latest": 76521,
+        "company_headcount_range": "10001+",
+        "company_industries": [
+         "Transportation, Logistics, Supply Chain and Storage"
+        ],
+        "company_professional_network_industry": "Transportation, Logistics, Supply Chain and Storage",
+        "position_id": 2133766544,
+        "company_type": "Public Company",
+        "company_headquarters_country": "Germany",
+        "company_hq_location": "Bonn, North Rhine-Westphalia, Germany",
+        "company_hq_location_address_components": [
+         "Bonn",
+         "Rhein-Sieg-Kreis",
+         "Cologne"
+        ],
+        "business_email_verified": false
+       },
+       {
+        "name": "DHL Supply Chain",
+        "company_website": "https://www.logistics.dhl/gb-en/home/our-divisions/supply-chain/contact-our-experts.html",
+        "professional_network_id": "3269",
+        "title": "Key Account Manager-National Accounts",
+        "employment_type": "Full-time",
+        "start_date": "2019-08-01T00:00:00",
+        "end_date": "2023-03-01T00:00:00",
+        "is_default": false,
+        "crustdata_company_id": 1134156,
+        "company_status": "active",
+        "company_profile_picture_permalink": "https://crustdata-media.s3.us-east-2.amazonaws.com/company/c418c6ddbb3c5af2e876526c00b5926062ab9f83041705b18be2f29496cb949b.jpg",
+        "company_professional_network_profile_url": "https://www.linkedin.com/company/dhl-supply-chain",
+        "seniority_level": "Entry Level Manager",
+        "function_category": "Sales",
+        "years_at_company": "3 to 5 years",
+        "years_at_company_raw": 3,
+        "company_headcount_latest": 76521,
+        "company_headcount_range": "10001+",
+        "company_industries": [
+         "Transportation, Logistics, Supply Chain and Storage"
+        ],
+        "company_professional_network_industry": "Transportation, Logistics, Supply Chain and Storage",
+        "position_id": 1597151076,
+        "company_type": "Public Company",
+        "company_headquarters_country": "Germany",
+        "company_hq_location": "Bonn, North Rhine-Westphalia, Germany",
+        "company_hq_location_address_components": [
+         "Bonn",
+         "Rhein-Sieg-Kreis",
+         "Cologne"
+        ],
+        "business_email_verified": false
+       },
+       {
+        "name": "RIVIGO",
+        "company_website": "https://mahindralogistics.com/b2b-express/",
+        "professional_network_id": "6585780",
+        "title": "Enterprise Business Manager",
+        "location": {
+         "raw": "Mumbai Area, India"
+        },
+        "employment_type": "",
+        "start_date": "2018-06-01T00:00:00",
+        "end_date": "2019-08-01T00:00:00",
+        "is_default": false,
+        "crustdata_company_id": 6039734,
+        "company_status": "active",
+        "company_profile_picture_permalink": "https://crustdata-media.s3.us-east-2.amazonaws.com/company/0e777c96b49112471a4d7757d6b4460d4ddbe6cc4ff330968f54253aaf9141ef.jpg",
+        "company_professional_network_profile_url": "https://www.linkedin.com/company/rivigo",
+        "seniority_level": "Entry Level Manager",
+        "function_category": "",
+        "years_at_company": "1 to 2 years",
+        "years_at_company_raw": 1,
+        "company_headcount_latest": 2209,
+        "company_headcount_range": "1001-5000",
+        "company_industries": [
+         "Truck Transportation",
+         "Transportation, Logistics, Supply Chain and Storage"
+        ],
+        "company_professional_network_industry": "Truck Transportation",
+        "position_id": 1345026318,
+        "company_type": "Privately Held",
+        "company_headquarters_country": "India",
+        "company_hq_location": "Gurgaon Sector 45, Wazirabad, Smaspur, Jharsa, Gwal Pahari, Haryana, India",
+        "company_hq_location_address_components": [],
+        "business_email_verified": false
+       }
+      ]
+     }
+    }
+   },
+   {
+    "crustdata_person_id": 4806193,
+    "metadata": {
+     "updated_at": "2026-11-16T00:43:57+00:00"
+    },
+    "fit": null,
+    "basic_profile": {
+     "name": "REDACTED",
+     "professional_network_name": "REDACTED",
+     "headline": "REDACTED",
+     "current_title": "Director- Supply Chain Solutions",
+     "normalized_title": {
+      "matched_title": "Director Supply Chain Solutions",
+      "department": "Operations & Logistics",
+      "sub_department": "Supply Chain & Logistics",
+      "similarity": 0.9992,
+      "confident": true
+     },
+     "location": {
+      "city": "Gurugram",
+      "state": "Haryana",
+      "country": "India",
+      "continent": "Asia",
+      "raw": "Gurugram, Haryana, India",
+      "full_location": "Gurugram, Haryana, India"
+     }
+    },
+    "contact": {
+     "has_business_email": true,
+     "has_personal_email": null,
+     "has_phone_number": null
+    },
+    "social_handles": {
+     "professional_network_identifier": {
+      "profile_url": "https://www.linkedin.com/in/redacted"
+     },
+     "dev_platform_identifier": {
+      "profile_url": null
+     },
+     "twitter_identifier": {
+      "slug": ""
+     }
+    },
+    "experience": {
+     "employment_details": {
+      "current": [
+       {
+        "name": "Delhivery",
+        "company_website": "https://www.delhivery.com/",
+        "professional_network_id": "2312777",
+        "title": "Director- Supply Chain Solutions",
+        "location": {
+         "raw": "Gurugram"
+        },
+        "employment_type": "Full-time",
+        "start_date": "2026-04-01T00:00:00",
+        "end_date": null,
+        "is_default": true,
+        "crustdata_company_id": 5798,
+        "company_status": "active",
+        "company_profile_picture_permalink": "https://crustdata-media.s3.us-east-2.amazonaws.com/company/71b150219cfe4c30f5586301a08cb16fbea70619f7f66cbf8fae2b7c1877a544.jpg",
+        "company_professional_network_profile_url": "https://www.linkedin.com/company/delhivery",
+        "seniority_level": "Director",
+        "function_category": "Operations",
+        "years_at_company": "Less than 1 year",
+        "years_at_company_raw": 0,
+        "company_headcount_latest": 35300,
+        "company_headcount_range": "10001+",
+        "company_industries": [
+         "Transportation, Logistics, Supply Chain and Storage"
+        ],
+        "company_professional_network_industry": "Transportation, Logistics, Supply Chain and Storage",
+        "position_id": 2887337375,
+        "company_type": "Public Company",
+        "company_headquarters_country": "India",
+        "company_hq_location": "DLF QE, Haryāna, India",
+        "company_hq_location_address_components": [],
+        "business_email_verified": false
+       }
+      ],
+      "past": [
+       {
+        "name": "Smart Joules",
+        "company_website": "http://www.smartjoules.co.in/",
+        "professional_network_id": "9399181",
+        "title": "Business Head- JouleCOOL",
+        "location": {
+         "raw": "New Delhi, Delhi, India"
+        },
+        "employment_type": "Full-time",
+        "start_date": "2025-04-01T00:00:00",
+        "end_date": "2026-04-01T00:00:00",
+        "is_default": false,
+        "crustdata_company_id": 47274,
+        "company_status": "active",
+        "company_profile_picture_permalink": "https://crustdata-media.s3.us-east-2.amazonaws.com/company/0b1ae584aebbd742b49409485ba8b31ff07c673b4f3d5e068ad885058dbb6464.jpg",
+        "company_professional_network_profile_url": "https://www.linkedin.com/company/smartjoules",
+        "seniority_level": "Director",
+        "function_category": "",
+        "years_at_company": "1 to 2 years",
+        "years_at_company_raw": 1,
+        "company_headcount_latest": 246,
+        "company_headcount_range": "201-500",
+        "company_industries": [
+         "Climate Technology Product Manufacturing",
+         "Manufacturing"
+        ],
+        "company_professional_network_industry": "Climate Technology Product Manufacturing",
+        "position_id": 2636467339,
+        "company_type": "Privately Held",
+        "company_headquarters_country": "India",
+        "company_hq_location": "F F C Okhla, Okhla Industrial Estate, Okhla Industrial Area Phase-i, Tehkhand, C R R I (South Delhi), Delhi, India",
+        "company_hq_location_address_components": [],
+        "business_email_verified": false
+       },
+       {
+        "name": "Smart Joules",
+        "company_website": "http://www.smartjoules.co.in/",
+        "professional_network_id": "9399181",
+        "title": "Sr. Manager- CEO’s Office",
+        "location": {
+         "raw": "Delhi, India"
+        },
+        "employment_type": "Full-time",
+        "start_date": "2023-01-01T00:00:00",
+        "end_date": "2025-04-01T00:00:00",
+        "is_default": false,
+        "crustdata_company_id": 47274,
+        "company_status": "active",
+        "company_profile_picture_permalink": "https://crustdata-media.s3.us-east-2.amazonaws.com/company/0b1ae584aebbd742b49409485ba8b31ff07c673b4f3d5e068ad885058dbb6464.jpg",
+        "company_professional_network_profile_url": "https://www.linkedin.com/company/smartjoules",
+        "seniority_level": "CXO",
+        "function_category": "",
+        "years_at_company": "3 to 5 years",
+        "years_at_company_raw": 2,
+        "company_headcount_latest": 246,
+        "company_headcount_range": "201-500",
+        "company_industries": [
+         "Climate Technology Product Manufacturing",
+         "Manufacturing"
+        ],
+        "company_professional_network_industry": "Climate Technology Product Manufacturing",
+        "position_id": 2106898785,
+        "company_type": "Privately Held",
+        "company_headquarters_country": "India",
+        "company_hq_location": "F F C Okhla, Okhla Industrial Estate, Okhla Industrial Area Phase-i, Tehkhand, C R R I (South Delhi), Delhi, India",
+        "company_hq_location_address_components": [],
+        "business_email_verified": false
+       },
+       {
+        "name": "Fashinza",
+        "company_website": "https://www.fashinza.com/",
+        "professional_network_id": "66727409",
+        "title": "Founder’s Office",
+        "location": {
+         "raw": "Gurugram, Haryana, India"
+        },
+        "employment_type": "",
+        "start_date": "2022-08-01T00:00:00",
+        "end_date": "2022-12-01T00:00:00",
+        "is_default": false,
+        "crustdata_company_id": 609226,
+        "company_status": "active",
+        "company_profile_picture_permalink": "https://crustdata-media.s3.us-east-2.amazonaws.com/company/34fad57cccfa6dd9e3d44d28bc50b1ff885450265b0730b126be118f3ad275b5.jpg",
+        "company_professional_network_profile_url": "https://www.linkedin.com/company/fashinza",
+        "seniority_level": "Owner / Partner",
+        "function_category": "",
+        "years_at_company": "Less than 1 year",
+        "years_at_company_raw": 0,
+        "company_headcount_latest": 192,
+        "company_headcount_range": "201-500",
+        "company_industries": [
+         "Apparel Manufacturing",
+         "Manufacturing"
+        ],
+        "company_professional_network_industry": "Apparel Manufacturing",
+        "position_id": 2030836624,
+        "company_type": "Privately Held",
+        "company_headquarters_country": "India",
+        "company_hq_location": "Gurgaon Sector 45, Wazirabad, Smaspur, Jharsa, Gwal Pahari, Haryana, India",
+        "company_hq_location_address_components": [],
+        "business_email_verified": false
+       }
+      ]
+     }
+    }
+   },
+   {
+    "crustdata_person_id": 25754773,
+    "metadata": {
+     "updated_at": "2026-11-16T00:43:57+00:00"
+    },
+    "fit": null,
+    "basic_profile": {
+     "name": "REDACTED",
+     "professional_network_name": "REDACTED",
+     "headline": "REDACTED",
+     "current_title": "Logistics/ Team Leader",
+     "normalized_title": {
+      "matched_title": "Operations Team Lead",
+      "department": "Operations & Logistics",
+      "sub_department": "Operations Management",
+      "similarity": 0.9999,
+      "confident": true
+     },
+     "location": {
+      "city": "Bengaluru",
+      "state": "Karnataka",
+      "country": "India",
+      "continent": "Asia",
+      "raw": "Bengaluru, Karnataka, India",
+      "full_location": "Bengaluru, Karnataka, India"
+     }
+    },
+    "contact": {
+     "has_business_email": false,
+     "has_personal_email": null,
+     "has_phone_number": null
+    },
+    "social_handles": {
+     "professional_network_identifier": {
+      "profile_url": "https://www.linkedin.com/in/redacted"
+     },
+     "dev_platform_identifier": {
+      "profile_url": null
+     },
+     "twitter_identifier": {
+      "slug": ""
+     }
+    },
+    "experience": {
+     "employment_details": {
+      "current": [
+       {
+        "name": "Delivery Limited",
+        "company_website": "",
+        "professional_network_id": null,
+        "title": "Logistics/ Team Leader",
+        "employment_type": "",
+        "start_date": null,
+        "end_date": null,
+        "is_default": true,
+        "crustdata_company_id": 0,
+        "company_status": null,
+        "company_profile_picture_permalink": "",
+        "company_professional_network_profile_url": "",
+        "seniority_level": "Entry Level",
+        "function_category": "Operations",
+        "years_at_company": "",
+        "years_at_company_raw": 0,
+        "company_headcount_latest": 0,
+        "company_headcount_range": "",
+        "company_industries": [],
+        "company_professional_network_industry": "",
+        "position_id": 2506571491,
+        "company_type": "",
+        "company_headquarters_country": "",
+        "company_hq_location": "",
+        "company_hq_location_address_components": [],
+        "business_email_verified": false
+       },
+       {
+        "name": "Delhivery",
+        "company_website": "https://www.delhivery.com/",
+        "professional_network_id": "2312777",
+        "title": "Operations Team Lead",
+        "location": {
+         "raw": "Bengaluru, Karnataka, India"
+        },
+        "employment_type": "",
+        "start_date": "2024-08-01T00:00:00",
+        "end_date": null,
+        "is_default": false,
+        "crustdata_company_id": 5798,
+        "company_status": "active",
+        "company_profile_picture_permalink": "https://crustdata-media.s3.us-east-2.amazonaws.com/company/71b150219cfe4c30f5586301a08cb16fbea70619f7f66cbf8fae2b7c1877a544.jpg",
+        "company_professional_network_profile_url": "https://www.linkedin.com/company/delhivery",
+        "seniority_level": "Senior",
+        "function_category": "Operations",
+        "years_at_company": "3 to 5 years",
+        "years_at_company_raw": 2,
+        "company_headcount_latest": 35300,
+        "company_headcount_range": "10001+",
+        "company_industries": [
+         "Transportation, Logistics, Supply Chain and Storage"
+        ],
+        "company_professional_network_industry": "Transportation, Logistics, Supply Chain and Storage",
+        "position_id": 2506575271,
+        "company_type": "Public Company",
+        "company_headquarters_country": "India",
+        "company_hq_location": "DLF QE, Haryāna, India",
+        "company_hq_location_address_components": [],
+        "business_email_verified": false
+       },
+       {
+        "name": "Delhivery",
+        "company_website": "https://www.delhivery.com/",
+        "professional_network_id": "2312777",
+        "title": "Head of Supply Chain Management",
+        "location": {
+         "raw": "Bengaluru, Karnataka, India"
+        },
+        "employment_type": "",
+        "start_date": "2024-08-01T00:00:00",
+        "end_date": null,
+        "is_default": false,
+        "crustdata_company_id": 5798,
+        "company_status": "active",
+        "company_profile_picture_permalink": "https://crustdata-media.s3.us-east-2.amazonaws.com/company/71b150219cfe4c30f5586301a08cb16fbea70619f7f66cbf8fae2b7c1877a544.jpg",
+        "company_professional_network_profile_url": "https://www.linkedin.com/company/delhivery",
+        "seniority_level": "Director",
+        "function_category": "Operations",
+        "years_at_company": "3 to 5 years",
+        "years_at_company_raw": 2,
+        "company_headcount_latest": 35300,
+        "company_headcount_range": "10001+",
+        "company_industries": [
+         "Transportation, Logistics, Supply Chain and Storage"
+        ],
+        "company_professional_network_industry": "Transportation, Logistics, Supply Chain and Storage",
+        "position_id": 2506578291,
+        "company_type": "Public Company",
+        "company_headquarters_country": "India",
+        "company_hq_location": "DLF QE, Haryāna, India",
+        "company_hq_location_address_components": [],
+        "business_email_verified": false
+       }
+      ],
+      "past": []
+     }
+    }
+   }
+  ],
+  "next_cursor": "H4sIAAAAAAAA_xTJzQ7CIAwA4FchPe_AT6Flr2LMUqBkByNxYwdjfHfj-fvA69Ljve1y7rAacKTclSll55Fzw5K7hBqacijN2uptpeQ4VxKNxeUUEJGFu0YuYmExcI5jwmpuPlJEonBfDMwx5bHVcT3_5Pn7CwAA___m_PC1eQAAAA==",
+  "total_count": 28,
+  "total_count_relation": null,
+  "remarks": []
+ }
+}

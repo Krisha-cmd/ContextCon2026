@@ -16,6 +16,26 @@ crustdata:
   batch_enrich: 5
   base_url: https://api.crustdata.com
   api_version: "2025-11-01"
+  page_size:                # results per call (API max 1000; keep small)
+    company_search: 10
+    person_search: 5
+    job_search: 10
+  company_search_fields: [basic_info, headcount, funding, locations]
+  company_search_sorts:     # stable order so cursors page without duplicates (probe test 2)
+    - {field: crustdata_company_id, order: asc}
+  enrich_fields: [basic_info, competitors, news, hiring, headcount, funding, people]
+  job_search_sorts:
+    - {field: metadata.date_added, order: desc}
+  web_location: IN
+  web_sources: [web]
+  est_credits:              # used only for the budget guard when no X-Credits-Used header
+    company_search_per_result: 0.53   # observed with headcount+funding+taxonomy premiums
+    company_enrich_per_domain: 2.4    # 2 per record, twins bill too (observed 12 for 5)
+    company_identify_per_input: 0.2
+    person_search_per_result: 0.33    # observed with no fields (docs say 0.23)
+    job_search_per_result: 0.03
+    web_search_per_page: 1
+    web_fetch_per_url: 1
 
 # app/gateway. Endpoint names are "<group>:<name>", e.g. "crustdata:company/identify".
 # Rate limiting uses one token bucket per endpoint. Its rpm is endpoint_rpm[endpoint] if set,

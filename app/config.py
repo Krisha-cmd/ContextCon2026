@@ -5,7 +5,7 @@ from __future__ import annotations
 import os
 from functools import lru_cache
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 import yaml
 from pydantic import BaseModel, ConfigDict, SecretStr
@@ -30,12 +30,41 @@ class Windows(_Frozen):
     stale_buyer_months: int
 
 
+class CrustdataPageSize(_Frozen):
+    company_search: int
+    person_search: int
+    job_search: int
+
+
+class CrustdataEstCredits(_Frozen):
+    company_search_per_result: float
+    company_enrich_per_domain: float
+    company_identify_per_input: float
+    person_search_per_result: float
+    job_search_per_result: float
+    web_search_per_page: float
+    web_fetch_per_url: float
+
+
+class Sort(_Frozen):
+    field: str
+    order: Literal["asc", "desc"]
+
+
 class Crustdata(_Frozen):
     rpm: int
     timeout_s: float
     batch_enrich: int
     base_url: str
     api_version: str
+    page_size: CrustdataPageSize
+    company_search_fields: tuple[str, ...]
+    company_search_sorts: tuple[Sort, ...]
+    enrich_fields: tuple[str, ...]
+    job_search_sorts: tuple[Sort, ...]
+    web_location: str
+    web_sources: tuple[str, ...]
+    est_credits: CrustdataEstCredits
 
 
 class Gateway(_Frozen):
