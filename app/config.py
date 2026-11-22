@@ -157,6 +157,14 @@ class CacheTtlHours(_Frozen):
 class Matching(_Frozen):
     match_threshold: float
     nomatch_threshold: float
+    model_path: str
+    training_csv: str
+    holdout_fraction: float
+    random_seed: int
+    calibration_cv: int
+    max_iter: int
+    synthetic_per_positive: int
+    synthetic_token: str
 
 
 class Shortlist(_Frozen):
