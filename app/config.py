@@ -34,6 +34,18 @@ class Crustdata(_Frozen):
     rpm: int
     timeout_s: float
     batch_enrich: int
+    base_url: str
+    api_version: str
+
+
+class Gateway(_Frozen):
+    max_attempts: int
+    backoff_base_s: float
+    backoff_max_s: float
+    backoff_jitter_s: float
+    bucket_capacity: float
+    default_rpm: int
+    default_timeout_s: float
 
 
 class CacheTtlHours(_Frozen):
@@ -88,6 +100,7 @@ class Settings(_Frozen):
     limits: Limits
     windows: Windows
     crustdata: Crustdata
+    gateway: Gateway
     cache_ttl_hours: CacheTtlHours
     matching: Matching
     shortlist: Shortlist
