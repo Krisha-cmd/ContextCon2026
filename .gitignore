@@ -3,3 +3,8 @@ API-research\calls.1795330655.jsonl
 API-research\calls.1795330994.jsonl
 API-research\calls.jsonl
 API-research\endpoints_snapshot.json
+.env
+.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/

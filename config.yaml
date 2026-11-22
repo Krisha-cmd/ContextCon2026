@@ -1,0 +1,47 @@
+# All limits, windows, thresholds and output fields. No magic numbers in code.
+# Secrets are NOT here: CRUSTDATA_API_KEY, GCP_PROJECT, REGISTRY_API_KEY, DATABASE_URL come from env.
+
+limits:
+  max_inr_per_job: 2500
+  max_minutes_per_job: 20
+  credit_inr: 25            # INR value of 1 Crustdata credit
+
+windows:
+  trigger_days: 30
+  stale_buyer_months: 6
+
+crustdata:
+  rpm: 5                    # observed effective_rate_limit_rpm on search/enrich/identify
+  timeout_s: 180            # web fetch was observed at 157 s
+  batch_enrich: 5
+
+cache_ttl_hours:
+  registry: 24
+  news: 24
+  company: 168
+  people: 168
+  negative: 6
+
+matching:
+  match_threshold: 0.9
+  nomatch_threshold: 0.5
+
+shortlist:
+  pre_rank_top: 10
+  enrich_top: 8
+
+output:
+  fields: []
+
+# Infrastructure settings (added with the skeleton so code has no magic numbers).
+db:
+  pool_min: 1
+  pool_max: 10
+  connect_timeout_s: 10
+  schema_lock_key: 7300001  # pg_advisory_xact_lock key used while applying schema.sql
+
+runner:
+  poll_interval_s: 5
+
+log:
+  level: INFO
