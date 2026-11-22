@@ -54,12 +54,12 @@ gateway:
 # Gemini on Vertex AI (app/gateway/vertex.py). Prices are list prices used only to ESTIMATE
 # cost_ledger.inr from token counts; check them against the GCP price page before the demo.
 vertex:
-  model: gemini-2.5-flash
-  location: us-central1
+  model: gemini-3.8-flash        # verified 2026-11-22; 2.5-flash returns 404 for this project
+  location: global
   temperature: 0
-  thinking_budget: 0              # parsing needs no thinking tokens; null = model default
+  thinking_budget: null          # Gemini 3.x: model default (2.5-era budget not sent)
   timeout_s: 60
-  usd_per_m_input_tokens: 0.30
+  usd_per_m_input_tokens: 0.30    # PLACEHOLDER: 2.5-flash list price; update for 3.8-flash
   usd_per_m_output_tokens: 2.50   # thinking tokens bill as output
   inr_per_usd: 88
   est_inr_per_call: 1             # pre-call budget-guard estimate (actual cost logged after)
@@ -143,9 +143,20 @@ cache_ttl_hours:
   people: 168
   negative: 6
 
+# app/identity/matcher.py + train.py. Bands: p >= match_threshold -> match,
+# p <= nomatch_threshold -> no match, otherwise cannot_verify (held for a person).
+# match_threshold is rewritten by `python -m app.identity.train`.
 matching:
   match_threshold: 0.9
   nomatch_threshold: 0.5
+  model_path: models/matcher.joblib
+  training_csv: tests/golden/match_pairs.csv
+  holdout_fraction: 0.25        # share of the hand-labelled pairs kept out for thresholding
+  random_seed: 7
+  calibration_cv: 5             # CalibratedClassifierCV folds (isotonic)
+  max_iter: 1000                # LogisticRegression solver iterations
+  synthetic_per_positive: 3     # perturbed negatives made from each training positive
+  synthetic_token: Logistics    # token appended by the "add a word" perturbation
 
 shortlist:
   pre_rank_top: 10

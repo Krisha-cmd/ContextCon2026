@@ -11,6 +11,7 @@ from app.config import DEFAULT_CONFIG_PATH, load_settings
 from app.discovery.dedup import normalize_name
 from app.evidence.models import FactStatus, Source
 from app.identity import crosswalk as cw
+from app.identity import ladder
 from app.identity.ladder import (
     NAMES_DIFFER,
     NO_ENTITY,
@@ -21,7 +22,7 @@ from app.identity.ladder import (
     AccountIn,
     Outcome,
 )
-from app.identity.matcher import features, score
+from app.identity.matcher import features
 from app.identity.step import IdentityDeps, identify, run_identity
 from app.runner.context import DROPPED, HELD, StepContext
 from tests.discovery_helpers import FakeSave
@@ -32,6 +33,12 @@ SUFFIXES = S.dedup.name_suffixes
 MAMAEARTH = json.loads(
     (Path(__file__).parent / "fixtures" / "identity" / "mamaearth.json").read_text(encoding="utf-8")
 )
+
+
+@pytest.fixture(autouse=True)
+def _no_trained_matcher(monkeypatch: pytest.MonkeyPatch) -> None:
+    """These tests pin the rule ladder; a models/matcher.joblib on disk must not change them."""
+    monkeypatch.setattr(ladder, "score", lambda feats: None)
 
 
 def _deps(fetch: FakeFetch | None = None, registry: FakeRegistry | None = None,
@@ -269,8 +276,9 @@ async def test_step_drops_no_match() -> None:
 # --- T07b hook ----------------------------------------------------------------------------
 
 
-def test_matcher_hook() -> None:
-    f = features({"name": "Honasa Consumer Ltd", "state": "Delhi"},
-                 {"name": "HONASA CONSUMER LIMITED", "state": "Delhi", "cin": "L1"})  # fmt: skip
-    assert f["name_equal"] is True and f["state_equal"] is True and f["cin_equal"] is None
-    assert score(f) is None
+def test_matcher_features_for_label_rows() -> None:
+    f = features(
+        {"name": "Honasa Consumer Ltd", "state": "Delhi"},
+        {"name": "HONASA CONSUMER LIMITED", "state": "Delhi", "cin": "L1"},
+    )
+    assert f["exact_name"] == 1.0 and f["state_match"] == 1.0 and f["pan_equal"] == 0.0

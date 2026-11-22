@@ -18,7 +18,7 @@ from app.discovery.normalize import normalize_domain
 from app.evidence.models import Fact, Source, cannot_verify, conflict, verified
 from app.identity import crosswalk as cw
 from app.identity.india import cin_state, gst_state, same_state
-from app.identity.matcher import features
+from app.identity.matcher import Band, band, features, score
 from app.identity.site import SiteFindings
 from app.trust.registry import (
     InvalidCin,
@@ -93,6 +93,7 @@ class Side:
     candidates: list[RegistryRecord] = field(default_factory=list)
     extra: list[tuple[RegistryRecord, Source]] = field(default_factory=list)
     notes: list[str] = field(default_factory=list)
+    matcher_p: float | None = None  # set when the scored matcher settled the MCA side
 
 
 @dataclass
@@ -168,9 +169,46 @@ async def _mca_by_name(
     if isinstance(cands, RegistryUnavailable):
         return Side(missing=f"legal name {name!r} not confirmed: {cands.reason}")
     pick, missing = choose_by_name(name, acct.state, cands, suffixes)
-    if pick is None:
-        return Side(missing=missing, no_entity=missing == NO_ENTITY, candidates=cands)
-    return Side(proven=pick, source=await _save(save, pick, "registry.mca"), candidates=cands)
+    if pick is not None:
+        return Side(proven=pick, source=await _save(save, pick, "registry.mca"), candidates=cands)
+    if missing == NO_ENTITY:
+        return Side(missing=missing, no_entity=True, candidates=cands)
+    return await _settle_with_matcher(name, acct, cands, missing, save)
+
+
+def matcher_right(rec: RegistryRecord) -> dict[str, Any]:
+    """A registry record in the shape matcher.features expects."""
+    out = {"name": rec.legal_name, "state": _record_state(rec)}
+    out.update({k: rec.extra[k] for k in ("city", "email", "pan", "directors") if rec.extra.get(k)})
+    if rec.kind == "gst":
+        out["gstin"] = rec.id
+    return out
+
+
+def matcher_left(name: str, acct: AccountIn) -> dict[str, Any]:
+    return {"name": name, "state": acct.state, "city": acct.city, "domain": acct.domain}
+
+
+async def _settle_with_matcher(
+    name: str, acct: AccountIn, cands: list[RegistryRecord], missing: str | None, save: SaveFn
+) -> Side:
+    """Rules couldn't decide. The scored matcher may: exactly one candidate in the match band
+    and every other in the no-match band -> that one; all in the no-match band -> no entity.
+    Anything else stays held. No trained model -> the rules' answer stands."""
+    left = matcher_left(name, acct)
+    scored = [(c, score(features(left, matcher_right(c)))) for c in cands]
+    if not scored or any(p is None for _, p in scored):
+        return Side(missing=missing, candidates=cands)
+    notes = [f"matcher p={p:.3f} for {c.id}" for c, p in scored]
+    bands = [(c, p, band(p)) for c, p in scored]
+    hits = [(c, p) for c, p, b in bands if b is Band.match]
+    if len(hits) == 1 and sum(b is Band.no_match for _, _, b in bands) == len(bands) - 1:
+        rec, p = hits[0]
+        src = await _save(save, rec, "registry.mca")
+        return Side(proven=rec, source=src, candidates=cands, notes=notes, matcher_p=p)
+    if all(b is Band.no_match for _, _, b in bands):
+        return Side(missing=NO_ENTITY, no_entity=True, candidates=cands, notes=notes)
+    return Side(missing=f"{missing}; scored matcher undecided", candidates=cands, notes=notes)
 
 
 def choose_by_name(
@@ -326,6 +364,8 @@ def _matched(
         "GSTIN": "GSTIN on the site confirmed in the GST registry",
         "name": "one registry entity with this legal name in the HQ state",
     }[via]
+    if mca.matcher_p is not None:
+        reason = f"scored matcher picked one registry entity (p={mca.matcher_p:.3f})"
     entity_id = f"cin:{mca.proven.id}" if mca.proven else f"pan:{pan_from_gstin(rec.id)}"
     return IdentityResult(
         Outcome.match,
