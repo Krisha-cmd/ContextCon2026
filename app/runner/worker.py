@@ -22,6 +22,7 @@ from typing import Any
 
 from app import db
 from app import gateway as gateway_module
+from app.actions.loop import OutboxLoop
 from app.config import Settings, get_settings
 from app.gateway import BudgetExceeded
 from app.log import bind, get_logger, setup_logging
@@ -165,10 +166,14 @@ def main() -> None:
     worker = Worker(settings, REGISTRY)
     for sig in (signal.SIGTERM, signal.SIGINT):
         signal.signal(sig, worker.request_stop)
+    outbox = OutboxLoop(settings, worker.stop)  # same stop event: SIGTERM stops both
+    outbox.start()
     with bind(step="worker"):
         log.info("worker started", extra={"owner": worker.owner, "steps": REGISTRY.names()})
         worker.run()
         log.info("worker stopping")
+    worker.stop.set()
+    outbox.join(timeout=settings.actions.poll_interval_s * 2)
     worker.close()
     db.close_pool()
 

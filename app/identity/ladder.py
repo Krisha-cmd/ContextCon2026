@@ -179,7 +179,8 @@ async def _mca_by_name(
 def matcher_right(rec: RegistryRecord) -> dict[str, Any]:
     """A registry record in the shape matcher.features expects."""
     out = {"name": rec.legal_name, "state": _record_state(rec)}
-    out.update({k: rec.extra[k] for k in ("city", "email", "pan", "directors") if rec.extra.get(k)})
+    extra = getattr(rec, "extra", None) or {}  # registry records may carry no extras (t08)
+    out.update({k: extra[k] for k in ("city", "email", "pan", "directors") if extra.get(k)})
     if rec.kind == "gst":
         out["gstin"] = rec.id
     return out

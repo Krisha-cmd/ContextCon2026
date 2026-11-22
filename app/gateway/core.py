@@ -17,7 +17,7 @@ from psycopg import AsyncConnection
 from psycopg_pool import AsyncConnectionPool
 
 from app.config import Settings
-from app.gateway import ratelimit, store
+from app.gateway import google_auth, ratelimit, store
 from app.gateway.hashing import request_hash
 from app.gateway.negative import is_negative
 from app.log import bind, get_logger
@@ -25,6 +25,7 @@ from app.log import bind, get_logger
 log = get_logger(__name__)
 
 CREDITS_HEADER = "X-Credits-Used"
+GOOGLE_GROUPS = ("gcal", "gmail")  # OAuth bearer from Application Default Credentials
 HASH_PREFIX_LEN = 12
 # A call can hold one connection for the single-flight lock and borrow a second for the
 # rate-limit bucket, so in-flight calls are capped at pool_max // CONNS_PER_CALL.
@@ -149,6 +150,8 @@ class Gateway:
         return status in statuses if statuses is not None else is_retryable_status(status)
 
     def group_headers(self, group: str) -> dict[str, str]:
+        if group in GOOGLE_GROUPS:
+            return {"Authorization": f"Bearer {google_auth.access_token(self.settings)}"}
         if group == "gstinapi":
             key = self.settings.secrets.gstin_api_key
             if key is None:
