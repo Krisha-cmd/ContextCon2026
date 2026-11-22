@@ -109,6 +109,12 @@ class Db(_Frozen):
 
 class Runner(_Frozen):
     poll_interval_s: float
+    lease_s: float
+    heartbeat_s: float
+    max_attempts: int
+    retry_backoff_base_s: float
+    retry_backoff_max_s: float
+    optional_steps: tuple[str, ...]
 
 
 class Log(_Frozen):

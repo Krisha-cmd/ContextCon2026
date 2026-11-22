@@ -175,6 +175,17 @@ CREATE TABLE IF NOT EXISTS source_stats (
     contradicted int NOT NULL DEFAULT 0
 );
 
+-- app/runner additions (ALTER ... IF NOT EXISTS keeps the file idempotent).
+ALTER TABLE jobs ADD COLUMN IF NOT EXISTS stop_optional text;  -- 'budget_exceeded' | 'time_limit'
+ALTER TABLE jobs ADD COLUMN IF NOT EXISTS updated_at timestamptz NOT NULL DEFAULT now();
+ALTER TABLE steps ADD COLUMN IF NOT EXISTS priority int NOT NULL DEFAULT 0;  -- = step order
+ALTER TABLE steps ADD COLUMN IF NOT EXISTS next_attempt_at timestamptz;
+ALTER TABLE steps ADD COLUMN IF NOT EXISTS last_error text;
+ALTER TABLE accounts ADD COLUMN IF NOT EXISTS status text NOT NULL DEFAULT 'active';  -- active|dropped|held
+ALTER TABLE accounts ADD COLUMN IF NOT EXISTS status_reason text;
+ALTER TABLE accounts ADD COLUMN IF NOT EXISTS status_step text;
+CREATE INDEX IF NOT EXISTS steps_job_idx ON steps (job_id, status, priority);
+
 -- Token buckets for app/gateway rate limiting, shared across processes.
 CREATE TABLE IF NOT EXISTS rate_buckets (
     bucket     text PRIMARY KEY,
