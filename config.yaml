@@ -234,12 +234,49 @@ outreach:
 identity:
   site_paths: ["", /privacy, /terms, /about, /contact]
 
+# app/actions: the outbox for irreversible side effects (calendar invites, emails).
+actions:
+  poll_interval_s: 5            # the worker's outbox loop runs execute_ready this often
+  batch_size: 10                # actions claimed per execute_ready
+  lease_s: 120                  # an 'executing' action older than this is reclaimed (crash recovery)
+  max_attempts: 5               # claims before an action is marked failed
+  email_mode: sink              # sink | gmail
+  calendar_mode: sink           # sink | google
+  sink_path: var/outbox_sink.jsonl
+  sink_address: sink@example.invalid
+  message_id_domain: revagent.invalid
+  calendar_id: primary
+  calendar_send_updates: none   # none | all ("all" emails invites to attendees)
+  default_timezone: Asia/Kolkata
+  google_scopes:
+    - https://www.googleapis.com/auth/calendar.events
+    - https://www.googleapis.com/auth/gmail.send
+    - https://www.googleapis.com/auth/gmail.readonly
+
+# Gateway groups for Google APIs (OAuth bearer from Application Default Credentials).
+# Calendar inserts carry a client-chosen event id, so retrying them is safe (409 = exists).
+# Gmail sends are NOT idempotent: the gateway never retries them; the outbox checks the
+# sent folder before any resend.
+gcal:
+  base_url: https://www.googleapis.com/calendar/v3
+  rpm: 60
+  timeout_s: 30
+  max_attempts: 3
+  retry_statuses: [429, 500, 502, 503, 504]
+gmail:
+  base_url: https://gmail.googleapis.com/gmail/v1
+  rpm: 60
+  timeout_s: 30
+  max_attempts: 1
+  retry_statuses: []
+
 cache_ttl_hours:
   registry: 24
   news: 24
   company: 168
   people: 168
   negative: 6
+  actions: 0                # side-effect calls are never served from cache
 
 # app/identity/matcher.py + train.py. Bands: p >= match_threshold -> match,
 # p <= nomatch_threshold -> no match, otherwise cannot_verify (held for a person).
