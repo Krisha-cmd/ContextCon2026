@@ -23,6 +23,9 @@ services:
       CRUSTDATA_API_KEY: ${CRUSTDATA_API_KEY:-}
       GCP_PROJECT: ${GCP_PROJECT:-}
       REGISTRY_API_KEY: ${REGISTRY_API_KEY:-}
+      REGISTRY_BASE_URL: ${REGISTRY_BASE_URL:-}
+      GSTIN_API_KEY: ${GSTIN_API_KEY:-}
+      API_TOKEN: ${API_TOKEN:-}
     ports:
       - "8000:8000"
     depends_on:

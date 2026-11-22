@@ -24,6 +24,68 @@ flowchart LR
 Every fact carries a Source. Every state change writes an audit row. All limits live in
 `config.yaml`.
 
+## Deployment
+
+UML deployment view: «device» and «execution environment» nodes hold the deployed
+«artifact»s. One Docker image runs as both api and worker.
+
+**Local (built; `docker compose up`)**
+
+```mermaid
+flowchart TB
+  subgraph DEV["«device» Developer laptop"]
+    BR["«artifact» Browser"]
+    subgraph DOCKER["«execution environment» Docker Compose"]
+      API["«container» api<br/>uvicorn app.api.main · :8000"]
+      WK["«container» worker<br/>python -m app.runner.worker<br/>+ outbox loop"]
+      PG[("«container» postgres<br/>pgvector/pg16 · host :5433")]
+      VOL[/"«volume» pgdata"/]
+    end
+    ENV[/"«file» .env<br/>API keys · API_TOKEN"/]
+  end
+  subgraph EXT["«external» SaaS APIs"]
+    CD[Crustdata]
+    GST[gstinapi.in]
+    VX[Vertex AI]
+    GG[Gmail · Calendar<br/>sink file locally]
+  end
+  BR -- "HTTP :8000" --> API
+  API -- "SQL" --> PG
+  WK -- "SQL · SKIP LOCKED leases" --> PG
+  PG --- VOL
+  ENV -. env .-> API & WK
+  WK -- "HTTPS via gateway" --> CD & GST & VX & GG
+  API -- "HTTPS via gateway" --> VX
+```
+
+**Cloud (target, not provisioned yet: there are no deploy files in the repo)**
+
+```mermaid
+flowchart TB
+  U["«device» Sales user browser"]
+  subgraph GCP["«execution environment» Google Cloud project"]
+    AR[/"«artifact» image in Artifact Registry"/]
+    RUNS["«Cloud Run service» api<br/>UI + POST /jobs"]
+    RUNJ["«Cloud Run Job» worker<br/>one execution per job<br/>RUN_JOB_ID=&lt;job&gt;"]
+    SQL[("«Cloud SQL» Postgres 16<br/>+ pgvector")]
+    SM[/"«Secret Manager» API keys · API_TOKEN"/]
+    VX[Vertex AI<br/>Gemini · embeddings]
+  end
+  EXT["«external» Crustdata · GST · Gmail · Calendar"]
+  U -- "HTTPS + token" --> RUNS
+  RUNS -- "jobs.run (api.start_mode = cloud_run)" --> RUNJ
+  RUNS & RUNJ -- SQL --> SQL
+  AR -. image .-> RUNS & RUNJ
+  SM -. secrets .-> RUNS & RUNJ
+  RUNJ -- "HTTPS via gateway" --> VX & EXT
+```
+
+| | Local | Cloud |
+|---|---|---|
+| Start a job | api inserts the steps; the always-on worker claims them | api inserts the steps, then calls the Cloud Run Jobs `:run` API |
+| Crash safety | step leases expire and are reclaimed | the same, inside the execution |
+| State | the `pgdata` volume | Cloud SQL |
+
 ## Pipeline: rules, ML and LLM
 
 ```mermaid
