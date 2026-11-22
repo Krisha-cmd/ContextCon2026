@@ -1,0 +1,33 @@
+{
+  "_note": "Synthetic MCA records for tests; not real companies.",
+  "mca": [
+    {
+      "cin": "U15400MH2015PTC000004",
+      "company_name": "ACME FOODS PRIVATE LIMITED",
+      "status": "Active",
+      "date_of_incorporation": "2015-04-01",
+      "registered_state": "Maharashtra"
+    },
+    {
+      "cin": "U51909DL2014PTC000555",
+      "company_name": "KAPPA TRADERS PRIVATE LIMITED",
+      "status": "Strike Off",
+      "date_of_incorporation": "2014-06-10",
+      "registered_state": "Delhi"
+    },
+    {
+      "cin": "U63090MH2010PTC000888",
+      "company_name": "OMEGA CARGO PRIVATE LIMITED",
+      "status": "Strike Off",
+      "date_of_incorporation": "2010-01-15",
+      "registered_state": "Maharashtra"
+    },
+    {
+      "cin": "U52100KA2018PTC000999",
+      "company_name": "DELTA STORES PRIVATE LIMITED",
+      "status": "Dormant",
+      "date_of_incorporation": "2018-08-20",
+      "registered_state": "Karnataka"
+    }
+  ]
+}

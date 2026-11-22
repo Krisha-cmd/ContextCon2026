@@ -32,7 +32,7 @@ async def test_live_gemini_parses_sample(
     db.apply_schema(pg_conn, load_settings(DEFAULT_CONFIG_PATH).db.schema_lock_key)
     started = datetime.now(UTC)
     try:
-        spec = await parse_request(json.loads(SAMPLE.read_text())["input"])
+        spec = await parse_request(json.loads(SAMPLE.read_text(encoding="utf-8"))["input"])
     finally:
         await gateway.close()
         get_settings.cache_clear()

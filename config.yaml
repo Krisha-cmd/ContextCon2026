@@ -76,6 +76,37 @@ gstinapi:
   est_credits_per_lookup: 1
   include_profile: true         # same cost; adds business_constitution, jurisdiction, etc.
 
+# app/trust/registry.py: which RegistryClient answers GST and MCA questions.
+# Each is one of gstinapi | provider | fixture | unavailable. Env REGISTRY_PROVIDER, if set,
+# overrides both. A real provider whose key/base URL is not in env becomes "unavailable".
+# The "registry" runner step reads statuses with exact matching (case and spacing ignored);
+# a status in neither list (Suspended, Dormant, Under Liquidation, ...) holds the account.
+registry:
+  gst_provider: gstinapi
+  mca_provider: provider          # no MCA provider wired yet: unavailable until env is set
+  fixture_dir: tests/fixtures/registry
+  gst_active_statuses: [active]
+  gst_drop_statuses: [cancelled]
+  mca_active_statuses: [active]
+  mca_drop_statuses: [strike off, struck off, dissolved, liquidated]
+
+# ProviderRegistry (gateway group "registryapi"). Base URL and key come from env
+# REGISTRY_BASE_URL / REGISTRY_API_KEY. PLACEHOLDER paths and prices until the provider's
+# docs are in: the request/response mapping lives in one function per endpoint.
+registryapi:
+  rpm: 60
+  timeout_s: 30
+  max_attempts: 3
+  retry_statuses: [429, 502, 503, 504]
+  credit_inr: 1                   # PLACEHOLDER: INR per lookup
+  est_credits_per_lookup: 1
+  auth_header: x-api-key
+  auth_prefix: ""                 # e.g. "Bearer " for Authorization headers
+  paths:
+    gst_search: /gst/search
+    gst_lookup: /gst/{gstin}
+    mca_lookup: /mca/companies
+
 # app/identity: company pages fetched for the legal name / CIN / GSTIN, in order.
 # Fetching stops at the first page that yields a legal name or CIN.
 identity:

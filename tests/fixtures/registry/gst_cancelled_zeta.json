@@ -1,0 +1,19 @@
+{
+  "_note": "Synthetic gstinapi.in-shaped record for tests; not a real taxpayer.",
+  "success": true,
+  "gstin": "29AABCZ5678K1ZQ",
+  "data": {
+    "gstin": "29AABCZ5678K1ZQ",
+    "legal_name": "ZETA TRADING PRIVATE LIMITED",
+    "trade_name": "ZETA TRADING PRIVATE LIMITED",
+    "status": "Cancelled",
+    "taxpayer_type": "Regular",
+    "registration_date": "2017-07-01",
+    "cancellation_date": "2025-03-31",
+    "state_code": "29",
+    "address_details": {
+      "state": "Karnataka"
+    },
+    "last_updated": "2025-04-02"
+  }
+}

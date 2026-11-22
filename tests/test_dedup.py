@@ -48,7 +48,7 @@ def test_beardsell_twins_collapse() -> None:
 
 
 async def test_beardsell_twin_collapses_with_real_search_record() -> None:
-    page_body = json.loads(SEARCH_FIXTURE.read_text())["response"]
+    page_body = json.loads(SEARCH_FIXTURE.read_text(encoding="utf-8"))["response"]
 
     async def search(job_id, filters, cursor=None):
         from app.discovery.crustdata import Page

@@ -142,6 +142,34 @@ class GstinApi(_Frozen):
     include_profile: bool
 
 
+class RegistryChoice(_Frozen):
+    gst_provider: Literal["gstinapi", "provider", "fixture", "unavailable"]
+    mca_provider: Literal["gstinapi", "provider", "fixture", "unavailable"]
+    fixture_dir: str
+    gst_active_statuses: tuple[str, ...]
+    gst_drop_statuses: tuple[str, ...]
+    mca_active_statuses: tuple[str, ...]
+    mca_drop_statuses: tuple[str, ...]
+
+
+class RegistryApiPaths(_Frozen):
+    gst_search: str
+    gst_lookup: str
+    mca_lookup: str
+
+
+class RegistryApi(_Frozen):
+    rpm: int
+    timeout_s: float
+    max_attempts: int
+    retry_statuses: tuple[int, ...]
+    credit_inr: float
+    est_credits_per_lookup: float
+    auth_header: str
+    auth_prefix: str
+    paths: RegistryApiPaths
+
+
 class Identity(_Frozen):
     site_paths: tuple[str, ...]
 
@@ -197,6 +225,8 @@ class Secrets(BaseSettings):
     crustdata_api_key: SecretStr | None = None
     gcp_project: str | None = None
     registry_api_key: SecretStr | None = None
+    registry_base_url: str | None = None  # not secret, but per-deployment like the key
+    registry_provider: str | None = None  # overrides registry.gst_provider / mca_provider
     gstin_api_key: SecretStr | None = None  # gstinapi.in x-api-key
     database_url: SecretStr | None = None
 
@@ -207,6 +237,8 @@ class Settings(_Frozen):
     crustdata: Crustdata
     gateway: Gateway
     gstinapi: GstinApi
+    registry: RegistryChoice
+    registryapi: RegistryApi
     identity: Identity
     vertex: Vertex
     cache_ttl_hours: CacheTtlHours

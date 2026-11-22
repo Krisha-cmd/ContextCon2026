@@ -34,7 +34,7 @@ from app.identity.ladder import (
 from app.identity.site import FetchFn, SaveFn, SiteFindings, scan_site
 from app.log import get_logger
 from app.runner.context import StepContext
-from app.trust.registry import GstinApiRegistry, Registry
+from app.trust.registry import RegistryClient, make_registry
 
 log = get_logger(__name__)
 
@@ -59,7 +59,7 @@ def db_crosswalk(pairs: list[tuple[str, str]]) -> cw.CrosswalkHit | None:
 @dataclass
 class IdentityDeps:
     fetch: FetchFn = crustdata.web_fetch
-    registry: Registry = field(default_factory=GstinApiRegistry)
+    registry: RegistryClient = field(default_factory=make_registry)
     save: SaveFn = save_evidence
     crosswalk: Callable[[list[tuple[str, str]]], cw.CrosswalkHit | None] = db_crosswalk
 

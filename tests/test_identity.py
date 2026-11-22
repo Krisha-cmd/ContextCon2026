@@ -30,7 +30,7 @@ from tests.identity_helpers import FakeFetch, FakeRegistry, gst, mca
 S = load_settings(DEFAULT_CONFIG_PATH)
 SUFFIXES = S.dedup.name_suffixes
 MAMAEARTH = json.loads(
-    (Path(__file__).parent / "fixtures" / "identity" / "mamaearth.json").read_text()
+    (Path(__file__).parent / "fixtures" / "identity" / "mamaearth.json").read_text(encoding="utf-8")
 )
 
 
@@ -163,7 +163,7 @@ async def test_gst_and_mca_names_must_agree() -> None:
 async def test_gst_only_match_when_mca_lookups_are_unsupported() -> None:
     # gstinapi.in today: GST lookup works; MCA and GSTIN-by-PAN don't exist.
     reg = FakeRegistry(gst_by_gstin={ACME_GSTIN: gst(ACME_GSTIN, "ACME FOODS PRIVATE LIMITED")},
-                       unsupported={"mca_lookup", "company_search"})  # fmt: skip
+                       unsupported={"mca_lookup"})  # fmt: skip
     r = await identify(_acct("Acme", "acme.in", state="Maharashtra"), "job",
                        _deps(FakeFetch({"https://acme.in": ACME_PAGE}), reg), S)  # fmt: skip
     assert r.outcome is Outcome.match
@@ -177,11 +177,11 @@ async def test_gst_only_match_when_mca_lookups_are_unsupported() -> None:
 
 
 async def test_name_only_with_unsupported_search_cannot_verify() -> None:
-    reg = FakeRegistry(unsupported={"company_search"})
+    reg = FakeRegistry(unsupported={"mca_lookup"})
     r = await identify(_acct("Sharma Logistics", state="Maharashtra"), "job", _deps(registry=reg),
                        S)  # fmt: skip
     assert r.outcome is Outcome.cannot_verify
-    assert "no company_search" in r.reason
+    assert "no mca_lookup" in r.reason
 
 
 async def test_single_name_match_with_unknown_hq_state_cannot_verify() -> None:
