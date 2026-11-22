@@ -28,7 +28,6 @@ from typing import Any
 from psycopg.types.json import Jsonb
 from pydantic import BaseModel, ValidationError
 
-from app import db
 from app.config import Settings
 from app.discovery import crustdata
 from app.discovery.crustdata import CrustdataError, UnresolvableURLError
@@ -38,6 +37,7 @@ from app.evidence.store import save_evidence
 from app.gateway import GatewayError
 from app.gateway.vertex import JsonLLM, get_vertex_llm
 from app.log import get_logger
+from app.revenue.common import cached_enrich
 from app.runner.context import StepContext
 from app.trust.article import Article, extract
 
@@ -50,11 +50,6 @@ SOURCE_ENRICH = "crustdata.company_enrich"
 SOURCE_ARTICLE = "web.article"
 VIA_LEGAL, VIA_TRADE_CITY = "legal_name", "trade_name+city"
 _UPDATE_ACCOUNT = "UPDATE accounts SET data = data || %s WHERE id = %s"
-_ENTITY_CACHE = (
-    "SELECT payload FROM entity_cache WHERE entity_id = %s AND data_type = %s "
-    "AND expires_at > now()"
-)
-ENRICH_CACHE_TYPE = "company"
 
 SaveFn = Callable[..., Source]
 CachedEnrich = Callable[[dict[str, Any]], dict[str, Any] | None]
@@ -231,19 +226,9 @@ def merge(*groups: list[Candidate]) -> list[Candidate]:
 
 
 def db_cached_enrich(account: dict[str, Any]) -> dict[str, Any] | None:
-    """An enrich record already on the account or in entity_cache. Never calls Crustdata."""
-    data = account.get("data") or {}
-    if isinstance(data.get("enrich"), dict):
-        return data["enrich"]
-    ids = data.get("crustdata_ids") or ([data["crustdata_id"]] if data.get("crustdata_id") else [])
-    if not ids:
-        return None
-    with db.tx() as conn:
-        for cid in ids:
-            row = conn.execute(_ENTITY_CACHE, (f"crustdata:{cid}", ENRICH_CACHE_TYPE)).fetchone()
-            if row and isinstance(row["payload"], dict):
-                return row["payload"]
-    return None
+    """The company record the enrich step cached (this or an earlier job). Never buys one."""
+    payload = cached_enrich(account.get("data") or {})
+    return payload["record"] if payload else None
 
 
 async def _default_llm() -> JsonLLM:

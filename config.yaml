@@ -131,6 +131,80 @@ news:
   llm_max_chars: 12000            # article text sent to the LLM is cut to this length
   hold_on_cannot_verify: true     # search failed -> hold (a wrong pass is worse than a hold)
 
+# app/revenue/trigger.py. A signal counts only with an explicit record_date inside
+# windows.trigger_days of the run date. strength = type_weights[type] * exp(-age_days / decay_days)
+trigger:
+  decay_days: 14
+  type_weights:
+    new_warehouse: 1.0
+    expansion: 0.8
+    new_market: 0.7
+    funding: 0.6
+    supply_chain_hiring: 0.6
+    leadership_hire: 0.5
+  # Job titles: one regex decides supply_chain_hiring (case ignored).
+  job_title_regex: '\b(warehous\w*|supply[\s-]?chain|logistics?|distribution|fulfil+ment|scm)\b'
+  # News titles: rules first (first match wins), then the optional LLM label.
+  news_title_regex:
+    new_warehouse: '\b(new|opens?|opening|launch\w*|sets? up|setting up)\b.*\b(warehouse|fulfil+ment cent(er|re)|distribution cent(er|re)|logistics park)\b'
+    funding: '\b(raises?|raised|funding|series [a-f]|seed round|investment of)\b'
+    expansion: '\b(expan\w*|new (plant|factory|facility)|capacity)\b'
+    new_market: '\b(enters?|entry into|forays? into|launch\w* in)\b'
+    leadership_hire: '\b(appoints?|names?|hires?|joins? as)\b.*\b(ceo|coo|cfo|chief|head|director|vp)\b'
+  use_llm: false                  # Gemini labels news the rules miss; its quote must be in the title
+
+# app/revenue/buyer.py. Titles are normalized (abbreviations expanded), then matched on
+# function words + seniority rank. Targets come from the RunSpec, else default_titles.
+buyer:
+  default_titles: [Head of Supply Chain, VP Logistics, Director Operations, Head of Warehousing, COO]
+  abbreviations:
+    vp: vice president
+    svp: senior vice president
+    evp: executive vice president
+    avp: assistant vice president
+    sr: senior
+    dir: director
+    mgr: manager
+    gm: general manager
+    ops: operations
+    scm: supply chain
+    coo: chief operating officer
+    cxo: chief
+    "&": and
+  functions:                      # phrase in a normalized title -> function
+    supply chain: supply_chain
+    logistics: logistics
+    warehousing: warehousing
+    warehouse: warehousing
+    operations: operations
+    operating: operations
+    distribution: logistics
+    fulfilment: warehousing
+    fulfillment: warehousing
+  seniority:                      # phrase -> rank; the highest phrase found wins
+    chief: 6
+    president: 5
+    vice president: 4
+    head: 4
+    director: 3
+    general manager: 2
+    senior manager: 2
+    manager: 1
+  confidence:                     # by how the title compares with its best target
+    same_rank_or_above: 0.9
+    one_rank_below: 0.6           # below that: no match
+
+# app/revenue/score.py: additive points; each contribution becomes one score_reasons line.
+score:
+  trigger: 30                     # * trigger strength
+  industry_fit: 10
+  size_fit: 10
+  state_fit: 10
+  buyer: 20                       # * buyer confidence
+  buyer_stale_penalty: 10
+  trust_active: 10                # status_active verified True
+  no_adverse_news: 10             # adverse_news verified "no adverse news found"
+
 # app/identity: company pages fetched for the legal name / CIN / GSTIN, in order.
 # Fetching stops at the first page that yields a legal name or CIN.
 identity:

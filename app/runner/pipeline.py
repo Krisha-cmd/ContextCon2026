@@ -10,6 +10,10 @@ from __future__ import annotations
 from typing import Any
 
 from app.identity.step import run_identity
+from app.revenue.buyer import run_buyer
+from app.revenue.enrich import run_enrich
+from app.revenue.score import run_score
+from app.revenue.trigger import run_trigger
 from app.runner.context import StepContext
 from app.runner.registry import StepFn, step
 from app.trust.news import run_news
@@ -34,6 +38,10 @@ IMPLEMENTED: dict[str, StepFn] = {
     "identity": run_identity,
     "registry": run_registry,
     "news": run_news,
+    "enrich": run_enrich,
+    "trigger": run_trigger,
+    "buyer": run_buyer,
+    "score": run_score,
 }
 ORDER_STEP = 10  # gap between orders so steps can be inserted later without renumbering
 
