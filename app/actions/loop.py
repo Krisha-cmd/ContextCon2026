@@ -62,6 +62,7 @@ class OutboxLoop(threading.Thread):
                 while not self.stop_event.is_set():
                     await self.tick(effects)
                     await asyncio.to_thread(self.stop_event.wait, interval)
+                await self.tick(effects)  # drain once on the way out (until-idle runs)
             finally:
                 await client.aclose()
                 await pool.close()

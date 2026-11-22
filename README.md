@@ -43,3 +43,52 @@ row holds a hash of the record, so the claim can be checked against the provider
 account automatically. The account is held and a person decides, because naming a company in
 connection with wrongdoing is an ethics-sensitive call. When nothing is found, the output says
 "no adverse news found" and cites the searches performed; it never calls a company "clean".
+
+## Run it
+
+### Local (docker compose)
+
+```bash
+docker compose up -d --build   # postgres (:5433) + api (:8000) + worker   (or: make up)
+curl localhost:8000/health     # {"status":"ok","db":"ok"}
+open 'http://localhost:8000/?token=local-dev-token'   # web UI (sets a cookie); API: header x-api-token
+```
+
+`.env` holds `CRUSTDATA_API_KEY`, `GSTIN_API_KEY`, `GCP_PROJECT` (and optionally
+`REGISTRY_API_KEY`). It is never committed or uploaded. The local worker polls for new jobs.
+Emails and calendar invites go to a sink file (`var/outbox_sink.jsonl`) unless
+`actions.email_mode` / `actions.calendar_mode` in `config.yaml` say otherwise.
+
+### Cloud (GCP)
+
+```bash
+gcloud auth login && gcloud config set project <project-id>
+make deploy                  # scripts/deploy.sh: asks before creating billable resources
+```
+
+This creates (or updates):
+- Cloud SQL Postgres 16 (`db-f1-micro`) with pgvector. The worker applies `schema.sql` on start.
+- Secret Manager entries `DB_PASSWORD`, `API_TOKEN` (both generated), plus `CRUSTDATA_API_KEY`
+  and `GSTIN_API_KEY` from `.env`.
+- Cloud Run service `api`, built from source.
+- Cloud Run job `worker`, from the same image, running `python -m app.runner.worker --until-idle`.
+  The API starts one execution per job with `RUN_JOB_ID` set (`START_MODE=cloud_run`).
+- A service account with the roles `cloudsql.client`, `secretmanager.secretAccessor`,
+  `aiplatform.user`, `run.invoker` and `logging.logWriter`, plus `run.jobsExecutorWithOverrides`
+  on the worker job.
+
+Logs are JSON lines, so Cloud Logging shows them as `jsonPayload` with `severity`. The saved
+query "revagent: one job" filters on `jsonPayload.job_id`. Get the API token with
+`gcloud secrets versions access latest --secret=API_TOKEN`. `make teardown` deletes the
+Cloud SQL instance, service and job.
+
+### Kill test
+
+```bash
+make kill-test
+```
+
+This hard-kills a worker in the middle of a step, restarts it, and checks that the step
+resumes and nothing runs twice. It also crashes the outbox after an email or calendar
+side effect but before mark-done, and checks that the restart sees the effect (409 or
+already sent) and doesn't send again. It needs the compose Postgres.

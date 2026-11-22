@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from app.discovery.steps import run_dedup, run_discover, run_pre_rank
 from app.identity.step import run_identity
 from app.outreach.draft import run_draft
 from app.revenue.buyer import run_buyer
@@ -17,6 +18,7 @@ from app.revenue.score import run_score
 from app.revenue.trigger import run_trigger
 from app.runner.context import StepContext
 from app.runner.registry import StepFn, step
+from app.spec.step import run_parse
 from app.trust.news import run_news
 from app.trust.step import run_registry
 
@@ -36,6 +38,10 @@ PIPELINE: list[tuple[str, bool]] = [  # (name, per_account), in run order
 ]
 # Built steps replace their placeholder here.
 IMPLEMENTED: dict[str, StepFn] = {
+    "parse": run_parse,
+    "discover": run_discover,
+    "dedup": run_dedup,
+    "pre_rank": run_pre_rank,
     "identity": run_identity,
     "registry": run_registry,
     "news": run_news,

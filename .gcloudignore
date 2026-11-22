@@ -1,0 +1,14 @@
+# What `gcloud run deploy --source .` uploads. Secrets and local state never leave the laptop.
+.git
+.gitignore
+.gcloudignore
+.env
+.env.*
+.venv/
+**/__pycache__/
+.pytest_cache/
+.ruff_cache/
+tests/
+API-research/
+Ideation/
+var/

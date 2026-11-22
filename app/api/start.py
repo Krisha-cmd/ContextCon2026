@@ -77,6 +77,6 @@ async def trigger_cloud_run(settings: Settings, job_id: Any) -> int:
 
 async def start(settings: Settings, registry: Registry, spec: dict, limits: dict) -> Any:
     job_id = insert_job(settings, registry, spec, limits)
-    if settings.api.start_mode == "cloud_run":
+    if (settings.secrets.start_mode or settings.api.start_mode) == "cloud_run":
         await trigger_cloud_run(settings, job_id)
     return job_id

@@ -7,6 +7,7 @@ from contextlib import contextmanager
 from pathlib import Path
 
 import psycopg
+from psycopg import conninfo
 from psycopg.rows import dict_row
 from psycopg_pool import AsyncConnectionPool, ConnectionPool
 
@@ -47,9 +48,19 @@ async def close_async_pool() -> None:
 
 
 def database_url(settings: Settings) -> str:
-    if settings.secrets.database_url is None:
-        raise RuntimeError("DATABASE_URL is not set")
-    return settings.secrets.database_url.get_secret_value()
+    """DATABASE_URL, or a conninfo built from DB_USER/DB_PASSWORD/DB_NAME/DB_HOST (Cloud SQL
+    unix socket on Cloud Run)."""
+    sec = settings.secrets
+    if sec.database_url is not None:
+        return sec.database_url.get_secret_value()
+    if sec.db_user and sec.db_password and sec.db_name and sec.db_host:
+        return conninfo.make_conninfo(
+            user=sec.db_user,
+            password=sec.db_password.get_secret_value(),
+            dbname=sec.db_name,
+            host=sec.db_host,
+        )
+    raise RuntimeError("DATABASE_URL (or DB_USER/DB_PASSWORD/DB_NAME/DB_HOST) is not set")
 
 
 def open_pool(settings: Settings | None = None) -> ConnectionPool:

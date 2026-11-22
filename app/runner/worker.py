@@ -7,6 +7,7 @@ and the step is reclaimed.
 
 from __future__ import annotations
 
+import argparse
 import asyncio
 import inspect
 import json
@@ -76,8 +77,21 @@ class Worker:
         return row is None or row["status"] in FINISHED_JOB_STATUSES
 
     # ---- loop ---------------------------------------------------------------------------
-    def run(self, *, until_job_done: bool = False, max_steps: int | None = None) -> int:
-        """Claim and run steps until stopped (or the job finishes / max_steps). Returns count."""
+    def idle(self) -> bool:
+        """No step is waiting or running in any running job (or in this worker's job)."""
+        with db.tx() as conn:
+            row = conn.execute(
+                "SELECT count(*) AS n FROM steps s JOIN jobs j ON j.id = s.job_id "
+                "WHERE s.status IN ('pending', 'running') AND j.status = 'running' "
+                "AND (%(job)s::uuid IS NULL OR s.job_id = %(job)s::uuid)",
+                {"job": self.job_id},
+            ).fetchone()
+        return row["n"] == 0
+
+    def run(self, *, until_job_done: bool = False, until_idle: bool = False,
+            max_steps: int | None = None) -> int:  # fmt: skip
+        """Claim and run steps until stopped, the job finishes, nothing is left to do
+        (until_idle), or max_steps. Returns the number of steps run."""
         done = 0
         while not self.stop.is_set():
             if until_job_done and self.job_finished():
@@ -86,6 +100,8 @@ class Worker:
                 break
             if self.run_once():
                 done += 1
+            elif until_idle and self.idle():
+                break
             else:
                 self.stop.wait(self.settings.runner.poll_interval_s)
         return done
@@ -159,13 +175,29 @@ class Worker:
             self.loop.close()
 
 
-def main() -> None:
+def _args(argv: list[str] | None) -> argparse.Namespace:
+    p = argparse.ArgumentParser(prog="python -m app.runner.worker")
+    p.add_argument(
+        "--until-idle",
+        action="store_true",
+        help="exit when no step is pending or running (Cloud Run Job mode)",
+    )
+    p.add_argument(
+        "--job-id",
+        default=os.environ.get(RUN_JOB_ENV) or None,
+        help=f"only run this job's steps, until it is done (default: env {RUN_JOB_ENV})",
+    )
+    return p.parse_args(argv)
+
+
+def main(argv: list[str] | None = None) -> None:
     import app.runner.pipeline  # noqa: F401  (registers the pipeline steps)
 
+    args = _args(argv)
     settings = get_settings()
     setup_logging(settings.log.level)
-    db.init_db(settings)
-    job_id = os.environ.get(RUN_JOB_ENV) or None  # Cloud Run Job execution: one job, then exit
+    db.init_db(settings)  # also applies schema.sql (idempotent)
+    job_id = args.job_id  # Cloud Run Job execution: one job, then exit
     worker = Worker(settings, REGISTRY, job_id=job_id)
     for sig in (signal.SIGTERM, signal.SIGINT):
         signal.signal(sig, worker.request_stop)
@@ -173,8 +205,8 @@ def main() -> None:
     outbox.start()
     with bind(step="worker"):
         log.info("worker started", extra={"owner": worker.owner, "steps": REGISTRY.names()})
-        worker.run(until_job_done=job_id is not None)
-        log.info("worker stopping")
+        worker.run(until_job_done=job_id is not None, until_idle=args.until_idle)
+        log.info("worker stopping", extra={"until_idle": args.until_idle, "job": job_id})
     worker.stop.set()
     outbox.join(timeout=settings.actions.poll_interval_s * 2)
     worker.close()

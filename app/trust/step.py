@@ -6,7 +6,9 @@ Each side (GST, MCA) is checked on its own, then the two are combined:
 - otherwise a dead status (Cancelled at GST, Strike Off at MCA) -> dropped;
 - an unclear status or a proved ID the registry no longer knows -> held;
 - an active status -> status_active verified True;
-- no registry answer at all -> cannot_verify("registry unavailable: ..."), held.
+- no registry answer at all (no ID proven, or the registry source is unavailable) ->
+  status_active cannot_verify and flagged, but the account CONTINUES ("unverified"); nothing
+  argues against it, and a person approves any outreach. Real doubts above still hold.
 The PAN (GSTIN characters 3-12) is added to entity_keys. All writes commit with the step.
 """
 
@@ -64,6 +66,7 @@ class Outcome(StrEnum):
     passed = "pass"
     dropped = "dropped"
     held = "held"
+    unverified = "unverified"  # nothing to check against: continue, flagged
 
 
 @dataclass(frozen=True)
@@ -219,7 +222,7 @@ def decide(gst: SideCheck, mca: SideCheck) -> Decision:
         reason = f"registry unavailable: {down}"
     else:
         reason = NO_IDS
-    return Decision(Outcome.held, reason, cannot_verify(reason))
+    return Decision(Outcome.unverified, reason, cannot_verify(reason), [reason, *gaps])
 
 
 # ---- PAN key ------------------------------------------------------------------------------

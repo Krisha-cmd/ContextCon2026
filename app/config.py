@@ -348,6 +348,14 @@ class Secrets(BaseSettings):
     gstin_api_key: SecretStr | None = None  # gstinapi.in x-api-key
     database_url: SecretStr | None = None
     api_token: SecretStr | None = None  # shared demo token for the web UI / API
+    # Cloud Run + Cloud SQL: the URL is built from parts when DATABASE_URL is not set.
+    db_user: str | None = None
+    db_password: SecretStr | None = None
+    db_name: str | None = None
+    db_host: str | None = None  # e.g. /cloudsql/<project>:<region>:<instance> (unix socket)
+    start_mode: Literal["local", "cloud_run"] | None = (
+        None  # env START_MODE overrides api.start_mode
+    )
 
 
 class Settings(_Frozen):

@@ -43,6 +43,9 @@ class Outcome(StrEnum):
     held = "held"
     cannot_verify = "cannot_verify"
     no_match = "no_match"
+    # Only a registry SOURCE was missing (not ambiguity, conflict or a red flag): the facts stay
+    # cannot_verify and flagged, but the account continues; a person approves any outreach.
+    unverified = "unverified"
 
 
 @dataclass(frozen=True)
@@ -94,6 +97,7 @@ class Side:
     extra: list[tuple[RegistryRecord, Source]] = field(default_factory=list)
     notes: list[str] = field(default_factory=list)
     matcher_p: float | None = None  # set when the scored matcher settled the MCA side
+    unavailable: bool = False  # the registry source couldn't answer (not configured / down)
 
 
 @dataclass
@@ -150,7 +154,9 @@ async def _mca_by_cin(job_id: Any, cin: str, reg: RegistryClient, save: SaveFn) 
     except InvalidCin:
         return Side(red_flag=f"CIN {cin} on the site is not a valid CIN")
     if isinstance(res, RegistryUnavailable):
-        return Side(missing=f"CIN {cin} found on the site but not confirmed: {res.reason}")
+        return Side(
+            missing=f"CIN {cin} found on the site but not confirmed: {res.reason}", unavailable=True
+        )
     if not res:
         return Side(red_flag=f"CIN {cin} on the site is not on the MCA register")
     rec = res[0]
@@ -167,7 +173,7 @@ async def _mca_by_name(
 ) -> Side:
     cands = await reg.mca_lookup(job_id, name=name)
     if isinstance(cands, RegistryUnavailable):
-        return Side(missing=f"legal name {name!r} not confirmed: {cands.reason}")
+        return Side(missing=f"legal name {name!r} not confirmed: {cands.reason}", unavailable=True)
     pick, missing = choose_by_name(name, acct.state, cands, suffixes)
     if pick is not None:
         return Side(proven=pick, source=await _save(save, pick, "registry.mca"), candidates=cands)
@@ -238,7 +244,10 @@ async def gst_side(job_id: Any, site: SiteFindings, reg: RegistryClient, save: S
     except InvalidGstin:
         return Side(red_flag=f"GSTIN {gstin} on the site is not a valid GSTIN")
     if isinstance(rec, RegistryUnavailable):
-        return Side(missing=f"GSTIN {gstin} found on the site but not confirmed: {rec.reason}")
+        return Side(
+            missing=f"GSTIN {gstin} found on the site but not confirmed: {rec.reason}",
+            unavailable=True,
+        )
     if rec is None:
         return Side(red_flag=f"GSTIN {gstin} on the site is not registered for GST")
     side = Side(proven=rec, source=await _save(save, rec, "registry.gst"))
@@ -281,6 +290,14 @@ def _distinct_names(names: list[tuple[str, Source]], suffixes: tuple[str, ...]) 
     return list(seen.values())
 
 
+def only_sources_missing(mca: Side, gst: Side) -> bool:
+    """True when nothing argues against the account: each side either had no registry source
+    to ask, or (GST) the company publishes no GSTIN. Ambiguity, conflicts and red flags never
+    get here (decide() handles them first)."""
+    gst_gap = gst.unavailable or gst.missing == NO_GSTIN
+    return mca.unavailable and gst_gap and not (mca.proven or gst.proven)
+
+
 def decide(
     acct: AccountIn, site: SiteFindings, mca: Side, gst: Side, suffixes: tuple[str, ...]
 ) -> IdentityResult:
@@ -310,8 +327,9 @@ def decide(
             Outcome.no_match, NO_ENTITY, _name_unproven(NO_ENTITY, site), gstin_fact, cin_fact
         )
     reason = mca.missing or gst.missing or "legal entity not proven"
+    outcome = Outcome.unverified if only_sources_missing(mca, gst) else Outcome.cannot_verify
     return _unresolved(
-        Outcome.cannot_verify,
+        outcome,
         reason,
         _name_unproven(reason, site),
         cin_fact,

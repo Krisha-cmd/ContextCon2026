@@ -110,11 +110,11 @@ async def test_gst_active_but_mca_struck_off_is_a_held_conflict() -> None:
     assert out["gst"]["check"] == "active" and out["mca"]["check"] == "dead"
 
 
-async def test_provider_down_is_cannot_verify_and_held() -> None:
+async def test_provider_down_is_cannot_verify_and_continues_flagged() -> None:
     ctx = _ctx(ACME_GSTIN, ACME_CIN)
-    await run_registry(ctx, _deps(UnavailableRegistry("HTTP 502 after 3 attempts")))
-    [d] = ctx.dispositions
-    assert d.status == HELD
+    out = await run_registry(ctx, _deps(UnavailableRegistry("HTTP 502 after 3 attempts")))
+    assert out["outcome"] == "unverified" and ctx.dispositions == []
+    assert any("HTTP 502" in f for f in out["flags"])
     fact = _patch(ctx)["status_active"]
     assert fact["status"] == "cannot_verify" and fact["value"] is None
     assert fact["missing"].startswith("registry unavailable")
@@ -142,10 +142,12 @@ async def test_proved_id_missing_from_registry_is_held() -> None:
     assert ctx.dispositions[0].status == HELD and "not on the MCA register" in out["reason"]
 
 
-async def test_no_proven_ids_is_held() -> None:
+async def test_no_proven_ids_continues_unverified() -> None:
     ctx = _ctx()
     out = await run_registry(ctx, _deps())
-    assert out["reason"] == NO_IDS and ctx.dispositions[0].status == HELD
+    assert out["reason"] == NO_IDS and out["outcome"] == "unverified"
+    assert ctx.dispositions == []
+    assert _patch(ctx)["status_active"]["status"] == "cannot_verify"
 
 
 async def test_unverified_identity_facts_are_ignored() -> None:

@@ -38,8 +38,10 @@ class JsonFormatter(logging.Formatter):
         out: dict[str, Any] = {
             "ts": datetime.fromtimestamp(record.created, UTC).isoformat(),
             "level": record.levelname,
+            "severity": record.levelname,  # Cloud Logging reads severity + message
             "logger": record.name,
             "msg": record.getMessage(),
+            "message": record.getMessage(),
         }
         for f in BOUND_FIELDS:
             out[f] = ctx.get(f)

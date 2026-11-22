@@ -286,7 +286,7 @@ api:
 cloudrun:
   base_url: https://run.googleapis.com/v2
   region: asia-south1
-  job: revagent-worker
+  job: worker                     # Cloud Run Job name (scripts/deploy.sh JOB)
   rpm: 30
   timeout_s: 30
   max_attempts: 2

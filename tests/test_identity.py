@@ -183,12 +183,32 @@ async def test_gst_only_match_when_mca_lookups_are_unsupported() -> None:
     assert (cw.KEY_PAN, "AAPCA1234B") in {(k, v) for k, v, _ in r.keys}
 
 
-async def test_name_only_with_unsupported_search_cannot_verify() -> None:
+async def test_name_only_with_no_registry_source_is_unverified_not_held() -> None:
+    # No MCA source and no GSTIN on the site: nothing argues against the account, so it
+    # continues flagged (facts stay cannot_verify) instead of being held.
     reg = FakeRegistry(unsupported={"mca_lookup"})
     r = await identify(_acct("Sharma Logistics", state="Maharashtra"), "job", _deps(registry=reg),
                        S)  # fmt: skip
-    assert r.outcome is Outcome.cannot_verify
+    assert r.outcome is Outcome.unverified
     assert "no mca_lookup" in r.reason
+    assert r.legal_name.status is FactStatus.cannot_verify and r.keys == []
+    assert r.label is not None  # still recorded for a person to resolve
+
+
+async def test_step_lets_unverified_continue_with_a_flag() -> None:
+    reg = FakeRegistry(unsupported={"mca_lookup"})
+    ctx = _ctx({"id": "a4", "name": "Sharma Logistics", "domain": None,
+                "data": {"state": "Maharashtra"}})  # fmt: skip
+    out = await run_identity(ctx, _deps(registry=reg))
+    assert out["outcome"] == "unverified" and ctx.dispositions == []
+    assert any(f.startswith("identity unverified:") for f in out["flags"])
+    assert any("match_labels" in w.sql for w in ctx.writes)
+
+
+async def test_ambiguity_still_holds_even_without_a_gstin() -> None:
+    reg = FakeRegistry(search={"Sharma Logistics Pvt Ltd": SHARMA})
+    r = await identify(_acct("Sharma Logistics Pvt Ltd"), "job", _deps(registry=reg), S)
+    assert r.outcome is Outcome.cannot_verify and r.reason == SEVERAL
 
 
 async def test_single_name_match_with_unknown_hq_state_cannot_verify() -> None:

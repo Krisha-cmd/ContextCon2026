@@ -16,22 +16,30 @@ from google.auth.transport.requests import Request
 
 from app.config import Settings
 
+CLOUD_PLATFORM = ("https://www.googleapis.com/auth/cloud-platform",)
+
 _lock = threading.Lock()
-_creds: Credentials | None = None
+_creds: dict[tuple[str, ...], Credentials] = {}
 
 
-def access_token(settings: Settings) -> str:
-    """A valid bearer token, refreshed when expired. Thread-safe; blocks briefly on refresh."""
-    global _creds
+def scopes_for(group: str, settings: Settings) -> tuple[str, ...]:
+    """Workspace APIs (gcal, gmail) use the configured user scopes; GCP APIs cloud-platform."""
+    return CLOUD_PLATFORM if group == "cloudrun" else tuple(settings.actions.google_scopes)
+
+
+def access_token(settings: Settings, group: str = "gcal") -> str:
+    """A valid bearer token for the group, refreshed when expired. Thread-safe."""
+    scopes = scopes_for(group, settings)
     with _lock:
-        if _creds is None:
-            _creds, _ = google.auth.default(scopes=list(settings.actions.google_scopes))
-        if not _creds.valid:
-            _creds.refresh(Request())
-        return _creds.token
+        creds = _creds.get(scopes)
+        if creds is None:
+            creds, _ = google.auth.default(scopes=list(scopes))
+            _creds[scopes] = creds
+        if not creds.valid:
+            creds.refresh(Request())
+        return creds.token
 
 
 def reset() -> None:
-    global _creds
     with _lock:
-        _creds = None
+        _creds.clear()

@@ -86,6 +86,8 @@ async def identify(acct: AccountIn, job_id: Any, deps: IdentityDeps, s: Settings
 def apply(ctx: StepContext, acct: AccountIn, r: IdentityResult) -> None:
     """Buffer every write on the context; the runner commits them with the step."""
     data = dict((ctx.account or {}).get("data") or {})
+    if r.outcome is Outcome.unverified:  # continues; the flag tells the person why
+        r.flags.append(f"identity unverified: {r.reason}")
     patch = {k: getattr(r, k).model_dump(mode="json") for k in FACT_KEYS}
     patch["identity"] = {
         "outcome": r.outcome.value,

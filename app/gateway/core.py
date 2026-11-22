@@ -151,7 +151,7 @@ class Gateway:
 
     def group_headers(self, group: str) -> dict[str, str]:
         if group in GOOGLE_GROUPS:
-            return {"Authorization": f"Bearer {google_auth.access_token(self.settings)}"}
+            return {"Authorization": f"Bearer {google_auth.access_token(self.settings, group)}"}
         if group == "gstinapi":
             key = self.settings.secrets.gstin_api_key
             if key is None:
