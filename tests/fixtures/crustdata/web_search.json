@@ -1,0 +1,88 @@
+{
+ "endpoint": "POST /web/search/live",
+ "request": {
+  "query": "Delhivery GST",
+  "location": "IN",
+  "sources": [
+   "web"
+  ]
+ },
+ "status": 200,
+ "credits_used": 1.0,
+ "recorded_at": "2026-11-22T07:06:19.429892+00:00",
+ "response": {
+  "metadata": {
+   "empty_pages": [],
+   "failed_pages": [],
+   "total_results": 9
+  },
+  "query": "Delhivery GST",
+  "results": [
+   {
+    "position": 1,
+    "snippet": "This document is a tax invoice from Delhivery Limited to Great India Relocation PA for freight services totaling Rs. 1410.06. The invoice includes details ...",
+    "source": "web",
+    "title": "Delhivery Invoice for Freight Services | PDF",
+    "url": "https://www.google.com/goto?url=CAESagHEIkXXGYeJPaDuSY2WTIBEWV44bRqKtE1ie43Jw9yPvLDV47vsGjWKqMYsQl2wzXhyKbXdZslOP_VN5BVvkMc_PgPavPXbL8QAK1P8J0GgGbRbIjcQoLI5_kogI2BjBOSwuGW1K6UmcuE&gsessionid=2JzGjJy4JfqhhHLicuNwqxfHgpyh7cn-gx_hpwlYok22JtsCnCEMRw"
+   },
+   {
+    "position": 2,
+    "snippet": "This document provides rate tables for Delhivery commercial surface and express shipping services. For surface, the rates are broken down by zone (A-D) ...",
+    "source": "web",
+    "title": "Delhivery Rate Card and Charges Overview | PDF | Trade",
+    "url": "https://www.google.com/goto?url=CAESeQHEIkXX2AP75878BaP1PJ_C2-o3iPVFTTT6ax7Qf4JfyRn6kcqy3hygSBz2xMsZlj8mzjIdheeadJLdSyyt70BsF03SvDFRDtZdPr6EyGvjMKb4Y2cZmzm7nt3_KP0o0pVYGquthqgCcVW9BSVb4wtEV95OZRJ4bZQ&gsessionid=2JzGjJy4JfqhhHLicuNwqxfHgpyh7cn-gx_hpwlYok22JtsCnCEMRw"
+   },
+   {
+    "position": 3,
+    "snippet": "4 अग॰ 2026 — Delhivery receives ₹49.19 Cr GST notice during its acquisition of Ecom Express, raising compliance concerns amid expansion plans.",
+    "source": "web",
+    "title": "Delhivery Gets ₹49 Cr GST Notice Amid Ecom Express Buy",
+    "url": "https://www.google.com/goto?url=CAESjwEBxCJF172SCkW7viK16D809-v8fZ07AH5pn3oiDshSkdCFHMOfRNq0lO21AykYktCK6VB4YRswvIq5Uh1IbOgDh_p9-LXNeaHQYiFdJi3OOKjpv84hnYRktUgnNaz7ywMD1HXc-1c3WDinOlhQDkglN97z4-Plrdiy2wpJC1OznHVlODM2scLN-AAUkayMqg&gsessionid=2JzGjJy4JfqhhHLicuNwqxfHgpyh7cn-gx_hpwlYok22JtsCnCEMRw"
+   },
+   {
+    "position": 4,
+    "snippet": "GST No. 06AAPCS9575E1ZR. CIN No. U63090DL2011PLC221234. Contact Details. Delhivery Limited. Manesar, Gurugram, Haryana. GST - 06AAPCS9575E1ZR. MobileEmail.",
+    "source": "web",
+    "title": "Delhivery Limited - Exporter & Service Provider from ...",
+    "url": "https://www.google.com/goto?url=CAEStgEBxCJF12ceEJReM-E-mUM51YLASJOXW9ddJ9LAC93rs8AruAfhcqKXngx0Z4omNc-Ing2uxQZSocRfNVHAL8wXW7a1wDvtbjT6A6BdK5SorQcsn6osXkHrmFVGg6Odsupgujc_XZf0kE6hLXkEqDeeUECfWnzm41iLoIE9Gvdtgoer7etQwpD79B2NiPO3NDMiGoACvIn1QEzM7lbpDNIakBKgO9ZTQx1S_9XY-4CewPuXZ5zrPw&gsessionid=2JzGjJy4JfqhhHLicuNwqxfHgpyh7cn-gx_hpwlYok22JtsCnCEMRw"
+   },
+   {
+    "position": 5,
+    "snippet": "Delhivery Protect ₹0.00. SGST @ 9% ₹9.99. CGST @ 9% ₹9.99. Discount -₹0.00. Invoice Total ₹111.00. Paid -₹111.00. Amount Due ₹0.0. Delhivery LTD - Plot 5 ...",
+    "source": "web",
+    "title": "GST Invoice for Shipping Services | PDF",
+    "url": "https://www.scribd.com/document/906694346/Invoice-T1T749GY89618369L8"
+   },
+   {
+    "position": 6,
+    "snippet": "GST 18% Docket Charges Rs 70. FSC 15% Delhivery B2B Rates N4 C1 C2 W1 W2 S1 8.0 9.1 9.8 9.2 10.2 9.8 7.7 9.7 10.5 10.0 10.5 10.5 7.3 10.4 10.4 11.6 11.6 11.6",
+    "source": "web",
+    "title": "Delhivery B2B Rates and Charges Guide | PDF",
+    "url": "https://www.google.com/goto?url=CAESegHEIkXXw_dbnMbqXgMMWQBTlbFDGZaA75ihxd2a7vioTb5kD_u8kHn-PT8xiqpA0eyq_qkAdAgbRlLrXYRsosGV74kMNxO_rJerVTnbPUCAsuNXQv_HF22sTsD9-q25w7JQz1elApbggA5BEwEB3mw7VUdiWuuqehMY&gsessionid=2JzGjJy4JfqhhHLicuNwqxfHgpyh7cn-gx_hpwlYok22JtsCnCEMRw"
+   },
+   {
+    "position": 7,
+    "snippet": "This petition is directed against an order passed by the department under Section 129 (3) of GST Act, dated 26.02.2023, addressed to one Ajay Yadav. This ...",
+    "source": "web",
+    "title": "Delhivery Limited vs State of U. P. - 2023 Supreme(All) 2473",
+    "url": "https://www.google.com/goto?url=CAESbgHEIkXXQMCsxD7ncj3asCgS35mIO0ylR151h8c6J_i5xJ2zrUWq-LGtPabi6Rds2QVu1fYGC39uAkuvN0sA4Fns19lG_oJcnkKR7rfOaDF37tcmSKPIh9iEtdmrkXJEQjXicM5Qds4eXO706vn8&gsessionid=2JzGjJy4JfqhhHLicuNwqxfHgpyh7cn-gx_hpwlYok22JtsCnCEMRw"
+   },
+   {
+    "position": 8,
+    "snippet": "Delhivery Ltd · Market Cap ₹ 34,415 Cr. · Current Price ₹ 459 · High / Low ₹ 524 / 365 · Stock P/E 164 · Book Value ₹ 131 · Dividend Yield 0.00 % · ROCE 1.01 % ...",
+    "source": "web",
+    "title": "Delhivery Ltd share price",
+    "url": "https://www.google.com/goto?url=CAESdAHEIkXXK-hiY5NLFo12gMl2zw_j8k8QsBSU_s434hLaUI9FmOoWr1L3BPXuV7JffPl3qwEd6RRdWwPlUh5MRMzZEAVmByg0pXy9uVicq4aFO8tS0i5SDM8CwvUL-sioU2y9ROeo-PL-DSgpNG-yIpHKUEkH&gsessionid=2JzGjJy4JfqhhHLicuNwqxfHgpyh7cn-gx_hpwlYok22JtsCnCEMRw"
+   },
+   {
+    "position": 9,
+    "snippet": "Documentation Index. Fetch the complete documentation index at: https://help.delhivery.com/llms.txt. Use this file to discover all available pages before ...",
+    "source": "web",
+    "title": "Tutorial",
+    "url": "https://www.google.com/goto?url=CAESbQHEIkXXV3zLPTGgpMfNiaZhRiDMYmX9rEusuPIq4h0toTLoBmy4SBCa0ls5FqoSi2aKvf4E5PRGBxQTnoK4UfBWHllRTmdQDvHkth2tLPBHJisLXAkeqeRPOVrhVXCUMHkbduJI-NBBkisB_iM&gsessionid=2JzGjJy4JfqhhHLicuNwqxfHgpyh7cn-gx_hpwlYok22JtsCnCEMRw"
+   }
+  ],
+  "success": true,
+  "timestamp": 1795331178255
+ }
+}

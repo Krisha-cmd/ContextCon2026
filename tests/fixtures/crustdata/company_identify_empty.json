@@ -1,0 +1,19 @@
+{
+ "endpoint": "POST /company/identify",
+ "request": {
+  "names": [
+   "Zqvantrix Freightlines Pvt Ltd"
+  ],
+  "exact_match": true
+ },
+ "status": 200,
+ "credits_used": 0.0,
+ "recorded_at": "2026-11-22T07:05:50.821270+00:00",
+ "response": [
+  {
+   "matched_on": "Zqvantrix Freightlines Pvt Ltd",
+   "match_type": "name",
+   "matches": []
+  }
+ ]
+}

@@ -1,0 +1,622 @@
+{
+ "endpoint": "POST /company/search",
+ "request": {
+  "filters": {
+   "op": "and",
+   "conditions": [
+    {
+     "field": "locations.country",
+     "type": "in",
+     "value": [
+      "India"
+     ]
+    },
+    {
+     "field": "taxonomy.professional_network_industry",
+     "type": "=",
+     "value": "Transportation, Logistics, Supply Chain and Storage"
+    }
+   ]
+  },
+  "fields": [
+   "basic_info",
+   "headcount",
+   "funding",
+   "locations"
+  ],
+  "limit": 10
+ },
+ "status": 200,
+ "credits_used": 5.3,
+ "recorded_at": "2026-11-22T07:03:24.185755+00:00",
+ "response": {
+  "companies": [
+   {
+    "crustdata_company_id": 35,
+    "basic_info": {
+     "name": "ABC India Limited",
+     "crustdata_company_id": 35,
+     "primary_domain": "abcindia.com",
+     "all_domains": [
+      "abcindia.com"
+     ],
+     "website": "http://www.abcindia.com",
+     "professional_network_url": "https://www.linkedin.com/company/abc-india-limited",
+     "professional_network_id": "486875",
+     "profile_name": "ABC India Limited",
+     "logo_permalink": "https://crustdata-media.s3.us-east-2.amazonaws.com/company/1534948c1a1e76198a4fa052ea466615cd43cfd3d4a8f94bd2f7026c0cd576da.jpg",
+     "description": "ABC India Ltd. is one of the oldest road logistics company in India. Our mission is Moving Made Simple. We have delivered critical capital goods to soom of the most challenging terrains in South Asia. Over the next decade, our goal is to address the large disruption and opportunities in trucking stemming from climate change, automation and digitisation.",
+     "company_type": "Privately Held",
+     "status": "active",
+     "year_founded": 1936,
+     "employee_count_range": "201-500",
+     "markets": [
+      "BSE"
+     ]
+    },
+    "headcount": {
+     "total": 292,
+     "largest_headcount_country": "IND",
+     "growth_percent": {
+      "1m": 0.0,
+      "3m": 0.3436426116838488,
+      "6m": 0.3436426116838488,
+      "12m": 3.180212014134275
+     },
+     "growth_absolute": {
+      "1m": 0,
+      "3m": 1,
+      "6m": 1,
+      "12m": 9
+     }
+    },
+    "funding": {
+     "is_investor": false,
+     "contact_email": "cmd@abcindia.com",
+     "phone_number": "(033) 62.9115.7906",
+     "total_investment_usd": 0.0,
+     "last_round_amount_usd": null,
+     "last_fundraise_date": null,
+     "last_round_type": "",
+     "investors": null
+    },
+    "locations": {
+     "country": "IND",
+     "headquarters": "Ballygunge Sc College, Ballygunge, Ballygunge RS, Garcha Road, Golpark, Gariahat Market, West Bengal, India",
+     "street_address": "Ballygunge Circular Road 40/8, Ballygunge Sc College, Ballygunge, Ballygunge RS, Garcha Road, Golpark, Gariahat Market, West Bengal",
+     "city": "Kolkata",
+     "state": "West Bengal",
+     "all_office_addresses": []
+    }
+   },
+   {
+    "crustdata_company_id": 193,
+    "basic_info": {
+     "name": "Allcargo Global",
+     "crustdata_company_id": 193,
+     "primary_domain": "allcargo.global",
+     "all_domains": [
+      "allcargo.global",
+      "allcargologistics.com"
+     ],
+     "website": "https://www.allcargo.global/",
+     "professional_network_url": "https://www.linkedin.com/company/allcargo-global",
+     "professional_network_id": "320161",
+     "profile_name": "Allcargo Global",
+     "logo_permalink": "https://crustdata-media.s3.us-east-2.amazonaws.com/company/3a9307449548feedaa4223723d2ac4a6797019fe8f064a48fefedef25022b089.jpg",
+     "description": "For over three decades, Allcargo Global (formerly Allcargo Logistics) has been shaping how the world moves. What began with a single vision to simplify global trade has grown into a worldwide logistics powerhouse.As part of the Allcargo Group, and through our wholly owned subsidiary, ECU Worldwide, we connect businesses across 60 countries, offering reliable, neutral, and scalable logistics solutions.Our portfolio — anchored by our leadership as the world’s No. 1 LCL consolidator — includes Neutral FCL, Air Freight, multimodal transport, door-to-door delivery, and value-added services, enabling end-to-end solutions that keep global supply chains moving seamlessly.Powered by ECU360, our digital platform, we combine innovation with experience — making logistics faster, smarter, and easier to manage.Built on purpose, sustainability, and trust, Allcargo Global continues to move not just cargo, but the ambitions and growth of businesses worldwide.As one of Allcargo Group’s flagship companies, we create synergies to offer CFS-ICD under Allcargo Terminals Limited, as well as a nationwide footprint of strategically located logistics and industrial parks.Give your business the advantage of more than three decades of expertise, and count on our digital-first and customer-centric approach to bolster business growth and progress.Partner with us to experience a world of difference, backed by ingenuity, innovation, and strong commitment to Environmental, Social and Governance standards with an aim to be carbon neutral by 2040.",
+     "company_type": "Public Company",
+     "status": "active",
+     "year_founded": 1993,
+     "employee_count_range": "5001-10000",
+     "markets": [
+      "PRIVATE"
+     ]
+    },
+    "headcount": {
+     "total": 2620,
+     "largest_headcount_country": "IND",
+     "growth_percent": {
+      "1m": -0.1143728555089592,
+      "3m": -0.19047619047619047,
+      "6m": -0.26646364674533685,
+      "12m": -1.3925479864508845
+     },
+     "growth_absolute": {
+      "1m": -3,
+      "3m": -5,
+      "6m": -7,
+      "12m": -37
+     }
+    },
+    "funding": {
+     "is_investor": false,
+     "contact_email": "",
+     "phone_number": "",
+     "total_investment_usd": 0.0,
+     "last_round_amount_usd": null,
+     "last_fundraise_date": null,
+     "last_round_type": "",
+     "investors": null
+    },
+    "locations": {
+     "country": "IND",
+     "headquarters": "Vidyanagari, Mahārāshtra, India",
+     "street_address": "The Avvashya House, 6th Floor CST Road, Santacruz East, Vidyanagari, Mahārāshtra",
+     "city": "Vidyanagari",
+     "state": "Mahārāshtra",
+     "all_office_addresses": []
+    }
+   },
+   {
+    "crustdata_company_id": 583,
+    "basic_info": {
+     "name": "Beardsell Ltd.",
+     "crustdata_company_id": 583,
+     "primary_domain": "beardsell.co.in",
+     "all_domains": [
+      "beardsell.co.in"
+     ],
+     "website": "http://www.beardsell.co.in",
+     "professional_network_url": "https://www.linkedin.com/company/beardsell-ltd.",
+     "professional_network_id": "473295",
+     "profile_name": "Beardsell Ltd.",
+     "logo_permalink": "",
+     "description": "We are the pioneering manufacturer of insulated panels for cold storages in India.  We also manufacture EPS-based packaging and insulation material for hundreds of customers across India.",
+     "company_type": "Public Company",
+     "status": "active",
+     "year_founded": 1936,
+     "employee_count_range": "51-200",
+     "markets": [
+      "NSE"
+     ]
+    },
+    "headcount": {
+     "total": 96,
+     "largest_headcount_country": "IND",
+     "growth_percent": {
+      "1m": 1.0526315789473684,
+      "3m": 1.0526315789473684,
+      "6m": 0.0,
+      "12m": 1.0526315789473684
+     },
+     "growth_absolute": {
+      "1m": 1,
+      "3m": 1,
+      "6m": 0,
+      "12m": 1
+     }
+    },
+    "funding": {
+     "is_investor": false,
+     "contact_email": "sales@beardsell.co.in",
+     "phone_number": "044-28293296",
+     "total_investment_usd": 0.0,
+     "last_round_amount_usd": null,
+     "last_fundraise_date": null,
+     "last_round_type": "",
+     "investors": null
+    },
+    "locations": {
+     "country": "IND",
+     "headquarters": "DPI, Greams Road, Teynampet West, Shastri Bhavan, Tamil Nādu, India",
+     "street_address": "DPI, Greams Road, Teynampet West, Shastri Bhavan, Tamil Nādu, India",
+     "city": "DPI, Greams Road, Teynampet West, Shastri Bhavan",
+     "state": "Tamil Nādu",
+     "all_office_addresses": []
+    }
+   },
+   {
+    "crustdata_company_id": 736,
+    "basic_info": {
+     "name": "Blue Dart",
+     "crustdata_company_id": 736,
+     "primary_domain": "bluedart.com",
+     "all_domains": [
+      "bluedart.com"
+     ],
+     "website": "http://www.bluedart.com",
+     "professional_network_url": "https://www.linkedin.com/company/bluedart",
+     "professional_network_id": "98212",
+     "profile_name": "Blue Dart",
+     "logo_permalink": "https://crustdata-media.s3.us-east-2.amazonaws.com/company/0201b22cb836304f2bb4a1342df0584d426b4a8025510c4636ce8426d5eae8b5.jpg",
+     "description": "Blue Dart Express Ltd., South Asia's premier express air, integrated transportation & distribution company, offers secure and reliable delivery of consignments to over 56,000+ locations in India. Blue Dart is a provider of choice for its stakeholders due to its customer centric approach and aims to further strengthen this partnership. As part of DHL Group’s DHL eCommerce division, Blue Dart accesses the largest and most comprehensive express and logistics network worldwide, covering over 220 countries and territories, and offers an entire spectrum of distribution services including air express, freight forwarding, supply chain solutions, customs clearance etc.The Blue Dart team drives market leadership through its motivated people, dedicated air and ground capacity, cutting-edge technology, wide range of innovative, vertical specific products and value-added services to deliver unmatched standards of service quality to its customers. Blue Dart's market leadership is further validated by its position as the nation’s most innovative and awarded express logistics company for exhibiting reliability, superior brand experience and sustainability which include recognition as one of ‘India's Best Companies to Work For’ by The Great Place to Work® Institute, India, ranked amongst ‘Best Multinational Workplaces in Asia’ by The Great Place to Work® Institute, Asia, voted a ‘Superbrand’ and ‘Reader’s Digest Most Trusted Brand’, listed as one of Fortune 500’s ‘India's Largest Corporations’ and Forbes ‘India's Super 50 Companies’ to name a few. Blue Dart’s Diversity and Inclusion initiatives have also led to it being recognized as one of India’s ‘Best Workplaces for Women’ in 2021 and ‘Best Organizations for Women’ in 2022 by the Economic Times.Blue Dart fulfils its social responsibility of climate protection (GoGreen), disaster management (GoHelp) and education (GoTeach) through its GoPrograms.",
+     "company_type": "Public Company",
+     "status": "active",
+     "year_founded": 1983,
+     "employee_count_range": "10001+",
+     "markets": [
+      "NSE"
+     ]
+    },
+    "headcount": {
+     "total": 10946,
+     "largest_headcount_country": "IND",
+     "growth_percent": {
+      "1m": 0.8383233532934131,
+      "3m": 2.051090807383927,
+      "6m": 4.736388862309827,
+      "12m": 9.110845295055821
+     },
+     "growth_absolute": {
+      "1m": 91,
+      "3m": 220,
+      "6m": 495,
+      "12m": 914
+     }
+    },
+    "funding": {
+     "is_investor": false,
+     "contact_email": "",
+     "phone_number": "91 22 28311184",
+     "total_investment_usd": 0.0,
+     "last_round_amount_usd": null,
+     "last_fundraise_date": null,
+     "last_round_type": "",
+     "investors": null
+    },
+    "locations": {
+     "country": "IND",
+     "headquarters": "International Airport, Sahar P & T Colony, Sahargaon, Airport (Mumbai), Maharashtra, India",
+     "street_address": "Blue Dart Centre Sahar Airport Road, International Airport, Sahar P & T Colony, Sahargaon, Airport (Mumbai), Maharashtra",
+     "city": "Mumbai",
+     "state": "Maharashtra",
+     "all_office_addresses": []
+    }
+   },
+   {
+    "crustdata_company_id": 906,
+    "basic_info": {
+     "name": "Chartered Logistics Ltd",
+     "crustdata_company_id": 906,
+     "primary_domain": "chartered.co.in",
+     "all_domains": [
+      "chartered.co.in"
+     ],
+     "website": "http://www.chartered.co.in",
+     "professional_network_url": "https://www.linkedin.com/company/chartered-logistics-ltd",
+     "professional_network_id": "3925194",
+     "profile_name": "Chartered Logistics Ltd",
+     "logo_permalink": "https://crustdata-media.s3.us-east-2.amazonaws.com/company/de04aeac88bc13ecb7ac1c38534d5b567184623e0e85f9f39eafa2e19b425237.jpg",
+     "description": "Chartered Logistics Ltd provides logistics services. we are listed on BSE",
+     "company_type": "Public Company",
+     "status": "active",
+     "year_founded": 1995,
+     "employee_count_range": "51-200",
+     "markets": [
+      "BSE"
+     ]
+    },
+    "headcount": {
+     "total": 60,
+     "largest_headcount_country": "IND",
+     "growth_percent": {
+      "1m": 0.0,
+      "3m": -3.225806451612903,
+      "6m": -3.225806451612903,
+      "12m": -1.639344262295082
+     },
+     "growth_absolute": {
+      "1m": 0,
+      "3m": -2,
+      "6m": -2,
+      "12m": -1
+     }
+    },
+    "funding": {
+     "is_investor": false,
+     "contact_email": "customercare@chartered.co.in",
+     "phone_number": "91 9879209040",
+     "total_investment_usd": 0.0,
+     "last_round_amount_usd": null,
+     "last_fundraise_date": null,
+     "last_round_type": "",
+     "investors": null
+    },
+    "locations": {
+     "country": "IND",
+     "headquarters": "Ahmedabad, Gujarat, India",
+     "street_address": "Ahmedabad, Gujarat, India",
+     "city": "Ahmedabad",
+     "state": "Gujarat",
+     "all_office_addresses": [
+      ", Mumbai , maharastra, , IN"
+     ]
+    }
+   },
+   {
+    "crustdata_company_id": 990,
+    "basic_info": {
+     "name": "Coastal Roadways Limited",
+     "crustdata_company_id": 990,
+     "primary_domain": "coastalroadways.com",
+     "all_domains": [
+      "coastalroadways.com"
+     ],
+     "website": "http://www.coastalroadways.com",
+     "professional_network_url": "https://www.linkedin.com/company/coastal-roadways-limited",
+     "professional_network_id": "1039404",
+     "profile_name": "Coastal Roadways Limited",
+     "logo_permalink": "https://crustdata-media.s3.us-east-2.amazonaws.com/company/b56703cdcff811abcf4b496e94895215dce5b8a70a0cc558f7b0aa173c4d7eb4.jpg",
+     "description": "Coastal Roadways Limited is one of the leading transportation companies of India. At Coastal Roadways Limited, we work hard to make sure that your cargo is delivered on time, always. We provide the most efficient and effective combination of services and guarantee promptness, economy and safety of materials while fine-tuning your supply chain management. Coastal Roadways Limited, since 1968, is a name synonymous with high-quality transportation and logistics services. Our commitment to Quality service - Every time, ensures competitive advantage to the client. Coastal Roadways Limited is today \"the only name in transportation that carries weight\".",
+     "company_type": "Public Company",
+     "status": "active",
+     "year_founded": 1968,
+     "employee_count_range": "201-500",
+     "markets": [
+      "BSE"
+     ]
+    },
+    "headcount": {
+     "total": 20,
+     "largest_headcount_country": "IND",
+     "growth_percent": {
+      "1m": 0.0,
+      "3m": 0.0,
+      "6m": -4.761904761904762,
+      "12m": 0.0
+     },
+     "growth_absolute": {
+      "1m": 0,
+      "3m": 0,
+      "6m": -1,
+      "12m": 0
+     }
+    },
+    "funding": {
+     "is_investor": false,
+     "contact_email": "corporate@coastalroadways.com",
+     "phone_number": "332-217-2222",
+     "total_investment_usd": 0.0,
+     "last_round_amount_usd": null,
+     "last_fundraise_date": null,
+     "last_round_type": "",
+     "investors": null
+    },
+    "locations": {
+     "country": "IND",
+     "headquarters": "Park Street H.O, Madrassa, Elliot Road, West Bengal, India",
+     "street_address": "1/1 Camac Street, Park Street H.O, Madrassa, Elliot Road, West Bengal",
+     "city": "Park Street H.O, Madrassa, Elliot Road",
+     "state": "West Bengal",
+     "all_office_addresses": [
+      "4, Black Burn Lane, Kolkata, West Bengal, 700012, IN"
+     ]
+    }
+   },
+   {
+    "crustdata_company_id": 1023,
+    "basic_info": {
+     "name": "Container Corporation Of India (Concor)",
+     "crustdata_company_id": 1023,
+     "primary_domain": "concorindia.com",
+     "all_domains": [
+      "concorindia.com"
+     ],
+     "website": "http://www.concorindia.com",
+     "professional_network_url": "https://www.linkedin.com/company/container-corporation-of-india-concor-",
+     "professional_network_id": "34207737",
+     "profile_name": "Container Corporation Of India (Concor)",
+     "logo_permalink": "",
+     "description": "To Join Its Community Partners And Stake Holders To Make Concor A Company Of Outstanding Quality.To Provide Responsive, Cost Effective, Efficient And Reliable Logistics Solutions To Its Customers Through Synergy With Community Partners And Ensuring Profit",
+     "company_type": "",
+     "status": "active",
+     "year_founded": 1988,
+     "employee_count_range": "11-50",
+     "markets": [
+      "NSE"
+     ]
+    },
+    "headcount": {
+     "total": 25,
+     "largest_headcount_country": "IND",
+     "growth_percent": {
+      "1m": 0.0,
+      "3m": 0.0,
+      "6m": 4.166666666666666,
+      "12m": 4.166666666666666
+     },
+     "growth_absolute": {
+      "1m": 0,
+      "3m": 0,
+      "6m": 1,
+      "12m": 1
+     }
+    },
+    "funding": {
+     "is_investor": false,
+     "contact_email": "co.pro@concorindia.com",
+     "phone_number": "+911141673093",
+     "total_investment_usd": 0.0,
+     "last_round_amount_usd": null,
+     "last_fundraise_date": "2026-06-30",
+     "last_round_type": "post_ipo_secondary",
+     "investors": [
+      "ICICI Prudential Mutual Fund"
+     ]
+    },
+    "locations": {
+     "country": "IND",
+     "headquarters": "New Delhi, Delhi, India",
+     "street_address": "New Delhi, Delhi, India",
+     "city": "New Delhi",
+     "state": "Delhi",
+     "all_office_addresses": []
+    }
+   },
+   {
+    "crustdata_company_id": 1216,
+    "basic_info": {
+     "name": "DIKSAT TRANSWORLD LIMITED",
+     "crustdata_company_id": 1216,
+     "primary_domain": "wintvindia.com",
+     "all_domains": [
+      "wintvindia.com"
+     ],
+     "website": "",
+     "professional_network_url": "https://www.linkedin.com/company/diksat-transworld-limited",
+     "professional_network_id": "27962471",
+     "profile_name": "DIKSAT TRANSWORLD LIMITED",
+     "logo_permalink": "",
+     "description": "DIKSAT TRANSWORLD LIMITED is a transportation/trucking/railroad company based out of 1st Floor, New No.24 & Old No. 32 South Mada Street, Mylapore, Chennai, Tamil Nadu, India.",
+     "company_type": "",
+     "status": "active",
+     "year_founded": null,
+     "employee_count_range": "",
+     "markets": []
+    },
+    "headcount": {
+     "total": 6,
+     "largest_headcount_country": "IND",
+     "growth_percent": {
+      "1m": 0.0,
+      "3m": 20.0,
+      "6m": 20.0,
+      "12m": 20.0
+     },
+     "growth_absolute": {
+      "1m": 0,
+      "3m": 1,
+      "6m": 1,
+      "12m": 1
+     }
+    },
+    "funding": {
+     "is_investor": false,
+     "contact_email": null,
+     "phone_number": null,
+     "total_investment_usd": null,
+     "last_round_amount_usd": null,
+     "last_fundraise_date": null,
+     "last_round_type": null,
+     "investors": null
+    },
+    "locations": {
+     "country": "IND",
+     "headquarters": "Chennai, Tamil Nadu, India",
+     "street_address": "Chennai, Tamil Nadu, India",
+     "city": "Chennai",
+     "state": "Tamil Nadu",
+     "all_office_addresses": []
+    }
+   },
+   {
+    "crustdata_company_id": 1407,
+    "basic_info": {
+     "name": "Essar Ports",
+     "crustdata_company_id": 1407,
+     "primary_domain": "essarports.com",
+     "all_domains": [
+      "essarports.com",
+      "essar.com"
+     ],
+     "website": "http://www.essarports.com",
+     "professional_network_url": "https://www.linkedin.com/company/essarports",
+     "professional_network_id": "27454118",
+     "profile_name": "Essar Ports",
+     "logo_permalink": "https://crustdata-media.s3.us-east-2.amazonaws.com/company/c3f73892f4c197089fe00627749e3b6c10af9016066e24bb3941490d59ed4392.jpg",
+     "description": "Essar Ports specialises in the development and operations of ports and terminals for handling dry bulk, break bulk, liquid, and general cargo. It is one of the largest private-sector port operators in India in terms of capacity and throughput. It has four operational terminals in India—one each in Hazira and Salaya (both in Gujarat) on the west coast and in Visakhapatnam and Paradip on the east coast. The current operational capacity of the port terminals in India is 110 MTPA.",
+     "company_type": "Public Company",
+     "status": "active",
+     "year_founded": 1975,
+     "employee_count_range": "201-500",
+     "markets": []
+    },
+    "headcount": {
+     "total": 139,
+     "largest_headcount_country": "IND",
+     "growth_percent": {
+      "1m": 0.0,
+      "3m": 1.4598540145985401,
+      "6m": 2.2058823529411766,
+      "12m": 2.2058823529411766
+     },
+     "growth_absolute": {
+      "1m": 0,
+      "3m": 2,
+      "6m": 3,
+      "12m": 3
+     }
+    },
+    "funding": {
+     "is_investor": false,
+     "contact_email": null,
+     "phone_number": null,
+     "total_investment_usd": null,
+     "last_round_amount_usd": null,
+     "last_fundraise_date": null,
+     "last_round_type": null,
+     "investors": null
+    },
+    "locations": {
+     "country": "IND",
+     "headquarters": "Haji Ali, Tulsiwadi, Mahārāshtra, India",
+     "street_address": "11 Keshavrao Khadye Marg, Mahalaxmi,, Haji Ali, Tulsiwadi, Mahārāshtra",
+     "city": "Haji Ali, Tulsiwadi",
+     "state": "Mahārāshtra",
+     "all_office_addresses": [
+      "ER-2 Building, Salaya, Taluka Khambhaliya, Jamnagar , Gujarat , 361305 , IN"
+     ]
+    }
+   },
+   {
+    "crustdata_company_id": 1409,
+    "basic_info": {
+     "name": "Essar Shipping",
+     "crustdata_company_id": 1409,
+     "primary_domain": "essar.com",
+     "all_domains": [
+      "essar.com"
+     ],
+     "website": "https://www.essar.com/shipping/",
+     "professional_network_url": "https://www.linkedin.com/company/essarshipping",
+     "professional_network_id": "31110811",
+     "profile_name": "Essar Shipping",
+     "logo_permalink": "https://crustdata-media.s3.us-east-2.amazonaws.com/company/5da7368f6afc7a679dee608077c388bffefb48dc1df95a6b8fd1282fd3a1d51a.jpg",
+     "description": "Essar Shipping is an integrated supply chain solution provider with its sea transportation business having a diversified fleet of 12 vessels and more than 220 ship years of experience. With a combined tonnage of 1.12 million, it provides crude oil and bulk commodity transportation services to leading Indian and global oil majors and commodity traders.",
+     "company_type": "Public Company",
+     "status": "active",
+     "year_founded": 1975,
+     "employee_count_range": "201-500",
+     "markets": []
+    },
+    "headcount": {
+     "total": 165,
+     "largest_headcount_country": "IND",
+     "growth_percent": {
+      "1m": -1.1976047904191618,
+      "3m": -1.7857142857142856,
+      "6m": -1.1976047904191618,
+      "12m": -0.6024096385542169
+     },
+     "growth_absolute": {
+      "1m": -2,
+      "3m": -3,
+      "6m": -2,
+      "12m": -1
+     }
+    },
+    "funding": {
+     "is_investor": false,
+     "contact_email": null,
+     "phone_number": null,
+     "total_investment_usd": null,
+     "last_round_amount_usd": null,
+     "last_fundraise_date": null,
+     "last_round_type": null,
+     "investors": null
+    },
+    "locations": {
+     "country": "IND",
+     "headquarters": "Haji Ali, Tulsiwadi, Mahārāshtra, India",
+     "street_address": "Essar House, 11, KK Marg, Mahalaxmi,, Haji Ali, Tulsiwadi, Mahārāshtra",
+     "city": "Haji Ali, Tulsiwadi",
+     "state": "Mahārāshtra",
+     "all_office_addresses": []
+    }
+   }
+  ],
+  "next_cursor": "H4sIAAAAAAAA_xTIvQ6CMBAA4Fdpbmag99MWXsUYcndAGIyN0A7G-O7G9fvAq2_nezn0OmAOQGYqJamQGqvKKr5lI1bmWJzRsYycXSPteU1EhIJxFzKf0DkJDAGuejaYwy3yON2HAK02fSxe-_PPlAX5-wsAAP__FqdTqXgAAAA=",
+  "total_count": 37524
+ }
+}

@@ -1,0 +1,471 @@
+{
+ "endpoint": "POST /job/search",
+ "request": {
+  "filters": {
+   "op": "and",
+   "conditions": [
+    {
+     "field": "company.basic_info.primary_domain",
+     "type": "=",
+     "value": "delhivery.com"
+    },
+    {
+     "field": "metadata.date_added",
+     "type": "=>",
+     "value": "2026-10-23"
+    }
+   ]
+  },
+  "sorts": [
+   {
+    "field": "metadata.date_added",
+    "order": "desc"
+   }
+  ],
+  "limit": 5
+ },
+ "status": 200,
+ "credits_used": 0.15,
+ "recorded_at": "2026-11-22T07:10:27.216747+00:00",
+ "response": {
+  "job_listings": [
+   {
+    "crustdata_job_id": 7176242522970651,
+    "job_details": {
+     "job_id": 7176242522970651,
+     "title": "Financial Analyst Internship",
+     "category": "Others",
+     "workplace_type": "Remote",
+     "url": "https://www.linkedin.com/jobs/view/4490433453",
+     "reposted_job": false,
+     "number_of_openings": null,
+     "source": "professional_network",
+     "employment_type": "intern"
+    },
+    "company": {
+     "basic_info": {
+      "crustdata_company_id": 5798,
+      "name": "Delhivery",
+      "primary_domain": "delhivery.com",
+      "website": "https://www.delhivery.com",
+      "professional_network_id": "2312777",
+      "industries": [
+       "Transportation, Logistics, Supply Chain and Storage"
+      ]
+     },
+     "locations": {
+      "country": "India",
+      "state": "Haryāna",
+      "city": null,
+      "street_address": "Plot 5,sector 44, DLF QE, Haryāna"
+     },
+     "headcount": {
+      "total": 35300,
+      "range": "10001+",
+      "largest_headcount_country": "IND"
+     },
+     "followers": {
+      "count": 1294601
+     },
+     "revenue": {
+      "estimated": {
+       "lower_bound_usd": 1000000000,
+       "upper_bound_usd": 1000000000000
+      },
+      "public_markets": {
+       "stock_symbols": [
+        "DELHIVERY"
+       ],
+       "fiscal_year_end": ""
+      },
+      "acquisition_status": null
+     },
+     "funding": {
+      "total_investment_usd": 1697675479.0,
+      "valuation_usd": 0.0,
+      "last_fundraise_date": "2026-06-24T00:00:00",
+      "last_round_type": "post_ipo_secondary",
+      "num_funding_rounds": 17,
+      "investors": [
+       "Addition",
+       "AlphaGrep Investment Management",
+       "BNP Paribas"
+      ]
+     },
+     "competitors": {
+      "websites": [
+       "http://batsondelivery.com",
+       "http://vulcanxpress.com",
+       "https://www.deleezy.com/"
+      ]
+     }
+    },
+    "location": {
+     "raw": "Gurugram, Haryana, India",
+     "city": "Gurugram",
+     "district": "Gurgaon Division",
+     "state": "Haryana",
+     "country": "India",
+     "pincode": null
+    },
+    "content": {
+     "description": "Role - InternshipDuration - 3 MonthsMode - Remote\nInternship Requirement – Robotics Projects | Engineering & MBA FinanceWe are looking to hire a few interns to support ongoing robotics projects and pilot implementations at Delhivery.Key Responsibilities:Calculate the Return on Investment (ROI) for robotics deployments.Evaluate productivity improvements and operational efficiencies across implemented robotics pilots.Analyse performance metrics to assess the business impact and effectiveness of robotics initiatives.Support data-driven assessments of robotics projects and automation initiatives.\nEligibility Criteria:Engineering Graduates: Candidates with a strong analytical mindset and an interest in robotics, automation and operational processes.MBA Finance (Mandatory): Candidates must have an MBA in Finance, with a good understanding of ROI calculations, financial analysis and productivity metrics.\nPreferred Skills: Strong analytical abilities, problem-solving skills, financial understanding and proficiency in Excel/Google Sheets.\nNote: MBA in Finance is mandatory, as the role requires a sound understanding of ROI and productivity concepts."
+    },
+    "metadata": {
+     "date_added": "2026-11-17T10:49:30",
+     "date_updated": "2026-11-19T00:00:00"
+    }
+   },
+   {
+    "crustdata_job_id": 3257818745031886,
+    "job_details": {
+     "job_id": 3257818745031886,
+     "title": "Product Manager",
+     "category": "Product",
+     "workplace_type": "On-site",
+     "url": "https://www.linkedin.com/jobs/view/4490414512",
+     "reposted_job": false,
+     "number_of_openings": null,
+     "source": "professional_network",
+     "employment_type": "full_time"
+    },
+    "company": {
+     "basic_info": {
+      "crustdata_company_id": 5798,
+      "name": "Delhivery",
+      "primary_domain": "delhivery.com",
+      "website": "https://www.delhivery.com",
+      "professional_network_id": "2312777",
+      "industries": [
+       "Transportation, Logistics, Supply Chain and Storage"
+      ]
+     },
+     "locations": {
+      "country": "India",
+      "state": "Haryāna",
+      "city": null,
+      "street_address": "Plot 5,sector 44, DLF QE, Haryāna"
+     },
+     "headcount": {
+      "total": 35300,
+      "range": "10001+",
+      "largest_headcount_country": "IND"
+     },
+     "followers": {
+      "count": 1294601
+     },
+     "revenue": {
+      "estimated": {
+       "lower_bound_usd": 1000000000,
+       "upper_bound_usd": 1000000000000
+      },
+      "public_markets": {
+       "stock_symbols": [
+        "DELHIVERY"
+       ],
+       "fiscal_year_end": ""
+      },
+      "acquisition_status": null
+     },
+     "funding": {
+      "total_investment_usd": 1697675479.0,
+      "valuation_usd": 0.0,
+      "last_fundraise_date": "2026-06-24T00:00:00",
+      "last_round_type": "post_ipo_secondary",
+      "num_funding_rounds": 17,
+      "investors": [
+       "Addition",
+       "AlphaGrep Investment Management",
+       "BNP Paribas"
+      ]
+     },
+     "competitors": {
+      "websites": [
+       "http://batsondelivery.com",
+       "http://vulcanxpress.com",
+       "https://www.deleezy.com/"
+      ]
+     }
+    },
+    "location": {
+     "raw": "Gurugram, Haryana, India",
+     "city": "Gurugram",
+     "district": "Gurgaon Division",
+     "state": "Haryana",
+     "country": "India",
+     "pincode": null
+    },
+    "content": {
+     "description": "Role: Product Manager / Senior Product Manager – Agentic AI (TMS)Location: GurgaonWhat is TMS?A transportation management system (TMS) is a logistics platform that helps businesses plan, execute, and optimize the physical movement of goods, both inbound and outbound. It provides visibility into day-to-day transportation operations, ensures regulatory and trade compliance along with the associated documentation, and tracks the timely delivery of freight. A TMS streamlines shipping and makes transportation operations easier to manage and optimize.\nWhy Agentic TMS?Traditional TMS platforms digitize workflows but still depend on people to run them. Procurement teams run RFQs and chase spot quotes, planners build loads, coordinators chase carriers, analysts audit invoices, and support teams field customer queries. We are building AI agents that take on these jobs end to end:Agents that procure freight capacity through spot quotes, and transporter bidsAgents that plan and optimize loadsAgents that coordinate with transporter and shippersAgents that track and manage exceptionsAgents that audit and settle freight invoicesAgents that answer customer queriesThese agents run as autonomous systems, with humans in the loop only when needed. They are not copilots bolted onto screens.We are seeking an AI-first Product Builder to join our team in Gurgaon. This is a product management role for someone who builds, not just specs. You will take ideas from customer conversation to working agent yourself, using AI-assisted development to close the gap between “what if” and “it works.” To succeed, you should:Enjoy getting your hands dirtyThrive on end-to-end ownershipLet data, not opinion, drive product decisionsBe excited about defining how AI agents do real operational work in logistics\nExpectations from a PM:Owns discovery and build of agentic features. This includes identifying which logistics workflows can be automated by agents, and to what degree of autonomy.Builds before writing. You prototype agents, tools, and workflows hands-on to validate an idea in days, then use the working prototype to align customers, design, and engineering.Designs agent behavior end to end:Goals, decision logic, and the tools/APIs the agent callsContext and data sourcesGuardrails, exception handling, and human-in-the-loop checkpointsDefines and owns evaluation frameworks for agents. This covers golden datasets, accuracy and decision-quality benchmarks, regression evals before every release, and monitoring for drift in production. Evals are written and run in code, not tracked in spreadsheets.Develops and ships production code via AI-assisted tools (Kiro), and submits all changes as PRs. Owns agent prompts, tool definitions, and configs in the repo like any other code.Conducts customer discovery, starts with high-level specs, and translates insights directly into product. Everything is documented before productionizing, including agent specs, prompts, tool contracts, and eval criteria.Balances agent quality against cost and latency, including model selection, token economics, and the right mix of deterministic logic and LLM reasoning.Owns product analytics, workflow QA, release notes, and pilot customers.Drives every decision with data, from what to build to whether it worked:Sets success metrics and baselines before building, not after shippingAnalyzes agent decisions and failure patterns to decide what to fix, automate further, or roll backBacks product calls with evidence in reviews, and changes course when the data says soOwns feature correctness, rollout quality, customer adoption, and feature-level metrics in production. Agent metrics include:Automation/touchless rateDecision accuracyEscalation rateTime and cost saved per transactionBuilds user trust in agents through explainability, audit trails, and clear handoffs between agent and operator.Escalates architectural questions to dev before building, and treats review feedback as blocking.\nWhat we are looking for:Undergraduate degree in engineering from a Tier-I institute2+ years of product management experience in enterprise-grade SaaS products or a supply chain organizationA builder’s track record: products, agents, or tools you have built and shipped yourself using AI tools, ideally including LLM-powered or agentic features in production. Links to things you’ve built are welcome.Comfort working in code, including:Reading and writing Python or TypeScript with AI assistanceWorking with Git, APIs, and SQLDebugging your own work before handing it offStrong data orientation: comfortable with numbers and analysis tools, able to work with messy operational data, and has a track record of product decisions driven by quantitative evidenceWorking understanding of:LLM capabilities and limitations (hallucination, non-determinism, context limits)Prompt and context engineeringTool/function calling and agent orchestration patternsExperience designing evals or quality frameworks for AI systems, with comfort judging when an agent is “good enough” to shipExposure to logistics or transportation workflows (procurement, planning, execution, freight audit and payment) is a strong plusStrong communication and organization skills, and the ability to think clearly, problem-solve, multi-task, and prioritizeAbility to thrive in a fast-paced, deadline-driven environment, with the tenacity to develop ideas independently and the conviction to drive them to completion\n"
+    },
+    "metadata": {
+     "date_added": "2026-11-17T08:06:43",
+     "date_updated": "2026-11-19T00:00:00"
+    }
+   },
+   {
+    "crustdata_job_id": 530043330071520,
+    "job_details": {
+     "job_id": 530043330071520,
+     "title": "Key Account Manager",
+     "category": "Others",
+     "workplace_type": "On-site",
+     "url": "https://www.linkedin.com/jobs/view/4490186384",
+     "reposted_job": false,
+     "number_of_openings": null,
+     "source": "professional_network",
+     "employment_type": "full_time"
+    },
+    "company": {
+     "basic_info": {
+      "crustdata_company_id": 5798,
+      "name": "Delhivery",
+      "primary_domain": "delhivery.com",
+      "website": "https://www.delhivery.com",
+      "professional_network_id": "2312777",
+      "industries": [
+       "Transportation, Logistics, Supply Chain and Storage"
+      ]
+     },
+     "locations": {
+      "country": "India",
+      "state": "Haryāna",
+      "city": null,
+      "street_address": "Plot 5,sector 44, DLF QE, Haryāna"
+     },
+     "headcount": {
+      "total": 35300,
+      "range": "10001+",
+      "largest_headcount_country": "IND"
+     },
+     "followers": {
+      "count": 1294601
+     },
+     "revenue": {
+      "estimated": {
+       "lower_bound_usd": 1000000000,
+       "upper_bound_usd": 1000000000000
+      },
+      "public_markets": {
+       "stock_symbols": [
+        "DELHIVERY"
+       ],
+       "fiscal_year_end": ""
+      },
+      "acquisition_status": null
+     },
+     "funding": {
+      "total_investment_usd": 1697675479.0,
+      "valuation_usd": 0.0,
+      "last_fundraise_date": "2026-06-24T00:00:00",
+      "last_round_type": "post_ipo_secondary",
+      "num_funding_rounds": 17,
+      "investors": [
+       "Addition",
+       "AlphaGrep Investment Management",
+       "BNP Paribas"
+      ]
+     },
+     "competitors": {
+      "websites": [
+       "http://batsondelivery.com",
+       "http://vulcanxpress.com",
+       "https://www.deleezy.com/"
+      ]
+     }
+    },
+    "location": {
+     "raw": "Ahmedabad, Gujarat, India",
+     "city": "Ahmedabad",
+     "district": null,
+     "state": "Gujarat",
+     "country": "India",
+     "pincode": null
+    },
+    "content": {
+     "description": "Job Title: Key Account ManagerExperience Required: 2+\nRoles and Responsibilities:Manage key client relationships, ensuring high levels of satisfaction and retention.Develop and execute account plans to drive business growth and revenue expansion.Collaborate with internal teams to deliver exceptional client service and support.Identify new opportunities for upselling and cross-selling within existing accounts.Analyze market trends and competitor activity to inform strategic decision-making.\nRequirements:2 -5 years of experience in Key Account Management or related field (e.g., Client Account Management).Proven track record of success in managing multiple clients simultaneously.Strong understanding of Key Client Management principles, including relationship building, communication, and problem-solving skills.Ability to work effectively under pressure, prioritizing tasks efficiently while meeting deadlines\""
+    },
+    "metadata": {
+     "date_added": "2026-11-17T04:25:31",
+     "date_updated": "2026-11-19T00:00:00"
+    }
+   },
+   {
+    "crustdata_job_id": 1120897132210544,
+    "job_details": {
+     "job_id": 1120897132210544,
+     "title": "Assistant Team Lead",
+     "category": null,
+     "workplace_type": "On-site",
+     "url": "https://in.indeed.com/viewjob?jk=f6bc3d7ca68a90af",
+     "reposted_job": false,
+     "number_of_openings": null,
+     "source": "indeed",
+     "employment_type": "full_time"
+    },
+    "company": {
+     "basic_info": {
+      "crustdata_company_id": 5798,
+      "name": "Delhivery",
+      "primary_domain": "delhivery.com",
+      "website": "https://www.delhivery.com",
+      "professional_network_id": "2312777",
+      "industries": [
+       "Transportation, Logistics, Supply Chain and Storage"
+      ]
+     },
+     "locations": {
+      "country": "India",
+      "state": "Haryāna",
+      "city": null,
+      "street_address": "Plot 5,sector 44, DLF QE, Haryāna"
+     },
+     "headcount": {
+      "total": 35300,
+      "range": "10001+",
+      "largest_headcount_country": "IND"
+     },
+     "followers": {
+      "count": 1294601
+     },
+     "revenue": {
+      "estimated": {
+       "lower_bound_usd": 1000000000,
+       "upper_bound_usd": 1000000000000
+      },
+      "public_markets": {
+       "stock_symbols": [
+        "DELHIVERY"
+       ],
+       "fiscal_year_end": ""
+      },
+      "acquisition_status": null
+     },
+     "funding": {
+      "total_investment_usd": 1697675479.0,
+      "valuation_usd": 0.0,
+      "last_fundraise_date": "2026-06-24T00:00:00",
+      "last_round_type": "post_ipo_secondary",
+      "num_funding_rounds": 17,
+      "investors": [
+       "Addition",
+       "AlphaGrep Investment Management",
+       "BNP Paribas"
+      ]
+     },
+     "competitors": {
+      "websites": [
+       "http://batsondelivery.com",
+       "http://vulcanxpress.com",
+       "https://www.deleezy.com/"
+      ]
+     }
+    },
+    "location": {
+     "raw": "Ettumanur, Kerala",
+     "city": "Ettumanoor",
+     "district": null,
+     "state": "Keralam",
+     "country": "India",
+     "pincode": null
+    },
+    "content": {
+     "description": "*Job Description:* Delhivery is hiring an *Assistant Team Lead (ATL) – Last Mile* to support daily delivery center operations. This role involves managing shipments, supervising field staff, and ensuring smooth last-mile operations. *Key Responsibilities:* * Oversee inbound and outbound shipment operations at the delivery center * Ensure quality checks and zero shipment loss (count & value accuracy) * Maintain duty rosters and monitor Field Executive attendance * Support delivery, pickups, NDC calling, and reverse logistics * Assist in achieving operational KPIs and productivity targets * Act as Team Lead during absence when required * Ensure safety, security, and compliance at the workplace * Handle reporting, data tracking, and basic operational analysis * Monitor manpower utilization and control operational costs * Coordinate with internal teams to resolve operational issues *Eligibility Criteria:* * *Education:* Minimum 12th Pass (Graduation preferred) * *Experience:* Fresher *Skills:* * Basic computer knowledge * Working knowledge of MS Excel *Benefits:* * ESI & PF coverage * Career growth opportunities * Stable work environment * Good communication & analytical skills * Ability to work independently and in a team * Performance-driven mindset Job Types: Full-time, Permanent Pay: ₹16,000.00 - ₹17,700.00 per month Benefits: * Cell phone reimbursement * Health insurance * Provident Fund Work Location: In person"
+    },
+    "metadata": {
+     "date_added": "2026-11-13T11:04:06",
+     "date_updated": "2026-11-15T17:57:40"
+    }
+   },
+   {
+    "crustdata_job_id": 6585674550730214,
+    "job_details": {
+     "job_id": 6585674550730214,
+     "title": "Team Leader - Operations",
+     "category": null,
+     "workplace_type": "On-site",
+     "url": "https://in.indeed.com/viewjob?jk=4a00ee138218e572",
+     "reposted_job": false,
+     "number_of_openings": null,
+     "source": "indeed",
+     "employment_type": "full_time"
+    },
+    "company": {
+     "basic_info": {
+      "crustdata_company_id": 5798,
+      "name": "Delhivery",
+      "primary_domain": "delhivery.com",
+      "website": "https://www.delhivery.com",
+      "professional_network_id": "2312777",
+      "industries": [
+       "Transportation, Logistics, Supply Chain and Storage"
+      ]
+     },
+     "locations": {
+      "country": "India",
+      "state": "Haryāna",
+      "city": null,
+      "street_address": "Plot 5,sector 44, DLF QE, Haryāna"
+     },
+     "headcount": {
+      "total": 35300,
+      "range": "10001+",
+      "largest_headcount_country": "IND"
+     },
+     "followers": {
+      "count": 1294601
+     },
+     "revenue": {
+      "estimated": {
+       "lower_bound_usd": 1000000000,
+       "upper_bound_usd": 1000000000000
+      },
+      "public_markets": {
+       "stock_symbols": [
+        "DELHIVERY"
+       ],
+       "fiscal_year_end": ""
+      },
+      "acquisition_status": null
+     },
+     "funding": {
+      "total_investment_usd": 1697675479.0,
+      "valuation_usd": 0.0,
+      "last_fundraise_date": "2026-06-24T00:00:00",
+      "last_round_type": "post_ipo_secondary",
+      "num_funding_rounds": 17,
+      "investors": [
+       "Addition",
+       "AlphaGrep Investment Management",
+       "BNP Paribas"
+      ]
+     },
+     "competitors": {
+      "websites": [
+       "http://batsondelivery.com",
+       "http://vulcanxpress.com",
+       "https://www.deleezy.com/"
+      ]
+     }
+    },
+    "location": {
+     "raw": "Ettumanur, Kerala",
+     "city": "Ettumanoor",
+     "district": null,
+     "state": "Keralam",
+     "country": "India",
+     "pincode": null
+    },
+    "content": {
+     "description": "*Job Title:* Team Lead – HUB Operations *Department:* Operations *Reporting To:* Manager *Job Summary:* The Team Lead is responsible for managing daily last-mile logistics operations at the delivery center, ensuring smooth inbound and outbound shipment flow, team management, and maintaining operational efficiency and service quality. *Key Responsibilities:* * Manage end-to-end DC operations including inbound and outbound shipments. * Plan routes and vehicle deployment for efficient resource utilization. * Ensure shipment quality checks and zero missing shipments. * Prepare duty rosters and manage Field Executives (attendance, pickups, reverse logistics). * Monitor operational performance and provide timely feedback. * Maintain safety, security, and compliance with operational standards. * Support the Manager with operational reports and administrative tasks. * Monitor cost control and efficient use of resources. *Qualifications & Skills:* * *Education:* Graduation * *Experience:* 1 Year – 2 years (Logistics/Manufacturing preferred) * *Skills:* Basic MS Excel knowledge, good communication, analytical ability, proactive attitude, and teamwork skills *Team Handling:* * Directly manage 10–12 Executives and offroll staffs Job Types: Full-time, Permanent Pay: ₹22,000.00 - ₹25,000.00 per month Benefits: * Health insurance * Provident Fund Work Location: In person"
+    },
+    "metadata": {
+     "date_added": "2026-11-13T11:03:09",
+     "date_updated": "2026-11-15T13:48:45"
+    }
+   }
+  ],
+  "next_cursor": "H4sIAAAAAAAA_xTLParDMAwA4KsYzRlkW7asXOXxCI6kkKE0ND9DKb17yfrB94HX5ft7WvuxwhjAxbulVJnRzL1mikWbZeyZ-iyuN0rWuCgmlzQv4vMildSoWSQYAhzbfsIY_iILlcrcBBGHUEsrlakU5Iwp0v8Q4NzO_ph0u573yPz9BQAA___F112pkAAAAA==",
+  "total_count": 37
+ }
+}
