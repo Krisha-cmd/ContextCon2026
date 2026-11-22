@@ -14,14 +14,14 @@ Cheap checks come first, and expensive ones run only on accounts that survive. E
 
 ```mermaid
 flowchart TD
-  A["Client request"] --> B["Parse into a run spec (Gemini Flash)"]
+  A["Client request"] --> B["Parse: rule engine first, Gemini Flash for the rest"]
   B --> C1["Door 1: Crustdata company search"]
   B --> C2["Door 2: jobs and news from the last 30 days"]
   C1 --> D["Merge and dedup: Crustdata ID, domain, PAN, name+city"]
   C2 --> D
   D -->|likely duplicate| X["Held for a person"]
   D --> E["Free pre-rank, then pick accounts by value per credit"]
-  E --> F["Match to legal entity (website footer, rules, scored matcher)"]
+  E --> F["Match to legal entity (crosswalk, website footer, scored matcher)"]
   F -->|unsure| X
   F -->|no match| Z["Dropped, reason logged"]
   F -->|match| G["Registry check: GST and MCA status"]
@@ -42,6 +42,8 @@ flowchart TD
   O --> Q
   Q --> R["Reflection: update preference rules"]
   R -.-> M
+  X -.->|person resolves| S["Stored as label: crosswalk + matcher recalibration"]
+  S -.-> F
 ```
 
 continueheld for a person (cannot verify)dropped with reason
@@ -50,7 +52,7 @@ continueheld for a person (cannot verify)dropped with reason
 
 | Stage | What happens | Source | Credits (est.) | When sources fail |
 | --- | --- | --- | --- | --- |
-| 0 · Parse | Request becomes a typed spec: industry, size, region, trigger types, buyer titles, cost and time limits. | Gemini Flash, schema-locked JSON | 0 (≈ ₹0.2) | Spec fails validation: ask the requester. |
+| 0 · Parse | Request becomes a typed spec: industry, size, region, trigger types, buyer titles, cost and time limits. Active parse rules run first, and Gemini handles only uncovered phrases and proposes new rules. | Rule engine + Gemini Flash, schema-locked JSON | 0 (≤ ₹0.2) | Spec fails validation: ask the requester. |
 | 1 · Find | Door 1 searches companies by filters. Door 2 searches job posts and news dated in the window. | Crustdata search, job search, web search | 10–20 | Empty matches are a valid result, not an error. |
 | 2 · Dedup + pick | Merge records on strong keys, then rank on fields we already have and spend by expected value per credit. | Local | 0 | held possible duplicates. |
 | 3 · Identity | Get the legal name from the website footer or privacy page, then match it to the registry record. | Web fetch, GST/MCA provider | 5–10 | cannot verify when the score lands in the middle band. |
@@ -79,8 +81,9 @@ flowchart LR
   subgraph GCP["GCP project"]
     API["Cloud Run service: api (FastAPI, approval page)"]
     subgraph WK["Cloud Run Job: worker"]
-      RUN["Step runner with checkpoints"]
-      GW["Outbound gateway: rate limit, cache, retries, budget guard, cost ledger"]
+      SCH["Scheduler: leases, SKIP LOCKED, fair share, aging"]
+      RUN["Step runner with checkpoints and audit log"]
+      GW["Outbound gateway: rate limit, 4-layer cache, retries, budget guard, cost ledger"]
       OB["Action outbox with idempotency keys"]
     end
     DB[("Cloud SQL Postgres + pgvector")]
@@ -98,6 +101,8 @@ flowchart LR
   U2 -->|approve or edit| API
   API -->|create job, record approval| DB
   API -->|start execution| RUN
+  SCH -->|claim step with lease| DB
+  SCH --> RUN
   RUN -->|read and write state| DB
   RUN --> GW
   GW --> CD
@@ -149,22 +154,93 @@ tests/golden/    hard cases from the probe
 ### Postgres tables
 
 ```
-jobs          id, spec, status, limits
-steps         job, account, step, status, output
-accounts      merged entity, keys, verdicts
+jobs          id, client_id, spec, status, limits,
+              input_snapshot_hash
+steps         job, account, step, status, output,
+              lease_owner, lease_until, attempts
+accounts      merged entity, verdicts
+entity_keys   entity, key_type, key_value,
+              evidence_id, resolved_by
+audit_log     job, step, table, record_id,
+              before, after, reason, evidence_ids
 evidence      url, field_or_quote, record_date,
               retrieved_at, raw_hash
-http_cache    request_hash, response, fetched_at
-cost_ledger   job, endpoint, credits, inr, ms
+http_cache    request_hash, response, status,
+              is_negative, fetched_at, expires_at
+entity_cache  entity, data_type, payload, expires_at
+cost_ledger   job, endpoint, credits, inr, ms,
+              cache_hit
 actions       idem_key, type, payload, state
 approvals     action, decision, final_text, by
-preferences   rule, version, source_diffs
-examples      approved email, embedding
+parse_rules   pattern, mapping, version, uses,
+              status, origin_request
+preferences   rule, scope, version, support,
+              source_diffs, status
+examples      draft, final, diff, embedding
+match_labels  pair, label, resolved_by
+source_stats  source, confirmed, contradicted
+dead_letter   step, error, attempts
 ```
 
 **Run it the same way everywhere.** Docker Compose (api, worker, postgres) on a laptop and Cloud Run in the cloud use the same image and config. For the kill on stage, stopping the worker locally is the most predictable. On Cloud Run the equivalent is cancelling the job execution and starting a new one. Deploy with `gcloud run deploy --source .`, which redeploys in about a minute for the live fix.
 
 Part 3
+
+## Integrity, reuse and scheduling
+
+These pieces answer three questions: what changed, why we never pay twice, and how work stays consistent and fair when there is a lot of it.
+
+### Audit log: "which records did you update?"
+
+- An append-only `audit_log` row for every change: job, step, table, record, before, after, reason and the evidence IDs behind it.
+- Each job stores a hash of the client data it read, so a mid-build change to a carrier record is visible.
+- "What did run 42 change, and why?" is one query, and the approval page shows it per account.
+
+### Four cache layers: never pay twice
+
+- **Request cache:** keyed by a hash of the normalized request, with a TTL per data type (registry 1 day, news 1 day, company basics 7 days).
+- **Entity cache:** once an entity is enriched, any query that resolves to it reuses the data.
+- **Negative cache:** "not found" is stored with a short TTL, so we don't keep paying to find nothing.
+- **Single-flight:** a Postgres advisory lock per request hash, so two workers never fetch the same thing at once.
+- Cache hits enter the ledger at ₹0, so the savings show up in the cost records.
+
+### Entity crosswalk: building the missing shared key
+
+- Bridge: domain → website footer → legal name and CIN → GST search on legal name plus state.
+- GSTIN characters 3–12 are the PAN, so GSTINs in different states with the same PAN group into one entity.
+- Every resolved join, by code or by a person, goes into `entity_keys` with its evidence. The next run looks it up first, for free.
+
+### Parse rule engine: parse once, compile into rules
+
+- Each Gemini parse also proposes reusable mappings, for example "mid-size" → headcount 200–2,000, or "West India" → MH, GJ, GOA, RJ.
+- A proposed rule becomes active after a person approves it, or after it gives the same result 3 times.
+- New requests run the active rules first. Gemini sees only the uncovered phrases, so LLM calls and variance fall over time.
+- Rules are versioned and tested against the golden requests before they go live, to catch over-generalizing.
+
+### Consistency at scale
+
+- Workers claim steps with `SELECT … FOR UPDATE SKIP LOCKED`, so no step runs twice at once.
+- Each claim is a lease with a heartbeat. If a worker dies, its lease expires and another worker picks the step up from its checkpoint.
+- One transaction per step, plus the action outbox, gives exactly-once effects.
+- After N failed attempts a step moves to `dead_letter` instead of retrying forever.
+
+### No starvation
+
+- Deficit round-robin across clients and jobs, so a 500-account job can't block a 5-account one.
+- Aging: a waiting step's priority rises with time, so every step eventually runs.
+- A per-client concurrency cap, and a central token bucket that gives each active job a fair share of Crustdata's 5 requests a minute.
+- At 100x: Pub/Sub with ordering keys, and Cloud Tasks for rate-limited dispatch.
+
+### How the system evolves: four loops, all human-reviewed and reversible
+
+| Loop | Signal | What changes | Guardrail | Proof |
+| --- | --- | --- | --- | --- |
+| Email preferences | Every approve, edit or reject | Examples update immediately. Rules are distilled in batches. | A rule needs at least 2 supporting edits and holds no prospect personal data | Draft-to-final edit distance falls |
+| Matcher | A person resolves a held match | Crosswalk entry plus a new labelled pair. Thresholds are recalibrated. | Precision on the golden set must not drop | The held share falls while precision holds |
+| Parse rules | Each Gemini parse | New mappings proposed, then activated | Approval or 3 consistent uses, plus golden tests | LLM calls per request fall |
+| Source reliability | A source confirmed or contradicted by another | Per-source trust weight | The weight only reorders sources, it never invents a fact | Fewer conflicts surface late |
+
+Part 4
 
 ## ML and algorithms: where, which, why
 
@@ -182,7 +258,7 @@ Lookalike and namesake test cases are judged here, and a wrong match costs more 
 
 Training data
 
-Hand-label 50–100 pairs from the probe (Beardsell twins, Mamaearth and Honasa), plus synthetic lookalikes made by perturbing real names.
+Hand-label 50–100 pairs from the probe (Beardsell twins, Mamaearth and Honasa), plus synthetic lookalikes made by perturbing real names. After that it learns actively: every held match a person resolves becomes a new labelled pair.
 
 Non-ML version
 
@@ -276,7 +352,7 @@ The ethics judge scores how the service explains its decisions. A transparent sc
 
 Algorithm
 
-Store each draft, final text and diff. A reflection step (one LLM call per batch) turns repeated edits into explicit, versioned preference rules. k-nearest-neighbour retrieval in pgvector supplies the three most similar approved emails as examples.
+Two kinds of memory. Episodic: every approve, edit or reject is stored at once (draft, final, diff, reason, embedding), and k-nearest-neighbour retrieval in pgvector feeds the three most similar approved emails into the next draft, so it adapts with every use. Semantic: a reflection step (one LLM call per batch) turns repeated edits into explicit, versioned rules scoped to the company, an approver or a segment. A rule needs at least 2 supporting edits, and when two rules conflict the newer one wins.
 
 Later
 
@@ -300,7 +376,7 @@ Why
 
 One call per job lets the unseen finals request work without new code. If the kickoff input format is structured JSON, map its fields directly and use the LLM only for free-text parts.
 
-Part 4
+Part 5
 
 ## Ready answers for the design question
 
